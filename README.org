@@ -23,7 +23,7 @@ customize as needed while keeping your environment specific customizations.
 Replace *GIT-CHECKOUT-FOLDER* with the folder where you cloned the project.
 
 #+begin_src emacs-lisp
-  emacs -q -l ~/GIT-CHECKOUT-FOLDER/emacs-rimero-setup/emacs.d/init.el
+  emacs -q -l ~/GIT-CHECKOUT-FOLDER/init.el
 #+end_src
 
 The above-mentioned sample =init.el= is provide as an example only, for integration, see the next section.
@@ -59,7 +59,7 @@ Again replace *GIT-CHECKOUT-FOLDER* with the folder where you cloned the project
   (require 'org)
   (require 'ob-tangle)
   
-  (org-babel-load-file "/GIT-CHECKOUT-FOLDER/emacs-rimero-setup/emacs.d/bootstrap/startup.org")
+  (org-babel-load-file "/GIT-CHECKOUT-FOLDER/bootstrap/startup.org")
 
   ;; my own stuff
   (setq myvar "something_cool")
