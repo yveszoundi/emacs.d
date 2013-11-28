@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: each.map
+# key: each
+# --
+${1:map}.each { ${2:k}, ${3:v} ->
+    $0
+}

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: each.col
+# key: each
+# --
+${1:col}.each { ${2:i} ->
+    $0
+}

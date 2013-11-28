@@ -1,0 +1,66 @@
+#+TITLE: README
+
+This is a remake of [[http://github.com/rimerosolutions/emacs-rimero-setup][emacs-rimero-setup]] for easier reuse in a non obstrusive way.
+
+* Rationale
+
+=emacs-rimero-setup= was painful to move across machines that had some specific settings.
+
+#+CAPTION: Sample settings
+#+ATTR_HTML: :border 2 :rules all :frame border
+| Application           | Home            | Work          |
+| Mail                  | gmail           | Exchange      |
+| Continous Integration | None            | Jenkins       |
+| Chat                  | NA              | Jabber        |
+| Email contacts        | Concat database | LDAP via eudc |
+| etc.                  | etc.            | etc.          |
+
+The distribution now acts just as a =template= that you load and 
+customize as needed while keeping your environment specific customizations.
+
+* Just testing the setup
+
+Replace *GIT-CHECKOUT-FOLDER* with the folder where you cloned the project.
+
+#+begin_src emacs-lisp
+  emacs -q -l ~/GIT-CHECKOUT-FOLDER/emacs-rimero-setup/emacs.d/init.el
+#+end_src
+
+The above-mentioned sample =init.el= is provide as an example only, for integration, see the next section.
+
+* Integration with your own customizations
+
+Below is a simple =.emacs.d/init.el= startup file.
+
+Again replace *GIT-CHECKOUT-FOLDER* with the folder where you cloned the project.
+
+#+begin_src emacs-lisp
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(ers-env-variables
+     (quote
+      (("JAVA_HOME" . "/opt/java6")
+       ("EDITOR"    . "emacsclient")
+       ("LC_ALL"    . "C")
+       ("LANG"      . "en"))))
+   '(send-mail-function (quote smtpmail-send-it)))
+  
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+    
+  (require 'cl-lib)
+  (require 'org)
+  (require 'ob-tangle)
+  
+  (org-babel-load-file "/GIT-CHECKOUT-FOLDER/emacs-rimero-setup/emacs.d/bootstrap/startup.org")
+
+  ;; my own stuff
+  (setq myvar "something_cool")
+#+end_src
