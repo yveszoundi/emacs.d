@@ -28,7 +28,7 @@
   (if (eq system-type 'windows-nt)
       ".bat" ""))
 
-(defcustom grails-compilation-buffer-name "Grails*"
+(defcustom grails-compilation-buffer-name "*Grails*"
   "Buffer name for Grails commands"
   :type 'string
   :group 'grails)
