@@ -1,19 +1,20 @@
 #+TITLE: README
 
-This is a remake of [[http://github.com/rimerosolutions/emacs-rimero-setup][emacs-rimero-setup]] for easier reuse in a non obstrusive way.
+This is a remake of [[https://github.com/rimerosolutions/emacs-rimero-setup][emacs-rimero-setup]] for easier reuse in a non obstrusive way.
 
+The setup is loaded via an =org= file, see the [[https://github.com/yveszoundi/emacs.d/blob/master/bootstrap/startup.org][startup.org]] file in the =bootstrap= folder.
 * Rationale
 
 =emacs-rimero-setup= was painful to move across machines that had some specific settings.
 
 #+CAPTION: Sample settings
 #+ATTR_HTML: :border 2 :rules all :frame border
-| Application           | Home            | Work          |
-| Mail                  | gmail           | Exchange      |
-| Continous Integration | None            | Jenkins       |
-| Chat                  | NA              | Jabber        |
-| Email contacts        | Concat database | LDAP via eudc |
-| etc.                  | etc.            | etc.          |
+| Application           | Home              | Work          |
+| Mail                  | gmail             | Exchange      |
+| Continous Integration | None              | Jenkins       |
+| Chat                  | NA                | Jabber        |
+| Email contacts        | Contacts database | LDAP via eudc |
+| etc.                  | etc.              | etc.          |
 
 The distribution now acts just as a =template= that you load and 
 customize as needed while keeping your environment specific customizations.
