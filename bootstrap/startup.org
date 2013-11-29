@@ -262,16 +262,16 @@
                              anzu ace-jump-mode
                              expand-region wrap-region
                              drag-stuff duplicate-thing
-                             htmlize undo-tree
-                             projectile workgroups2 guide-key
-                             powerline rainbow-delimiters
+                             htmlize
+                             projectile workgroups2
+                             powerline rainbow-delimiters guide-key
                              ido flx-ido ido-ubiquitous ido-vertical-mode ido-hacks
-                             base16-theme
-                             dired-details smex
+                             dired-details smex undo-tree
                              auto-complete paredit yasnippet
                              markdown-mode groovy-mode inf-groovy
                              org2blog xml-rpc w3m
-                             magit dsvn)
+                             magit dsvn
+                             base16-theme)
     "A list of packages to ensure are installed."
     :type 'symbol
     :group 'emacs-rimero-setup)
@@ -484,8 +484,7 @@
         py-indent-offset          ers-tab-size
         sgml-basic-offset         ers-tab-size
         nxml-child-indent         ers-tab-size
-        nxml-outline-child-indent ers-tab-size
-        nxml-slash-auto-complete-flag t)
+        nxml-outline-child-indent ers-tab-size)
   
   (defun ers/indent-region-or-buffer ()
     "Indents an entire buffer using the default intenting scheme."
@@ -640,8 +639,13 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
   (use-package grails-projectile-mode
     :config (grails-projectile-mode t)
     :diminish grails-projectile-mode)
-  
+#+end_src
+
+** XML mode
+
+#+begin_src emacs-lisp  
   (use-package nxml-mode
+    :config (setq nxml-slash-auto-complete-flag t)
     :mode ("\\.\\(pom\\|xsd\\|gsp\\)$" . nxml-mode))
 #+end_src
 
@@ -816,35 +820,39 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
   (use-package expand-region
     :bind ("C-c ," . er/expand-region))
   
-  (let ((my-bindings `((,(kbd "C-c <left>")  . windmove-left)
-                       (,(kbd "C-c <right>") . windmove-right)
-                       (,(kbd "C-c <up>")    . windmove-up)
-                       (,(kbd "C-c <down>")  . windmove-down)
-                       (,(kbd "C-c r")       . revert-buffer)
-                       (,(kbd "C-c g")       . goto-line)
-                       (,(kbd "C-c m")       . browse-url-at-point)
-                       (,(kbd "C-o")         . open-next-line)
-                       (,(kbd "M-o")         . open-previous-line)
-                       (,(kbd "C-x \\")      . comment-or-uncomment-region)
-                       (,(kbd "C-c o")       . occur))))
-    (dolist (my-binding my-bindings)
-      (global-set-key (car my-binding) (cdr my-binding))))
+  (let ((ers-keybindings `((,(kbd "C-c <left>")  . windmove-left)
+                           (,(kbd "C-c <right>") . windmove-right)
+                           (,(kbd "C-c <up>")    . windmove-up)
+                           (,(kbd "C-c <down>")  . windmove-down)
+                           (,(kbd "C-c r")       . revert-buffer)
+                           (,(kbd "C-c g")       . goto-line)
+                           (,(kbd "C-c m")       . browse-url-at-point)
+                           (,(kbd "C-o")         . open-next-line)
+                           (,(kbd "M-o")         . open-previous-line)
+                           (,(kbd "C-x \\")      . comment-or-uncomment-region)
+                           (,(kbd "C-c o")       . occur))))
+    (dolist (ers-keybinding ers-keybindings)
+      (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
   
   (use-package dired-details
     :init (setq-default dired-details-hidden-string "--- ")
     :config (dired-details-install))
   
   (use-package recentf
+    :defer t
     :config (progn
               (defun ers/recentf-ido-find-file ()
                 "Find a recent file using Ido."
                 (interactive)
                 (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
                   (when file
-                    (find-file file))))
-              (recentf-mode 1))
-    :init (setq recentf-max-menu-items 25
-                recentf-save-file "~/.emacs.d/data/recentf")
+                    (find-file file)))))
+  
+    :init (progn (setq recentf-max-menu-items 25
+                       recentf-exclude '("/tmp" "/ssh:" "\\ido.last" "recentf")
+                       recentf-save-file "~/.emacs.d/data/recentf")
+                 (recentf-mode +1))
+    
     :bind ("C-x C-r" . ers/recentf-ido-find-file))
   
   (use-package ls-lisp
