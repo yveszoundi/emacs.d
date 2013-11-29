@@ -797,7 +797,8 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
   
   (use-package guide-key
     :init (setq guide-key/guide-key-sequence '("C-c z"))
-    :config (guide-key-mode t))
+    :config (guide-key-mode t)
+    :diminish guide-key-mode)
   
   (use-package anzu
     :config (global-anzu-mode t)
