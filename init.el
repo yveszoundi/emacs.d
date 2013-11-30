@@ -41,5 +41,8 @@
 (require 'ob-tangle)
 
 ;; Just for testing, for the typical setup see the README file, use the full path to startup.org..
-(org-babel-load-file (expand-file-name (concat (file-name-directory load-file-name) "bootstrap/startup.org")))
-
+(org-babel-load-file (expand-file-name
+                      (concat
+                       (file-name-as-directory
+                        (concat (file-name-as-directory (file-name-directory load-file-name)) "bootstrap"))
+                       "startup.org")))

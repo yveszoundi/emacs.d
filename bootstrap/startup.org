@@ -260,7 +260,7 @@
                              projectile workgroups2
                              powerline rainbow-delimiters guide-key
                              helm helm-ag helm-projectile ac-helm
-                             dired-details smex undo-tree
+                             dired-details undo-tree
                              auto-complete paredit yasnippet
                              markdown-mode groovy-mode inf-groovy
                              org2blog xml-rpc w3m
@@ -914,16 +914,15 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
    
 #+begin_src emacs-lisp
   (use-package helm
-    :config (setq helm-ff-transformer-show-only-basename nil)
-  
     :init
     (progn
-      (setq helm-adaptive-history-file ers-helm-adaptive-history-file
-            helm-ff-lynx-style-map nil
-            helm-ff-auto-update-initial-value nil
-            helm-yank-symbol-first t
-            helm-input-idle-delay 0.1
-            helm-idle-delay 0.1)
+      (setq helm-ff-transformer-show-only-basename nil
+            helm-adaptive-history-file             ers-helm-adaptive-history-file
+            helm-ff-lynx-style-map                 nil
+            helm-ff-auto-update-initial-value      nil
+            helm-yank-symbol-first                 t
+            helm-input-idle-delay                  0.1
+            helm-idle-delay                        0.1)
   
       (use-package helm-config)
       (use-package helm-ag)
@@ -946,18 +945,6 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
     :diminish helm-mode)
 #+end_src
    
-** Smex setup
-
-#+begin_src emacs-lisp
-  ;; (use-package smex
-  ;;   :bind (("C-x C-m"     . smex)
-  ;;          ("M-x"         . smex)
-  ;;          ("M-X"         . smex-major-mode-commands)
-  ;;          ("C-c C-c M-x" . execute-extended-command))
-  
-  ;;   :config (setq smex-save-file ers-smex-save-file))
-#+end_src
-
 * UI configuration
 
 ** Misc
