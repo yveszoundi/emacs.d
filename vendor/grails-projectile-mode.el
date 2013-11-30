@@ -86,7 +86,7 @@
   :type 'string
   :group 'grails)
 
-(defun grails/join-lines (beg end)
+(defun grails/--join-lines (beg end)
   "Apply join-line over region."
   (interactive "r")
   (if mark-active
@@ -96,19 +96,46 @@
         (while (< (point) end)
           (join-line 1)))))
 
-(defun grails/read-grails-options-projectile-file (filePath)
+(defun grails/--read-grails-options-projectile-file (filePath)
   "Return filePath's file content."
   (with-temp-buffer
     (insert-file-contents filePath)
     (mark-whole-buffer)
-    (grails/join-lines (point-min)(point-max))
+    (grails/--join-lines (point-min)(point-max))
     (buffer-string)))
 
-(defun grails/create-grails-projectile-file ()
+(defun grails/wizard-new-app ()
+  "Create a new application project."
   (interactive)
-  (let ((default-directory (expand-file-name (projectile-project-root))))
-    (with-temp-file (concat default-directory ".projectile")
-      (insert "-target"))))
+  (grails/--wizard-new-app-or-plugin "create-app"))
+
+(defun grails/wizard-new-plugin ()
+  "Create a new plugin project."
+  (interactive)
+  (grails/--wizard-new-app-or-plugin "create-plugin"))
+
+(defun grails/--wizard-new-app-or-plugin (cmd)
+  "Create a new application or plugin."
+
+  (let ((insert-default-directory  t))
+    (let ((grails-project-folder (read-directory-name "Directory: " default-directory))
+          (app-name (read-from-minibuffer "Application Name: ")))
+
+      (let ((default-directory (file-name-as-directory grails-project-folder))
+            (grails-command (concat grails-executable grails-executable-suffix))
+            (grails-arguments (concat cmd " --inplace " app-name)))
+
+        (unless (file-exists-p default-directory)
+          (make-directory default-directory t))
+
+        (grails/create-grails-projectile-file default-directory)
+
+        (let ((grails-command-line (concat grails-command " " grails-arguments)))
+          (compilation-start grails-command-line 'compilation-mode 'get-grails-compilation-buffer-name))))))
+
+(defun grails/create-grails-projectile-file (dir)
+  (with-temp-file (concat dir ".projectile")
+    (insert "-/target")))
 
 ;; --------------------------------
 ;; Main functions
@@ -125,7 +152,7 @@
         (setq grails-cmd-line (concat default-directory grails-wrapper-filename grails-executable-suffix))))
 
     (when (file-exists-p (concat default-directory grails-projectile-filename))
-      (setq grails-args (grails/read-grails-options-projectile-file (concat default-directory grails-projectile-filename))))
+      (setq grails-args (grails/--read-grails-options-projectile-file (concat default-directory grails-projectile-filename))))
 
     (let (( grails-command-line (concat grails-cmd-line " " grails-output-opts " " grails-args " " str)))
       ;; runs the grails command from the project directory
@@ -198,6 +225,12 @@
   (interactive)
   (grails/command "compile"))
 
+(defun grails/clean ()
+  "Clean"
+
+  (interactive)
+  (grails/command "clean"))
+
 (defun grails/refresh-dependencies ()
   "Refresh Grails Dependencies"
 
@@ -231,6 +264,7 @@
       (browse-url grails-url-guide)
     (message "No Grails URL guide set. Customize the 'grails' group")))
 
+;;; Minor mode
 (defvar grails-projectile-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map   (kbd "C-c ;rd") 'grails/refresh-dependencies)
@@ -238,12 +272,14 @@
     (define-key map   (kbd "C-c ;cl") 'grails/clean)
     (define-key map   (kbd "C-c ;e")  'grails/icommand)
     (define-key map   (kbd "C-c ;cd") 'grails/create-domain)
+    (define-key map   (kbd "C-c ;na") 'grails/wizard-new-app)
+    (define-key map   (kbd "C-c ;np") 'grails/wizard-new-plugin)
     (define-key map   (kbd "C-c ;cc") 'grails/create-controller)
     (define-key map   (kbd "C-c ;cs") 'grails/create-service)
     (define-key map   (kbd "C-c ;pl") 'grails/plugins-list-installed)
     (define-key map   (kbd "C-c ;pp") 'grails/plugins-package-plugin)
     map)
-  "Keymap for the Emacs Grails Project Mode extensions minor mode")
+  "Keymap for Grails Projectile mode.")
 
 (easy-menu-define grails-projectile-mode-menu grails-projectile-mode-map
   "Emacs Grails Project Mode Menu."

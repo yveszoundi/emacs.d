@@ -191,15 +191,25 @@
     :group 'emacs-rimero-setup)
   
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; completions
+  ;; Files
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defcustom ers-ac-histfile "~/.emacs.d/data/ac-comphist.dat"
     "Auto-complete completion data."
     :type 'file
     :group 'emacs-rimero-setup)
   
+  (defcustom ers-recentf-file "~/.emacs.d/data/recentf"
+    "Recent file list."
+    :type 'file
+    :group 'emacs-rimero-setup)
+  
+  (defcustom ers-helm-adaptive-history-file "~/.emacs.d/data/helm-adaptative-history-file"
+    "Helm adaptative history file"
+    :type 'file
+    :group 'emacs-rimero-setup)
+  
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; backups
+  ;; Backups
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (defcustom ers-bookmarks-file (expand-file-name  "~/.emacs.d/data/bookmarks")
     "Bookmarks"
@@ -234,22 +244,6 @@
     :type 'directory
     :group 'emacs-rimero-setup)
   
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; ido
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defcustom ers-ido-save-directory-list-file "~/.emacs.d/data/ido.last"
-    "IDO history file."
-    :type 'file
-    :group 'emacs-rimero-setup)
-  
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; smex
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defcustom ers-smex-save-file "~/.emacs.d/data/.smex-items"
-    "Smex history file."
-    :type 'file
-    :group 'emacs-rimero-setup)
-  
   (defcustom ers-workgroups-file "~/.emacs.d/data/workgroups"
     "Workgroups file."
     :type 'file
@@ -265,7 +259,7 @@
                              htmlize
                              projectile workgroups2
                              powerline rainbow-delimiters guide-key
-                             ido flx-ido ido-ubiquitous ido-vertical-mode ido-hacks
+                             helm helm-ag helm-projectile ac-helm
                              dired-details smex undo-tree
                              auto-complete paredit yasnippet
                              markdown-mode groovy-mode inf-groovy
@@ -331,44 +325,24 @@
 * Utility functions
 
 #+begin_src emacs-lisp
-  (defun duplicate-current-line-or-region (arg)
-    "Duplicates the current line or region ARG times.
-  If there's no region, the current line will be duplicated. However, if
-  there's a region, all lines that region covers will be duplicated."
-    (interactive "p")
-    (let (beg end (origin (point)))
-      (if (and mark-active (> (point) (mark)))
-          (exchange-point-and-mark))
-      (setq beg (line-beginning-position))
-      (if mark-active
-          (exchange-point-and-mark))
-      (setq end (line-end-position))
-      (let ((region (buffer-substring-no-properties beg end)))
-        (dotimes (i arg)
-          (goto-char end)
-          (newline)
-          (insert region)
-          (setq end (point)))
-        (goto-char (+ origin (* (length region) arg) arg)))))
-
   (defun ers/get-string-from-file (filePath)
     "Return filePath's file content."
     (with-temp-buffer
       (insert-file-contents filePath)
       (buffer-string)))
-
+  
   (when (eq system-type 'darwin)
     (defvar osx-pbpaste-cmd "/usr/bin/pbpaste"
       "*command-line paste program")
-
+  
     (defvar osx-pbcopy-cmd "/usr/bin/pbcopy"
       "*command-line copy program")
-
+  
     (defun osx-pbpaste ()
       "paste the contents of the os x clipboard into the buffer at point."
       (interactive)
       (call-process osx-pbpaste-cmd nil t t))
-
+  
     (defun osx-pbcopy ()
       "copy the contents of the region into the os x clipboard."
       (interactive)
@@ -377,9 +351,8 @@
               (and (fboundp 'region-exists-p) (region-exists-p)))
           (call-process-region
            (region-beginning) (region-end) osx-pbcopy-cmd nil t t)
-        (error "region not selected")))
-    )
-
+        (error "region not selected"))))
+  
   (defun ers/recompile-init-files()
     "Recompile emacsd files."
     (interactive)
@@ -389,13 +362,13 @@
 * Encoding settings
 
 #+begin_src emacs-lisp
-(setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
-(set-language-environment "UTF-8")
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (setq-default buffer-file-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (set-language-environment "UTF-8")
 #+end_src
 
 * Eshell configuration
@@ -623,7 +596,6 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                 projectile-known-projects-file ers-projectile-bookmarks-file
                 projectile-indexing-method     'native
                 projectile-enable-caching      t)
-    :bind ("C-x C-M-f" . projectile-find-file)
     :diminish projectile-mode)
 #+end_src
 
@@ -693,18 +665,18 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 ** Web browswing
 
 #+begin_src emacs-lisp
-(setq browse-url-browser-function          ers-browser-program
-      browse-url-new-window-flag           t
-      browse-url-firefox-new-window-is-tab t)
-
-;; w3m
-(setq w3m-coding-system           'utf-8
-      w3m-file-coding-system      'utf-8
-      w3m-file-name-coding-system 'utf-8
-      w3m-input-coding-system     'utf-8
-      w3m-output-coding-system    'utf-8
-      w3m-terminal-coding-system  'utf-8)
-
+  (setq browse-url-browser-function          ers-browser-program
+        browse-url-new-window-flag           t
+        browse-url-firefox-new-window-is-tab t)
+  
+  ;; w3m
+  (setq w3m-coding-system           'utf-8
+        w3m-file-coding-system      'utf-8
+        w3m-file-name-coding-system 'utf-8
+        w3m-input-coding-system     'utf-8
+        w3m-output-coding-system    'utf-8
+        w3m-terminal-coding-system  'utf-8)
+  
 #+end_src
 
 ** IRC configuration
@@ -736,20 +708,20 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 ** Blogging
 
 #+begin_src emacs-lisp
-(use-package org2blog-autoloads
-  :config
-  (progn
-    (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
-          personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
-          org2blog/wp-blog-alist `((,corporate-blog-name
-                                    :url ,corporate-blog-url
-                                    :username (netrc-get corporate-blog "login")
-                                    :password (netrc-get corporate-blog "password"))
-                                   (,personal-blog-name
-                                    :url ,personal-blog-url
-                                    :username (netrc-get personal-blog "login")
-                                    :password (netrc-get personal-blog "password"))))))
-
+  (use-package org2blog-autoloads
+    :config
+    (progn
+      (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
+            personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
+            org2blog/wp-blog-alist `((,corporate-blog-name
+                                      :url ,corporate-blog-url
+                                      :username (netrc-get corporate-blog "login")
+                                      :password (netrc-get corporate-blog "password"))
+                                     (,personal-blog-name
+                                      :url ,personal-blog-url
+                                      :username (netrc-get personal-blog "login")
+                                      :password (netrc-get personal-blog "password"))))))
+  
 #+end_src
 
 * Various utilities
@@ -840,21 +812,12 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
     :config (dired-details-install))
   
   (use-package recentf
-    :defer t
-    :config (progn
-              (defun ers/recentf-ido-find-file ()
-                "Find a recent file using Ido."
-                (interactive)
-                (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
-                  (when file
-                    (find-file file)))))
-  
     :init (progn (setq recentf-max-menu-items 25
                        recentf-exclude '("/tmp" "/ssh:" "\\ido.last" "recentf")
-                       recentf-save-file "~/.emacs.d/data/recentf")
+                       recentf-save-file ers-recentf-file)
                  (recentf-mode +1))
-    
-    :bind ("C-x C-r" . ers/recentf-ido-find-file))
+  
+    :bind ("C-x C-r" . helm-recentf))
   
   (use-package ls-lisp
     :config (setq ls-lisp-use-insert-directory-program nil
@@ -899,7 +862,7 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
               (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
               (add-hook 'prog-mode-hook 'linum-mode)))
   
-  (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+  (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
   (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 #+end_src
 
@@ -947,54 +910,52 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
   :diminish auto-complete-mode)
 #+end_src
 
-** IDO settings
+** Helm settings
    
-   #+begin_src emacs-lisp
-     (use-package ido-ubiquitous
-       :config
-       (progn
-         (ido-mode t)
-         (ido-everywhere t)
-         (ido-ubiquitous-mode t)
-     
-         (use-package ido-hacks
-           :config (ido-hacks-mode t))
-     
-         (use-package flx-ido
-           :config (flx-ido-mode t))
-     
-         (use-package ido-vertical-mode
-           :config (ido-vertical-mode t))
-     
-         (add-to-list 'ido-work-directory-list-ignore-regexps tramp-file-name-regexp))
-     
-       :init
-       (progn
-         (setq gc-cons-threshold 20000000)
-         (setq ido-enable-prefix             nil
-               ido-enable-flex-matching      t
-               ido-create-new-buffer        'always
-               ido-use-filename-at-point     nil
-               ido-max-prospects             50
-               ido-enable-tramp-completion   nil
-               ido-use-faces                 nil
-               ido-save-directory-list-file  ers-ido-save-directory-list-file
-               ido-max-window-height         nil
-               ido-default-file-method       'selected-window
-               ido-default-buffer-method     'selected-window)))
-     
-   #+end_src
+#+begin_src emacs-lisp
+  (use-package helm
+    :config (setq helm-ff-transformer-show-only-basename nil)
+  
+    :init
+    (progn
+      (setq helm-adaptive-history-file ers-helm-adaptive-history-file
+            helm-ff-lynx-style-map nil
+            helm-ff-auto-update-initial-value nil
+            helm-yank-symbol-first t
+            helm-input-idle-delay 0.1
+            helm-idle-delay 0.1)
+  
+      (use-package helm-config)
+      (use-package helm-ag)
+      (use-package ac-helm)
+  
+      (helm-mode t)
+      (helm-adaptative-mode t)
+  
+      (use-package helm-projectile
+        :bind ("C-x C-M-f" . helm-projectile))
+  
+      (add-hook 'eshell-mode-hook
+                #'(lambda ()
+                    (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
+  
+    :bind ( ("C-x r l" . helm-bookmarks)
+            ("C-x C-m" . execute-extended-command)
+            ("C-c o"   . helm-occur))
+  
+    :diminish helm-mode)
+#+end_src
    
 ** Smex setup
 
 #+begin_src emacs-lisp
-  (use-package smex
-    :bind (("C-x C-m"     . smex)
-           ("M-x"         . smex)
-           ("M-X"         . smex-major-mode-commands)
-           ("C-c C-c M-x" . execute-extended-command))
-
-    :config (setq smex-save-file ers-smex-save-file))
+  ;; (use-package smex
+  ;;   :bind (("C-x C-m"     . smex)
+  ;;          ("M-x"         . smex)
+  ;;          ("M-X"         . smex-major-mode-commands)
+  ;;          ("C-c C-c M-x" . execute-extended-command))
+  
+  ;;   :config (setq smex-save-file ers-smex-save-file))
 #+end_src
 
 * UI configuration
@@ -1002,33 +963,33 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 ** Misc
 
 #+begin_src emacs-lisp
-(setq visible-bell             t
-      display-time-24hr-format t
-      use-dialog-box           nil
-      default-frame-alist      `((font . ,ers-ui-font)))
+  (setq visible-bell             t
+        display-time-24hr-format t
+        use-dialog-box           nil
+        default-frame-alist      `((font . ,ers-ui-font)))
 #+end_src
 
 ** Themes
 
 #+begin_src emacs-lisp
-(defun ers/load-theme (theme-symbol)
-  (when (boundp theme-symbol)
-    (when (symbol-value theme-symbol)
-      (funcall 'load-theme (symbol-value theme-symbol) t))))
-
-(if window-system
-    (ers/load-theme 'ers-ui-theme)
-  (ers/load-theme 'ers-ui-theme-console))
+  (defun ers/load-theme (theme-symbol)
+    (when (boundp theme-symbol)
+      (when (symbol-value theme-symbol)
+        (funcall 'load-theme (symbol-value theme-symbol) t))))
+  
+  (if window-system
+      (ers/load-theme 'ers-ui-theme)
+    (ers/load-theme 'ers-ui-theme-console))
 #+end_src
 
 ** Modeline
 
 #+begin_src emacs-lisp
-(when (boundp 'ers-powerline-enabled)
-  (when ers-powerline-enabled
-    (use-package powerline
-      :init (setq powerline-arrow-shape 'curve)
-      :config (powerline-default-theme))))
+  (when (boundp 'ers-powerline-enabled)
+    (when ers-powerline-enabled
+      (use-package powerline
+        :init (setq powerline-arrow-shape 'curve)
+        :config (powerline-default-theme))))
 #+end_src
 
 ** Fonts
