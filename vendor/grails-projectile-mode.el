@@ -62,7 +62,8 @@
 
 (defvar grails-executable-suffix
   (if (eq system-type 'windows-nt)
-      ".bat" ""))
+      ".bat" "")
+  "Suffix for the Grails executable file.")
 
 (defcustom grails-compilation-buffer-name "*Grails*"
   "Buffer name for Grails commands."
@@ -108,17 +109,17 @@
   :group 'grails)
 
 (defcustom grails-url-wikidocs "http://grails.org/Documentation"
-  "Grails Wiki documentation URL"
+  "Grails Wiki documentation URL."
   :type 'string
   :group 'grails)
 
 (defcustom grails-url-apidocs "http://grails.org/doc/latest/api/"
-  "Grails documentation URL"
+  "Grails documentation URL."
   :type 'string
   :group 'grails)
 
 (defcustom grails-url-guide "http://grails.org/doc/latest/guide/single.html"
-  "Grails Latest Guide URL"
+  "Grails Latest Guide URL."
   :type 'string
   :group 'grails)
 
@@ -200,7 +201,7 @@
   grails-compilation-buffer-name)
 
 (defun grails/--read-param-and-run (input-hint grails-command)
-  "Read an input parameter and invoke a given Grails command"
+  "Read an input parameter and invoke a given Grails command."
 
   (let (grails-command-argument)
     (setq grails-command-argument (read-from-minibuffer input-hint))
@@ -210,13 +211,13 @@
 ;; General functions
 ;; --------------------------------
 (defun grails/icommand ()
-  "Enter a Grails command (Interactive)"
+  "Enter a Grails command."
 
   (interactive)
   (grails/--read-param-and-run "Goal:" ""))
 
 (defun grails/create-domain ()
-  "Create a Grails Domain Class"
+  "Create a Grails Domain Class."
   (interactive)
   (grails/--read-param-and-run "Domain class:" "create-domain-class"))
 
@@ -227,13 +228,13 @@
   (grails/--read-param-and-run "Controller Domain class:" "create-controller"))
 
 (defun grails/create-service ()
-  "Create a Grails Service"
+  "Create a Grails Service."
 
   (interactive)
   (grails/--read-param-and-run "Service Domain class:" "create-service"))
 
 (defun grails/create-taglib ()
-  "Create a Grails Taglib"
+  "Create a Grails Taglib."
 
   (interactive)
   (grails/--read-param-and-run "TagLib Name:" "create-tag-lib"))
@@ -242,13 +243,13 @@
 ;; Plugin functions
 ;; --------------------------------
 (defun grails/plugins-list-installed ()
-  "List Grails installed plugins"
+  "List Grails installed plugins."
 
   (interactive)
   (grails/--command "list-plugins -installed"))
 
 (defun grails/plugins-package-plugin ()
-  "Package a Grails plugin"
+  "Package a Grails plugin."
 
   (interactive)
   (grails/--command "package-plugin"))
@@ -257,19 +258,19 @@
 ;; Other targets
 ;; --------------------------------
 (defun grails/compile ()
-  "Compile"
+  "Compile."
 
   (interactive)
   (grails/--command "compile"))
 
 (defun grails/clean ()
-  "Clean"
+  "Clean."
 
   (interactive)
   (grails/--command "clean"))
 
 (defun grails/refresh-dependencies ()
-  "Refresh Grails Dependencies"
+  "Refresh Grails Dependencies."
 
   (interactive)
   (grails/--command "refresh-dependencies"))
@@ -278,7 +279,7 @@
 ;; Browse docs (api, wiki, guide)
 ;; --------------------------------
 (defun grails/browse-wiki-docs ()
-  "Browse the Wiki Documentation"
+  "Browse the Wiki Documentation."
 
   (interactive)
   (if (boundp 'grails-url-wikidocs)
@@ -286,7 +287,7 @@
     (message "No Grails Wikidocs set. Customize the 'grails' group")))
 
 (defun grails/browse-api-docs ()
-  "Browse the API Documentation"
+  "Browse the API Documentation."
 
   (interactive)
   (if (boundp 'grails-url-apidocs)
@@ -294,7 +295,7 @@
     (message "No Grails API URL set. Customize the 'grails' group")))
 
 (defun grails/browse-latest-guide ()
-  "Browse the official Grails Guide"
+  "Browse the official Grails Guide."
 
   (interactive)
   (if (boundp 'grails-url-guide)
@@ -337,7 +338,9 @@
 
 ;;;###autoload
 (define-minor-mode grails-projectile-mode
-  "Emacs Grails Projectile Mode."
+  "Grails Projectile Mode.
+
+  \\{grails-projectile-mode-map}"
   :lighter grails-projectile-mode-line
   :keymap  'grails-projectile-mode-map
   :group   'grails
