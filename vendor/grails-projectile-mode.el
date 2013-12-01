@@ -164,20 +164,21 @@
         (unless (file-exists-p default-directory)
           (make-directory default-directory t))
 
-        (grails/create-grails-projectile-file default-directory)
+        (grails/--create-grails-projectile-file default-directory)
 
         (let ((grails-command-line (concat grails-command " " grails-arguments)))
-          (compilation-start grails-command-line 'compilation-mode 'get-grails-compilation-buffer-name))))))
+          (compilation-start grails-command-line 'compilation-mode 'grails/--get-compilation-buffer-name))))))
 
-(defun grails/create-grails-projectile-file (dir)
+(defun grails/--create-grails-projectile-file (dir)
+  "Add the default .projectile file after creating a new app or plugin."
   (with-temp-file (concat dir ".projectile")
     (insert "-/target")))
 
 ;; --------------------------------
 ;; Main functions
 ;; --------------------------------
-(defun grails/command (str)
-  "Run a Grails command (Non interactive)"
+(defun grails/--command (str)
+  "Run a Grails command."
 
   (let ((default-directory (expand-file-name (projectile-project-root)))
         (grails-args (concat grails-jvm-opts " " grails-cmd-opts))
@@ -192,18 +193,18 @@
 
     (let (( grails-command-line (concat grails-cmd-line " " grails-output-opts " " grails-args " " str)))
       ;; runs the grails command from the project directory
-      (compilation-start grails-command-line 'compilation-mode 'get-grails-compilation-buffer-name))))
+      (compilation-start grails-command-line 'compilation-mode 'grails/--get-compilation-buffer-name))))
 
-(defun get-grails-compilation-buffer-name (mode)
+(defun grails/--get-compilation-buffer-name (mode)
   "The buffer name to use for Grails Commands."
   grails-compilation-buffer-name)
 
-(defun grails/read-param-and-run (input-hint grails-command)
+(defun grails/--read-param-and-run (input-hint grails-command)
   "Read an input parameter and invoke a given Grails command"
 
   (let (grails-command-argument)
     (setq grails-command-argument (read-from-minibuffer input-hint))
-    (grails/command (concat grails-command " " grails-command-argument))))
+    (grails/--command (concat grails-command " " grails-command-argument))))
 
 ;; --------------------------------
 ;; General functions
@@ -212,30 +213,30 @@
   "Enter a Grails command (Interactive)"
 
   (interactive)
-  (grails/read-param-and-run "Goal:" ""))
+  (grails/--read-param-and-run "Goal:" ""))
 
 (defun grails/create-domain ()
   "Create a Grails Domain Class"
   (interactive)
-  (grails/read-param-and-run "Domain class:" "create-domain-class"))
+  (grails/--read-param-and-run "Domain class:" "create-domain-class"))
 
 (defun grails/create-controller ()
   "Create a Grails Controller"
 
   (interactive)
-  (grails/read-param-and-run "Controller Domain class:" "create-controller"))
+  (grails/--read-param-and-run "Controller Domain class:" "create-controller"))
 
 (defun grails/create-service ()
   "Create a Grails Service"
 
   (interactive)
-  (grails/read-param-and-run "Service Domain class:" "create-service"))
+  (grails/--read-param-and-run "Service Domain class:" "create-service"))
 
 (defun grails/create-taglib ()
   "Create a Grails Taglib"
 
   (interactive)
-  (grails/read-param-and-run "TagLib Name:" "create-tag-lib"))
+  (grails/--read-param-and-run "TagLib Name:" "create-tag-lib"))
 
 ;; --------------------------------
 ;; Plugin functions
@@ -244,13 +245,13 @@
   "List Grails installed plugins"
 
   (interactive)
-  (grails/command "list-plugins -installed"))
+  (grails/--command "list-plugins -installed"))
 
 (defun grails/plugins-package-plugin ()
   "Package a Grails plugin"
 
   (interactive)
-  (grails/command "package-plugin"))
+  (grails/--command "package-plugin"))
 
 ;; --------------------------------
 ;; Other targets
@@ -259,19 +260,19 @@
   "Compile"
 
   (interactive)
-  (grails/command "compile"))
+  (grails/--command "compile"))
 
 (defun grails/clean ()
   "Clean"
 
   (interactive)
-  (grails/command "clean"))
+  (grails/--command "clean"))
 
 (defun grails/refresh-dependencies ()
   "Refresh Grails Dependencies"
 
   (interactive)
-  (grails/command "refresh-dependencies"))
+  (grails/--command "refresh-dependencies"))
 
 ;; --------------------------------
 ;; Browse docs (api, wiki, guide)
