@@ -1,4 +1,4 @@
-;;; grails-projectile-mode.el --- User settings loaded after main settings
+;;; grails-projectile-mode.el --- Grails mode with Projectile for projects management.
 ;;
 ;; Copyright (C) 2013 Rimero Solutions
 ;;
@@ -337,7 +337,7 @@
 
 ;;;###autoload
 (define-minor-mode grails-projectile-mode
-  "Emacs Grails Project Mode Extensions"
+  "Emacs Grails Projectile Mode."
   :lighter grails-projectile-mode-line
   :keymap  'grails-projectile-mode-map
   :group   'grails
