@@ -2,47 +2,47 @@
 
 * Startup
 ** Pre-startup
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
   (defconst ers-bootstrap-dir (file-name-directory load-file-name))
   (defconst ers-emacs-dir (file-name-directory (directory-file-name ers-bootstrap-dir)))
   (defconst ers-user-filename "ers-user.el")
-  
+
   (defun ers/mkdir-p (dir-path)
     (unless (file-exists-p dir-path)
       (make-directory dir-path t)))
-  
+
   (defun ers/emacs-sub-dir (path-elements)
       (let ( (ers-emacs-sub-folder ers-emacs-dir))
         (dolist (p path-elements)
           (setq ers-emacs-sub-folder (file-name-as-directory (concat ers-emacs-sub-folder p))))
         ers-emacs-sub-folder))
-  
+
   (message "emacs-rimero-setup directory is %s" ers-emacs-dir)
-  
+
   (defun ers/emacs-file (sub-dir-list filename)
     (expand-file-name (concat (ers/emacs-sub-dir sub-dir-list) filename)))
-  
+
   (defvar ers-user-file (concat user-emacs-directory ers-user-filename))
-  
+
   (mapc #'(lambda(p) (add-to-list 'load-path p))
         `( ,(ers/emacs-sub-dir '("vendor"))))
-  
+
   ;; packages
   (require 'package)
-  
+
   (setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
                            ("marmalade" . "http://marmalade-repo.org/packages/")
                            ("melpa"     . "http://melpa.milkbox.net/packages/")))
-  
+
   (package-initialize)
-  
+
   (unless package-archive-contents
     (package-refresh-contents))
-#+end_src
-
+   #+end_src
+   
 ** Global variables
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; global variables defcustoms
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,7 +50,7 @@
     "Emacs rimero setup group."
     :group 'customize
     :prefix "ers-")
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Credentials file for netrc authentication
   ;; Also symblink .authinfo to .netrc for offlineimap
@@ -59,7 +59,7 @@
     "Secrets file."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; environment variables
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -71,7 +71,7 @@
     "Environment variables."
     :type 'symbol
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Projects
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -79,12 +79,12 @@
     "Projectile Cache file"
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-projectile-bookmarks-file "~/.emacs.d/data/projectile-bookmarks.eld"
     "Projectile Bookmarks file"
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; blogging
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,7 +92,7 @@
   (defvar corporate-blog-name "wordpress-your-netrc-entry-in-dot-autinfo")
   (defvar personal-blog-url "http://wordpress-site/xmlrpc.php")
   (defvar corporate-blog-url "http://wordpress-site/xmlrpc.php")
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; indentation
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,7 +100,7 @@
     "Number of spaces for tabs."
     :type 'integer
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; ui settings
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -112,22 +112,22 @@
     "Font to use."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-ui-theme nil
     "GUI Theme to use."
     :type 'symbol
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-ui-theme-console nil
     "Console theme to use."
     :type 'symbol
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-powerline-enabled nil
     "Whether or not powerline is enabled."
     :type 'boolean
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; spelling
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -135,7 +135,7 @@
     "Aspell location for spell-checking."
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; personal information
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -143,22 +143,22 @@
     "Email address."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-pim-public-mail-address "me.spam@gmail.com"
     "Public spam email address used for emacs-lisp snippets."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-pim-full-name "MeFirstname MeLastName"
     "Full name."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-pim-organization "My Company"
     "Organization name."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; org-mode
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -166,17 +166,17 @@
     "Org-mode folder."
     :type 'directory
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-org-archive-location-filename "archive.org::"
     "Org-mode archive location."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-org-notes-filename "notes.org"
     "Org-mode notes file name."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; erc
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -184,12 +184,12 @@
     "IRC server to use for erc."
     :type 'string
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-erc-channel-list '(("freenode.net" "##java" "#emacs"))
     "ERC connection information server and channels."
     :type 'symbol
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Files
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -197,17 +197,17 @@
     "Auto-complete completion data."
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-recentf-file "~/.emacs.d/data/recentf"
     "Recent file list."
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-helm-adaptive-history-file "~/.emacs.d/data/helm-adaptative-history-file"
     "Helm adaptative history file"
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Backups
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -215,27 +215,27 @@
     "Bookmarks"
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-place-file (expand-file-name  "~/.emacs.d/data/saved-places")
     "Places file."
     :type 'directory
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-backup-dir (expand-file-name "~/.emacs.d/data/backups")
     "Backups folder."
     :type 'directory
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-auto-save-folder (expand-file-name "~/.emacs.d/data/auto-save-list/")
     "Auto-save folder."
     :type 'directory
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-url-cookie-file "~/.emacs.d/data/cookies"
     "Cookies file for url connections."
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; eshell
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,12 +243,12 @@
     "Eshell data folder."
     :type 'directory
     :group 'emacs-rimero-setup)
-  
+
   (defcustom ers-workgroups-file "~/.emacs.d/data/workgroups"
     "Workgroups file."
     :type 'file
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; packages
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -269,7 +269,7 @@
     "A list of packages to ensure are installed."
     :type 'symbol
     :group 'emacs-rimero-setup)
-  
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Programs
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -280,29 +280,29 @@
     "Browser application:"
     :type 'symbol
     :group 'emacs-rimero-setup)
-#+end_src
-
+   #+end_src
+   
 ** Post-startup
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
   (when (eq system-type 'darwin)
     (add-to-list 'ers-packages 'exec-path-from-shell))
-  
+
   (defun ers/package-install(package-name)
     (unless (package-installed-p package-name)
       (package-install package-name)))
-  
+
   (dolist (p ers-packages)
     (ers/package-install p))
-  
+
   (require 'use-package)
   (require 'netrc)
-  
+
   (ers/mkdir-p ers-org-directory)
-#+end_src
-
+   #+end_src
+   
 * Backups
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (setq backup-directory-alist         `(("." . ,ers-backup-dir))
       delete-old-versions            t
       kept-new-versions              6
@@ -314,35 +314,44 @@
       auto-save-list-file-prefix     ers-auto-save-folder
       auto-save-file-name-transforms `((".*" ,ers-auto-save-folder t))
       tramp-auto-save-directory      ers-auto-save-folder)
-#+end_src
-
+  #+end_src
+  
 * Aliases
-#+begin_src emacs-lisp
+  #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
   (defalias 'serc        'ers/start-erc)
-#+end_src
-
+  #+end_src
+  
 * Utility functions
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
   (defun ers/get-string-from-file (filePath)
     "Return filePath's file content."
     (with-temp-buffer
       (insert-file-contents filePath)
       (buffer-string)))
-  
+
+  (defun ers/copy-symbol-at-point ()
+    "Copy the symbol at point."
+    (interactive)
+
+    (let ((b (bounds-of-thing-at-point 'symbol)))
+      (when b
+        (save-excursion
+          (kill-ring-save (car b) (cdr b))))))
+
   (when (eq system-type 'darwin)
     (defvar osx-pbpaste-cmd "/usr/bin/pbpaste"
       "*command-line paste program")
-  
+
     (defvar osx-pbcopy-cmd "/usr/bin/pbcopy"
       "*command-line copy program")
-  
+
     (defun osx-pbpaste ()
       "paste the contents of the os x clipboard into the buffer at point."
       (interactive)
       (call-process osx-pbpaste-cmd nil t t))
-  
+
     (defun osx-pbcopy ()
       "copy the contents of the region into the os x clipboard."
       (interactive)
@@ -352,16 +361,16 @@
           (call-process-region
            (region-beginning) (region-end) osx-pbcopy-cmd nil t t)
         (error "region not selected"))))
-  
+
   (defun ers/recompile-init-files()
     "Recompile emacsd files."
     (interactive)
     (byte-recompile-directory user-emacs-directory 0 nil))
-#+end_src
-
+  #+end_src
+  
 * Encoding settings
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
   (setq locale-coding-system 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
@@ -369,11 +378,11 @@
   (setq-default buffer-file-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (set-language-environment "UTF-8")
-#+end_src
-
+  #+end_src
+  
 * Eshell configuration
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (setq eshell-directory-name ers-eshell-dir)
 
 ;; Set environment variables
@@ -443,13 +452,13 @@
             (setq path-string (concat "../" path-string)))
           (cd path-string)))
     (cd "../")))
-#+end_src
-
-* Indentation settings
-
-#+begin_src emacs-lisp
-  (setq-default indent-tabs-mode nil)
+  #+end_src
   
+* Indentation settings
+  
+  #+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil)
+
   (setq c-basic-offset            ers-tab-size
         tab-width                 ers-tab-size
         js2-basic-offset          ers-tab-size
@@ -458,25 +467,25 @@
         sgml-basic-offset         ers-tab-size
         nxml-child-indent         ers-tab-size
         nxml-outline-child-indent ers-tab-size)
-  
+
   (defun ers/indent-region-or-buffer ()
     "Indents an entire buffer using the default intenting scheme."
     (interactive)
-  
+
     (if (region-active-p)
         (indent-region (region-beginning) (region-end))
       (progn
         (delete-trailing-whitespace)
         (indent-region (point-min) (point-max) nil)
         (untabify (point-min) (point-max)))))
-  
+
   (bind-key "C-x /" 'ers/indent-region-or-buffer)
   (bind-key "RET"   'newline-and-indent)
-#+end_src
-
+  #+end_src
+  
 * Org mode settings
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (setq org-directory ers-org-directory)
 
 ;; default settings
@@ -564,32 +573,32 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                                     (ps-landscape-mode t)
                                     (org-agenda-add-entry-text-maxlines 5)
                                     (htmlize-output-type 'css)))
-#+end_src
-
+  #+end_src
+  
 * Personal information
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (setq user-mail-address ers-pim-mail-address
       user-full-name ers-pim-full-name
       message-signature-file "~/.signature")
-#+end_src
-
+  #+end_src
+  
 * Programming and related
-
+  
 ** Version control
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (use-package vc-svn)
   (autoload 'svn-status "dsvn" "Run `svn status'." t)
   (autoload 'svn-update "dsvn" "Run `svn update'." t)
-  
+
   (use-package magit
     :bind ("C-x g" . magit-status))
-#+end_src
-
+   #+end_src
+   
 ** Project management
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (use-package projectile
     :config (projectile-global-mode t)
     :init (setq projectile-cache-file          ers-projectile-cache-file
@@ -597,41 +606,41 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                 projectile-indexing-method     'native
                 projectile-enable-caching      t)
     :diminish projectile-mode)
-#+end_src
-
+   #+end_src
+   
 ** Groovy mode
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
   (use-package groovy-mode
     :mode ("\\.\\(groovy\\|gradle\\)$" . groovy-mode))
-#+end_src
-
+   #+end_src
+   
 ** Grails settings
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (use-package grails-projectile-mode
     :config (grails-projectile-global-mode t)
     :diminish grails-projectile-mode)
-#+end_src
-
+   #+end_src
+   
 ** XML mode
-
-#+begin_src emacs-lisp  
+   
+   #+begin_src emacs-lisp
   (use-package nxml-mode
     :config (setq nxml-slash-auto-complete-flag t)
     :mode ("\\.\\(pom\\|xsd\\|gsp\\)$" . nxml-mode))
-#+end_src
-
+   #+end_src
+   
 ** Markdown keybindings
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (use-package markdown-mode
     :defer t
     :mode ("\\.\\(markdown\\|mdown\\|md\\)$" . markdown-mode))
-#+end_src
-
+   #+end_src
+   
 * Yasnippets configuration
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (defvar yas-elpa-snippets-folder
   (car (file-expand-wildcards
         (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
@@ -653,22 +662,22 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
   :init (setq yas-verbosity 1)
   :config (yas-global-mode t)
   :diminish yas-minor-mode)
-#+end_src
-
+  #+end_src
+  
 * Spellchecking configuration
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (setq ispell-program-name ers-spelling-aspell-path)
-#+end_src
-
+  #+end_src
+  
 * Networking
 ** Web browswing
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (setq browse-url-browser-function          ers-browser-program
         browse-url-new-window-flag           t
         browse-url-firefox-new-window-is-tab t)
-  
+
   ;; w3m
   (setq w3m-coding-system           'utf-8
         w3m-file-coding-system      'utf-8
@@ -676,12 +685,12 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
         w3m-input-coding-system     'utf-8
         w3m-output-coding-system    'utf-8
         w3m-terminal-coding-system  'utf-8)
-  
-#+end_src
 
+   #+end_src
+   
 ** IRC configuration
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (use-package erc
     :config
     (progn
@@ -703,11 +712,11 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
              :nick (netrc-get erc-config "login")
              :password (netrc-get erc-config "password")))))
 
-#+end_src
-
+   #+end_src
+   
 ** Blogging
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (use-package org2blog-autoloads
     :config
     (progn
@@ -721,155 +730,156 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                                       :url ,personal-blog-url
                                       :username (netrc-get personal-blog "login")
                                       :password (netrc-get personal-blog "password"))))))
-  
-#+end_src
 
+   #+end_src
+   
 * Various utilities
-
-#+begin_src emacs-lisp
-  (defun ers/insert-time (&optional date-pattern)
-    "Inserts the time given an optional pattern."
-    (interactive "P")
-    (let ( (current-date-pattern (or date-pattern "%a %d.%m.%y %H:%M:%S")))
-      (insert (ers/get-date current-date-pattern))))
   
-  (defun ers/get-date (date-pattern)
-    "Returns a formatted date for a given pattern."
-    (format-time-string date-pattern (current-time)))
-  
-  (defun ers/insert-date-simple ()
-    "Inserts the time in year-month-date format."
-    (interactive)
-    (ers/insert-time "%Y-%m-%d"))
-  
-  (defun ers/insert-date-raw ()
-    "Insert the time in raw format."
-    (interactive)
-    (ers/insert-time "%Y%m%d.%H%M%S"))
-  
-  (defun ers/insert-date-full()
-    "Inserts the full date and time."
-    (interactive)
-    (ers/insert-time "%a %d.%m.%y %T"))
-  
-  (defun open-next-line (arg)
-    "Move to the next line and then opens a line.
-                See also `newline-and-indent'."
-    (interactive "p")
-    (end-of-line)
-    (open-line arg)
-    (forward-line 1))
-  
-  (defun open-previous-line (arg)
-    "Open a new line before the current one.
-                 See also `newline-and-indent'."
-    (interactive "p")
-    (beginning-of-line)
-    (open-line arg))
-  
-  (use-package guide-key
-    :init (setq guide-key/guide-key-sequence '("C-c z"))
-    :config (guide-key-mode t)
-    :diminish guide-key-mode)
-  
-  (use-package anzu
-    :config (global-anzu-mode t)
-    :diminish anzu-mode)
-  
-  (use-package wrap-region
-    :config (wrap-region-global-mode t)
-    :diminish wrap-region-mode)
-  
-  (use-package undo-tree
-    :config (global-undo-tree-mode t)
-    :init (setq undo-tree-visualizer-relative-timestamps  t
-                undo-tree-visualizer-timestamps           t)
-    :diminish undo-tree-mode)
-  
-  (use-package ace-jump-mode
-    :bind ("C-c SPC" . ace-jump-mode)
-    :diminish ace-jump-mode)
-  
-  (use-package expand-region
-    :bind ("C-c ," . er/expand-region))
-  
-  (let ((ers-keybindings `((,(kbd "C-c <left>")  . windmove-left)
-                           (,(kbd "C-c <right>") . windmove-right)
-                           (,(kbd "C-c <up>")    . windmove-up)
-                           (,(kbd "C-c <down>")  . windmove-down)
-                           (,(kbd "C-c r")       . revert-buffer)
-                           (,(kbd "C-c g")       . goto-line)
-                           (,(kbd "C-c m")       . browse-url-at-point)
-                           (,(kbd "C-o")         . open-next-line)
-                           (,(kbd "M-o")         . open-previous-line)
-                           (,(kbd "C-x \\")      . comment-or-uncomment-region)
-                           (,(kbd "C-c o")       . occur))))
-    (dolist (ers-keybinding ers-keybindings)
-      (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
-  
-  (use-package dired-details
-    :init (setq-default dired-details-hidden-string "--- ")
-    :config (dired-details-install))
-  
-  (use-package recentf
-    :init (progn (setq recentf-max-menu-items 25
-                       recentf-exclude '("/tmp" "/ssh:" "\\ido.last" "recentf")
-                       recentf-save-file ers-recentf-file)
-                 (recentf-mode +1))
-  
-    :bind ("C-x C-r" . helm-recentf))
-  
-  (use-package ls-lisp
-    :config (setq ls-lisp-use-insert-directory-program nil
-                  ls-lisp-dirs-first t
-                  ls-list-ignore-case t))
-  
-  (use-package dired
-    :config (progn
-              (put 'dired-find-alternate-file 'disabled nil)
-              (defun ers/dired-go-to-first-item ()
-                (interactive)
-                (goto-char (point-min))
-                (dired-next-line 3))
-  
-              (defun ers/dired-go-to-last-item ()
-                (interactive)
-                (goto-char (point-max))
-                (dired-previous-line 1))
-  
-              (bind-key "."   'dired-up-directory dired-mode-map)
-              (bind-key "C-a" 'ers/dired-go-to-first-item dired-mode-map)
-              (bind-key "C-e" 'ers/dired-go-to-last-item  dired-mode-map)))
-  
-  (use-package uniquify
-    :init (setq uniquify-buffer-name-style 'post-forward))
-  
-  (use-package drag-stuff
-    :config (if window-system
+  #+begin_src emacs-lisp
+    (defun ers/insert-time (&optional date-pattern)
+      "Inserts the time given an optional pattern."
+      (interactive "P")
+      (let ( (current-date-pattern (or date-pattern "%a %d.%m.%y %H:%M:%S")))
+        (insert (ers/get-date current-date-pattern))))
+    
+    (defun ers/get-date (date-pattern)
+      "Returns a formatted date for a given pattern."
+      (format-time-string date-pattern (current-time)))
+    
+    (defun ers/insert-date-simple ()
+      "Inserts the time in year-month-date format."
+      (interactive)
+      (ers/insert-time "%Y-%m-%d"))
+    
+    (defun ers/insert-date-raw ()
+      "Insert the time in raw format."
+      (interactive)
+      (ers/insert-time "%Y%m%d.%H%M%S"))
+    
+    (defun ers/insert-date-full()
+      "Inserts the full date and time."
+      (interactive)
+      (ers/insert-time "%a %d.%m.%y %T"))
+    
+    (defun open-next-line (arg)
+      "Move to the next line and then opens a line.
+                    See also `newline-and-indent'."
+      (interactive "p")
+      (end-of-line)
+      (open-line arg)
+      (forward-line 1))
+    
+    (defun open-previous-line (arg)
+      "Open a new line before the current one.
+                     See also `newline-and-indent'."
+      (interactive "p")
+      (beginning-of-line)
+      (open-line arg))
+    
+    (use-package guide-key
+      :init (setq guide-key/guide-key-sequence '("C-c z"))
+      :config (guide-key-mode t)
+      :diminish guide-key-mode)
+    
+    (use-package anzu
+      :config (global-anzu-mode t)
+      :diminish anzu-mode)
+    
+    (use-package wrap-region
+      :config (wrap-region-global-mode t)
+      :diminish wrap-region-mode)
+    
+    (use-package undo-tree
+      :config (global-undo-tree-mode t)
+      :init (setq undo-tree-visualizer-relative-timestamps  t
+                  undo-tree-visualizer-timestamps           t)
+      :diminish undo-tree-mode)
+    
+    (use-package ace-jump-mode
+      :bind ("C-c SPC" . ace-jump-mode)
+      :diminish ace-jump-mode)
+    
+    (use-package expand-region
+      :bind ("C-c ," . er/expand-region))
+    
+    (use-package dired-details
+      :init (setq-default dired-details-hidden-string "--- ")
+      :config (dired-details-install))
+    
+    (use-package recentf
+      :init (progn (setq recentf-max-menu-items 25
+                         recentf-exclude '("/tmp" "/ssh:" "\\ido.last" "recentf")
+                         recentf-save-file ers-recentf-file)
+                   (recentf-mode +1))
+    
+      :bind ("C-x C-r" . helm-recentf))
+    
+    (use-package ls-lisp
+      :config (setq ls-lisp-use-insert-directory-program nil
+                    ls-lisp-dirs-first t
+                    ls-list-ignore-case t))
+    
+    (use-package dired
+      :config (progn
+                (put 'dired-find-alternate-file 'disabled nil)
+                (defun ers/dired-go-to-first-item ()
+                  (interactive)
+                  (goto-char (point-min))
+                  (dired-next-line 3))
+    
+                (defun ers/dired-go-to-last-item ()
+                  (interactive)
+                  (goto-char (point-max))
+                  (dired-previous-line 1))
+    
+                (bind-key "."   'dired-up-directory dired-mode-map)
+                (bind-key "C-a" 'ers/dired-go-to-first-item dired-mode-map)
+                (bind-key "C-e" 'ers/dired-go-to-last-item  dired-mode-map)))
+    
+    (use-package uniquify
+      :init (setq uniquify-buffer-name-style 'post-forward))
+    
+    (use-package drag-stuff
+      :config (if window-system
+                  (progn
+                    (global-set-key (kbd "<M-up>")     'drag-stuff-up)
+                    (global-set-key (kbd "<M-down>")   'drag-stuff-down))
                 (progn
-                  (global-set-key (kbd "<M-up>")     'drag-stuff-up)
-                  (global-set-key (kbd "<M-down>")   'drag-stuff-down))
-              (progn
-                (global-set-key (kbd "<ESC> <up>")   'drag-stuff-up)
-                (global-set-key (kbd "<ESC> <down>") 'drag-stuff-down))))
+                  (global-set-key (kbd "<ESC> <up>")   'drag-stuff-up)
+                  (global-set-key (kbd "<ESC> <down>") 'drag-stuff-down))))
+    
+    (use-package duplicate-thing
+      :bind ("C-c d" . duplicate-thing))
+    
+    (use-package rainbow-delimiters
+      :defer t
+      :config (progn
+                (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+                (add-hook 'prog-mode-hook 'linum-mode)))
+    
+    (let ((ers-keybindings `((,(kbd "C-c <left>")  . windmove-left)
+                             (,(kbd "C-c <right>") . windmove-right)
+                             (,(kbd "C-c <up>")    . windmove-up)
+                             (,(kbd "C-c <down>")  . windmove-down)
+                             (,(kbd "C-c r")       . revert-buffer)
+                             (,(kbd "C-c g")       . goto-line)
+                             (,(kbd "C-c m")       . browse-url-at-point)
+                             (,(kbd "C-o")         . open-next-line)
+                             (,(kbd "M-o")         . open-previous-line)
+                             (,(kbd "C-x y")       . ers/copy-symbol-at-point)
+                             (,(kbd "C-x \\")      . comment-or-uncomment-region)
+                             (,(kbd "C-c o")       . occur))))
+      (dolist (ers-keybinding ers-keybindings)
+        (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
+    
+    (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
+    (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+  #+end_src
   
-  (use-package duplicate-thing
-    :bind ("C-c d" . duplicate-thing))
-  
-  (use-package rainbow-delimiters
-    :defer t
-    :config (progn
-              (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-              (add-hook 'prog-mode-hook 'linum-mode)))
-  
-  (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
-  (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-#+end_src
-
 * Completion, matching and suggestions
 ** Hippie-expand
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (setq hippie-expand-try-functions-list '(try-expand-dabbrev
                                            try-expand-dabbrev-all-buffers
                                            try-expand-dabbrev-from-kill
@@ -882,11 +892,11 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                                            try-complete-lisp-symbol))
 
   (global-set-key "\M- " 'hippie-expand)
-#+end_src
-
+   #+end_src
+   
 ** Auto-complete settings
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
 (use-package auto-complete-config
   :init (set-default 'ac-sources
                      '(ac-source-abbrev
@@ -908,11 +918,11 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
             (global-auto-complete-mode t))
 
   :diminish auto-complete-mode)
-#+end_src
-
+   #+end_src
+   
 ** Helm settings
    
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
   (use-package helm
     :init
     (progn
@@ -923,64 +933,64 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
             helm-yank-symbol-first                 t
             helm-input-idle-delay                  0.1
             helm-idle-delay                        0.1)
-  
+
       (use-package helm-config)
       (use-package helm-ag)
       (use-package ac-helm)
-  
+
       (helm-mode t)
       (helm-adaptative-mode t)
-  
+
       (use-package helm-projectile
         :bind ("C-x C-M-f" . helm-projectile))
-  
+
       (add-hook 'eshell-mode-hook
                 #'(lambda ()
                     (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
-  
+
     :bind ( ("C-x r l" . helm-bookmarks)
             ("C-x C-m" . execute-extended-command)
             ("C-c o"   . helm-occur))
-  
+
     :diminish helm-mode)
-#+end_src
+   #+end_src
    
 * UI configuration
-
+  
 ** Misc
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (setq visible-bell             t
         display-time-24hr-format t
         use-dialog-box           nil
         default-frame-alist      `((font . ,ers-ui-font)))
-#+end_src
-
+   #+end_src
+   
 ** Themes
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (defun ers/load-theme (theme-symbol)
     (when (boundp theme-symbol)
       (when (symbol-value theme-symbol)
         (funcall 'load-theme (symbol-value theme-symbol) t))))
-  
+
   (if window-system
       (ers/load-theme 'ers-ui-theme)
     (ers/load-theme 'ers-ui-theme-console))
-#+end_src
-
+   #+end_src
+   
 ** Modeline
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
   (when (boundp 'ers-powerline-enabled)
     (when ers-powerline-enabled
       (use-package powerline
         :init (setq powerline-arrow-shape 'curve)
         :config (powerline-default-theme))))
-#+end_src
-
+   #+end_src
+   
 ** Fonts
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
 (defun ers/fontify-frame (frame)
   (set-frame-parameter frame 'font ers-ui-font))
 
@@ -993,11 +1003,11 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 
   (if window-system
       (ers/set-current-font))
-#+end_src
-
+   #+end_src
+   
 ** Enable/Disable UI modes
-
-#+begin_src emacs-lisp
+   
+   #+begin_src emacs-lisp
 (defun ers/apply-frame-settings ()
   (dolist (mode '(menu-bar-mode
                   tool-bar-mode
@@ -1011,21 +1021,21 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
     (when (fboundp mode) (funcall mode 1))))
 
 (ers/apply-frame-settings)
-#+end_src
-
+   #+end_src
+   
 * User settings
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
 (when (file-exists-p ers-user-file)
   (load-file ers-user-file))
-#+end_src
+  #+end_src
 * Workgroups
-
-#+begin_src emacs-lisp
+  
+  #+begin_src emacs-lisp
   ;; TODO re-enable later - need to be flexible...
   ;; (use-package workgroups2
   ;;   :init (setq wg-prefix-key (kbd "C-c z")
   ;;               wg-default-session-file ers-workgroups-file)
   ;;   :config (workgroups-mode t)
   ;;   :diminish workgroups-mode)
-#+end_src
+  #+end_src

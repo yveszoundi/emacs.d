@@ -28,9 +28,11 @@
 ;; Boston, MA 02111-1307, USA.
 ;;
 ;; Sypnosis: Emacs Grails mode with Projectile for project-management.
-;;    - You can run pre-defined or arbitrary Grails commans for a project
-;;    - You can browse documentation (wiki, guide, apidocs)
-;;    - Menubar contributions in Grails mode
+;;    - You can run pre-defined or arbitrary Grails commans for a project.
+;;    - You can also search service, domain or controller files against the current file or project.
+;;    - You can browse documentation (wiki, guide, apidocs).
+;;    - You can search plugins by tag or query string.
+;;    - Menubar contributions if you make use of the menubar.
 ;;    - The default keymap prefix is `C-c ;` (see `grails-projectile-keymap-prefix`)
 ;;
 ;; You can customize the mode using `M-x customize-group` [RET] grails.
@@ -118,6 +120,11 @@
   :type 'string
   :group 'grails)
 
+(defcustom grails-plugins-base-url "http://grails.org/plugins/"
+  "Grails plugins base URL."
+  :type 'string
+  :group 'grails)
+
 (defcustom grails-url-guide "http://grails.org/doc/latest/guide/single.html"
   "Grails Latest Guide URL."
   :type 'string
@@ -141,6 +148,9 @@
     (grails/--join-lines (point-min)(point-max))
     (buffer-string)))
 
+;; --------------------------------
+;; Wizard functions
+;; --------------------------------
 (defun grails/wizard-new-app ()
   "Create a new application project."
   (interactive)
@@ -155,18 +165,22 @@
   "Create a new application or plugin."
 
   (let ((insert-default-directory  t))
-    (let ((grails-project-folder (read-directory-name "Directory: " default-directory))
+    ;; Ask the user for the project folder
+    (let ((grails-project-folder (read-directory-name "Application Directory: " default-directory))
           (app-name (read-from-minibuffer "Application Name: ")))
 
       (let ((default-directory (file-name-as-directory grails-project-folder))
             (grails-command (concat grails-executable grails-executable-suffix))
             (grails-arguments (concat cmd " --inplace " app-name)))
 
+        ;; Create the project folder.
         (unless (file-exists-p default-directory)
           (make-directory default-directory t))
 
+        ;; Create the .projectile file in the new project folder.
         (grails/--create-grails-projectile-file default-directory)
 
+        ;; Generate the Grails app or plugin in-place inside the new project folder.
         (let ((grails-command-line (concat grails-command " " grails-arguments)))
           (compilation-start grails-command-line 'compilation-mode 'grails/--get-compilation-buffer-name))))))
 
@@ -174,6 +188,137 @@
   "Add the default .projectile file after creating a new app or plugin."
   (with-temp-file (concat dir ".projectile")
     (insert "-/target")))
+
+;; --------------------------------
+;; Finder helper functions
+;; --------------------------------
+(defun grails/--find-grails-file (grails-proj-folder pred-fn-sym file-basename)
+  "Find a Grails file in a project folder.
+
+   grails-proj-folder is the base search folder.
+   pred-fn-sym is the function to filter project files.
+   file-basename is the filename to search without extension.
+"
+  (let ( (result-list (grails/--find-grails-files grails-proj-folder
+                                                  file-basename
+                                                  pred-fn-sym)))
+    (if result-list
+        (if (= (length result-list) 1)
+            (find-file (concat (projectile-project-root) (car result-list)))
+          (progn
+            (let ((file-list (mapcar #'(lambda(p) (concat (projectile-project-root) p)) result-list)))
+              (let ((selected-file (completing-read "Select a file:" file-list)))
+                (find-file selected-file)))))
+      (message "No artefact found for %s in '%s'" file-basename grails-proj-folder))))
+
+(defun grails/--find-grails-files (dirname file-basename pred-fn)
+  "Jumps to a filename from a given base folder."
+
+  (let ((folder-files (projectile-files-in-project-directory dirname)))
+    (let ((filtered-folder-files '()))
+      (dolist (elt folder-files)
+        (when (funcall pred-fn (file-name-base elt) file-basename)
+          (add-to-list 'filtered-folder-files elt)))
+      filtered-folder-files)))
+
+(defun grails/--base-name-matches-p (value expected)
+  "Matches two strings."
+  (string= expected value))
+
+(defun grails/--test-matches-p (value expected)
+  "Test whether a file basename matches a test class."
+  (or (string= (concat expected "Test") value)
+      (string= (concat expected "Spec") value)))
+
+(defun grails/--string/ends-with (s ending)
+  "return non-nil if string S ends with ENDING."
+  (let ((elength (length ending)))
+    (string= (substring s (- 0 elength)) ending)))
+
+(defun grails/--artifact-name (file-basename)
+  (let ((artifact-name file-basename)
+        (artifact-suffixes '("Spec" "Test" "Service" "Controller" "TagLib" "Command")))
+
+    (dolist (elt artifact-suffixes)
+      (when (grails/--string/ends-with artifact-name elt)
+        (setq artifact-name (substring artifact-name 0 (- (length artifact-name) (length elt))))))
+
+    artifact-name))
+
+(defun grails/--find-artefact (artefact-folder artefact-suffix &optional artefact-full-name)
+  (grails/--find-grails-file (grails/--grails-app-folder artefact-folder)
+                             'grails/--base-name-matches-p
+                             (or artefact-full-name
+                                 (concat (grails/--artifact-name (file-name-base (buffer-file-name)))
+                                         artefact-suffix))))
+
+;; --------------------------------
+;; Finder functions
+;; --------------------------------
+(defun grails/locate-test (test-name)
+  "Locate a test class in the project."
+  (interactive "sTest file name without extension: \n")
+  (grails/--find-grails-file (grails/--project-sub-folder "test")
+                             'grails/--test-matches-p
+                             test-name))
+
+(defun grails/find-test-for-file ()
+  "Find a test class associated with the current file."
+  (interactive)
+  (grails/--find-grails-file (grails/--project-sub-folder "test")
+                             'grails/--test-matches-p
+                             (file-name-base (buffer-file-name))))
+
+(defun grails/locate-service (service-name)
+  "Locate a service class in the project."
+  (interactive "sService full-name: \n")
+  (grails/--find-artefact "services" "Service" service-name))
+
+(defun grails/find-service-for-file ()
+  (interactive)
+  "Find a service class associated with the current file."
+  (grails/--find-artefact "services" "Service"))
+
+(defun grails/locate-controller (controller-name)
+  "Locate a controller class in the project."
+  (interactive "sController full-name: \n")
+  (grails/--find-artefact "controllers" "Controller" controller-name))
+
+(defun grails/find-controller-for-file ()
+  (interactive)
+  "Find a controller class associated with the current file."
+  (grails/--find-artefact "controllers" "Controller"))
+
+(defun grails/locate-domain (domain-name)
+  "Locate a domain class in the project."
+  (interactive "sDomain name: \n")
+  (grails/--find-artefact "domain" "" domain-name))
+
+(defun grails/find-domain-for-file ()
+  (interactive)
+  "Find a domain class associated with the current file."
+  (grails/--find-artefact "domain" ""))
+
+(defun grails/locate-taglib (tag-lib-name)
+  "Locate a taglib class in the project."
+  (interactive "sTagLib full-name: \n")
+  (grails/--find-artefact "taglib" "TagLib" tag-lib-name))
+
+(defun grails/find-taglib-for-file ()
+  (interactive)
+  "Find a taglib class associated to the current file."
+  (grails/--find-artefact "taglib" "TagLib"))
+
+;; --------------------------------
+;; Folder helper functions
+;; --------------------------------
+(defun grails/--project-sub-folder (folder-name)
+  "grails-app sub-folder path of the project."
+  (file-name-as-directory (concat (projectile-project-root) folder-name)))
+
+(defun grails/--grails-app-folder (folder-name)
+  "grails-app sub-folder path of the project."
+  (grails/--project-sub-folder "grails-app"))
 
 ;; --------------------------------
 ;; Main functions
@@ -294,6 +439,24 @@
       (browse-url grails-url-apidocs)
     (message "No Grails API URL set. Customize the 'grails' group")))
 
+(defun grails/--search-plugin (base-url query-string)
+  "Search Grails plugins."
+  (browse-url (url-encode-url (concat base-url query-string))))
+
+(defun grails/search-plugin-query (query-string)
+  "Search Grails plugins by query string."
+  (interactive "sPlugin name or query: \n")
+  (if (boundp 'grails-plugins-base-url)
+      (grails/--search-plugin grails-plugins-base-url query-string)
+    (message "No Grails plugins base URL set. Customize the 'grails' group")))
+
+(defun grails/search-plugin-tag (query-string)
+  "Search Grails plugins."
+  (interactive "sPlugin tag: \n")
+  (if (boundp 'grails-plugins-base-url)
+      (grails/--search-plugin ((concat grails-plugins-base-url "tag/") query-string))
+    (message "No Grails plugins base URL set. Customize the 'grails' group")))
+
 (defun grails/browse-latest-guide ()
   "Browse the official Grails Guide."
 
@@ -301,6 +464,7 @@
   (if (boundp 'grails-url-guide)
       (browse-url grails-url-guide)
     (message "No Grails URL guide set. Customize the 'grails' group")))
+
 
 ;;; Minor mode
 (defvar grails-projectile-mode-map
@@ -310,11 +474,25 @@
       (define-key prefix-map   (kbd "c p") 'grails/compile)
       (define-key prefix-map   (kbd "c l") 'grails/clean)
       (define-key prefix-map   (kbd "e")   'grails/icommand)
+
       (define-key prefix-map   (kbd "c d") 'grails/create-domain)
+      (define-key prefix-map   (kbd "c t") 'grails/create-taglib)
+      (define-key prefix-map   (kbd "c s") 'grails/create-service)
+      (define-key prefix-map   (kbd "c c") 'grails/create-controller)
+
+      (define-key prefix-map   (kbd "f d") 'grails/find-domain-for-file)
+      (define-key prefix-map   (kbd "f t") 'grails/find-test-for-file)
+      (define-key prefix-map   (kbd "f s") 'grails/find-service-for-file)
+      (define-key prefix-map   (kbd "f c") 'grails/find-controller-for-file)
+
+      (define-key prefix-map   (kbd "l d") 'grails/locate-domain)
+      (define-key prefix-map   (kbd "l t") 'grails/locate-test)
+      (define-key prefix-map   (kbd "l s") 'grails/locate-service)
+      (define-key prefix-map   (kbd "l c") 'grails/locate-controller)
+
       (define-key prefix-map   (kbd "n a") 'grails/wizard-new-app)
       (define-key prefix-map   (kbd "n p") 'grails/wizard-new-plugin)
-      (define-key prefix-map   (kbd "c c") 'grails/create-controller)
-      (define-key prefix-map   (kbd "c s") 'grails/create-service)
+
       (define-key prefix-map   (kbd "p l") 'grails/plugins-list-installed)
       (define-key prefix-map   (kbd "p p") 'grails/plugins-package-plugin)
 
@@ -325,16 +503,36 @@
 (easy-menu-define grails-projectile-mode-menu grails-projectile-mode-map
   "Emacs Grails Project Mode Menu."
   '("Grails"
-    ["Execute Command"      grails/icommand               t]
-    ["Compile"              grails/compile                t]
-    ["Clean"                grails/clean                  t]
-    ["--"                   'ignore                        ]
-    ["Create Domain Class"  grails/create-domain          t]
-    ["Create Controller"    grails/create-controller      t]
-    ["Create Service"       grails/create-service         t]
-    ["--"                   'ignore                        ]
-    ["Installed Plugins"    grails/plugins-list-installed t]
-    ["Package Plugin"       grails/plugins-package-plugin t]))
+    ["Execute Command"           grails/icommand                 t]
+    ["Compile"                   grails/compile                  t]
+    ["Clean"                     grails/clean                    t]
+
+    ["--"                        'ignore                          ]
+
+    ["Create Domain Class"       grails/create-domain            t]
+    ["Create Controller"         grails/create-controller        t]
+    ["Create Service"            grails/create-service           t]
+    ["Create TagLib"             grails/create-taglib            t]
+
+    ["--"                        'ignore                          ]
+
+    ["Find domain for file"      grails/find-domain-for-file     t]
+    ["Find controller for file"  grails/find-controller-for-file t]
+    ["Find service for file"     grails/find-service-for-file    t]
+    ["Find test for file"        grails/find-test-for-file       t]
+
+    ["--"                        'ignore                          ]
+
+    ["Locate domain"             grails/locate-domain            t]
+    ["Locate controller"         grails/locate-controller        t]
+    ["Locate service"            grails/locate-service           t]
+    ["Locate test"               grails/locate-test              t]
+
+    ["--"                        'ignore                          ]
+
+    ["Installed Plugins"         grails/plugins-list-installed   t]
+    ["Package Plugin"            grails/plugins-package-plugin   t]
+    ))
 
 ;;;###autoload
 (define-minor-mode grails-projectile-mode
