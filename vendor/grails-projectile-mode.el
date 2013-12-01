@@ -1,55 +1,91 @@
-;; ================================
-;; Extensions for grails-mode
-;; Author : Rimero Solutions
-;; Created : 11-07-2013
+;;; grails-projectile-mode.el --- User settings loaded after main settings
 ;;
-;; License: GNU GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+;; Copyright (C) 2013 Rimero Solutions
+;;
+;; Version: 20131201.084654
+;; X-Original-Version: 1.0.0
+;; Keywords: elisp, grails, projectile
+;; Author: Yves Zoundi <rimerosolutions@gmail.com>
+;; Maintainer: Yves Zoundi
+;; Contributors: The internet and people who surf it.
+;; Last updated: 2013-12-01
+;;
+;; This file is not part of GNU Emacs.
+;;
+;; This is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+;;
+;; This is distributed in the hope that it will be useful, but WITHOUT
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+;; or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+;; License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+;;
 ;; Sypnosis: Emacs Grails mode with Projectile for project-management.
 ;;    - You can run pre-defined or arbitrary Grails commans for a project
 ;;    - You can browse documentation (wiki, guide, apidocs)
 ;;    - Menubar contributions in Grails mode
+;;    - The default keymap prefix is `C-c ;` (see `grails-projectile-keymap-prefix`)
+;;
+;; You can customize the mode using `M-x customize-group` [RET] grails.
 ;;
 ;; Add the folder containing grails-projectile-mode.el in your load-path
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/")
 ;;
 ;; (require 'grails-projectile-mode)
-;; (grails-projectile-mode t)
+;; (grails-projectile-global-mode t)
 ;;
 ;; All the commands start with 'grails/'
-;; example, from a projectile managed buffer run
-;; M-x grails/compile [RET]
+;; From a projectile managed buffer run `M-x grails/compile [RET]`
+;; to compile your Grails application.
 ;;
-;; To list keybindings press C-h b and search for grails-projectile-mode.
+;; To list keybindings press `C-h b` or type `M-x describe-mode`
+;; Then search for grails-projectile-mode.
 ;;
-;; ================================
 (require 'projectile)
+
+(defcustom grails-projectile-keymap-prefix (kbd "C-c ;")
+  "Grails Projectile keymap prefix."
+  :group 'projectile
+  :type 'string)
+
+(defcustom grails-projectile-mode-line " Grails"
+  "Grails projectile modeline."
+  :type 'string
+  :group 'grails)
 
 (defvar grails-executable-suffix
   (if (eq system-type 'windows-nt)
       ".bat" ""))
 
 (defcustom grails-compilation-buffer-name "*Grails*"
-  "Buffer name for Grails commands"
+  "Buffer name for Grails commands."
   :type 'string
   :group 'grails)
 
 (defcustom use-grails-wrapper-when-possible t
-  "Use the Grails wrapper whenever available"
+  "Use the Grails wrapper whenever available."
   :type 'boolean
   :group 'grails)
 
-(defcustom grails-output-opts "--plain-output"
-  "No weird characters when running Grails commands"
+(defcustom grails-output-opts ""
+  "Output options such as --plain-output."
   :type 'string
   :group 'grails)
 
 (defcustom grails-cmd-opts "--non-interactive --stacktrace"
-  "Grails command line options"
+  "Grails command line options."
   :type 'string
   :group 'grails)
 
 (defcustom grails-wrapper-filename "grailsw"
-  "Grails Wrapper file name"
+  "Grails Wrapper file name."
   :type 'string
   :group 'grails)
 
@@ -267,17 +303,20 @@
 ;;; Minor mode
 (defvar grails-projectile-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map   (kbd "C-c ;rd") 'grails/refresh-dependencies)
-    (define-key map   (kbd "C-c ;cp") 'grails/compile)
-    (define-key map   (kbd "C-c ;cl") 'grails/clean)
-    (define-key map   (kbd "C-c ;e")  'grails/icommand)
-    (define-key map   (kbd "C-c ;cd") 'grails/create-domain)
-    (define-key map   (kbd "C-c ;na") 'grails/wizard-new-app)
-    (define-key map   (kbd "C-c ;np") 'grails/wizard-new-plugin)
-    (define-key map   (kbd "C-c ;cc") 'grails/create-controller)
-    (define-key map   (kbd "C-c ;cs") 'grails/create-service)
-    (define-key map   (kbd "C-c ;pl") 'grails/plugins-list-installed)
-    (define-key map   (kbd "C-c ;pp") 'grails/plugins-package-plugin)
+    (let ((prefix-map (make-sparse-keymap)))
+      (define-key prefix-map   (kbd "r d") 'grails/refresh-dependencies)
+      (define-key prefix-map   (kbd "c p") 'grails/compile)
+      (define-key prefix-map   (kbd "c l") 'grails/clean)
+      (define-key prefix-map   (kbd "e")   'grails/icommand)
+      (define-key prefix-map   (kbd "c d") 'grails/create-domain)
+      (define-key prefix-map   (kbd "n a") 'grails/wizard-new-app)
+      (define-key prefix-map   (kbd "n p") 'grails/wizard-new-plugin)
+      (define-key prefix-map   (kbd "c c") 'grails/create-controller)
+      (define-key prefix-map   (kbd "c s") 'grails/create-service)
+      (define-key prefix-map   (kbd "p l") 'grails/plugins-list-installed)
+      (define-key prefix-map   (kbd "p p") 'grails/plugins-package-plugin)
+
+      (define-key map grails-projectile-keymap-prefix prefix-map))
     map)
   "Keymap for Grails Projectile mode.")
 
@@ -298,10 +337,31 @@
 ;;;###autoload
 (define-minor-mode grails-projectile-mode
   "Emacs Grails Project Mode Extensions"
-  :lighter " Grails"
+  :lighter grails-projectile-mode-line
   :keymap  'grails-projectile-mode-map
   :group   'grails
-  :global  t
+  :require 'grails-projectile-mode
   (easy-menu-add grails-projectile-mode-menu))
+
+;;;###autoload
+(define-globalized-minor-mode grails-projectile-global-mode
+  grails-projectile-mode
+  grails-projectile-on)
+
+(defun grails-projectile-on ()
+  "Enable Grails Projectile minor mode."
+  (grails-projectile-mode 1))
+
+(defun grails-projectile-off ()
+  "Disable Grails Projectile minor mode."
+  (grails-projectile-mode -1))
+
+(defun grails-projectile-global-on ()
+  "Enable Grails Projectile global minor mode."
+  (grails-projectile-global-mode +1))
+
+(defun grails-projectile-global-off ()
+  "Disable Grails Projectile global minor mode."
+  (grails-projectile-global-mode -1))
 
 (provide 'grails-projectile-mode)

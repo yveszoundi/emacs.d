@@ -609,7 +609,7 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 
 #+begin_src emacs-lisp
   (use-package grails-projectile-mode
-    :config (grails-projectile-mode t)
+    :config (grails-projectile-global-mode t)
     :diminish grails-projectile-mode)
 #+end_src
 
