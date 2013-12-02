@@ -336,9 +336,8 @@
       (interactive)
     
       (if (region-active-p)
-          (comment-or-uncomment-region)
-        (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
-      )
+          (comment-or-uncomment-region (region-beginning) (region-end))
+        (comment-or-uncomment-region (line-beginning-position) (line-end-position))))
     
     (defun ers/copy-symbol-at-point ()
       "Copy the symbol at point."
