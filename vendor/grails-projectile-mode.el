@@ -236,21 +236,34 @@
     (if (< elength (length s))
         (string= (substring s (- 0 elength)) ending))))
 
-(defun grails/--artifact-name (file-basename)
-  (let ((artifact-name file-basename)
+(defun grails/--artefact-name-no-suffix (file-basename)
+  "Returns the Grails artefact name without its suffix
+
+  file-basename is the full basename of the file such as TestController.
+
+  The transformation of TestControllerSpec would remove both Spec and Controller
+  from the basename and return only Test.
+  "
+  (let ((artefact-name file-basename)
         (artifact-suffixes '("Spec" "Test" "Service" "Controller" "TagLib" "Command")))
 
     (dolist (elt artifact-suffixes)
-      (when (grails/--string/ends-with artifact-name elt)
-        (setq artifact-name (substring artifact-name 0 (- (length artifact-name) (length elt))))))
+      (when (grails/--string/ends-with artefact-name elt)
+        (setq artefact-name (substring artefact-name 0 (- (length artefact-name) (length elt))))))
 
-    artifact-name))
+    artefact-name))
 
 (defun grails/--find-artefact (artefact-folder artefact-suffix &optional artefact-full-name)
+  "Finds a Grails artefact in a given folder by suffix.
+
+  artefact-folder is the Grails sub-folder to look at usually inside grails-app.
+  artefact-suffix is a suffix convention such as Controller, Service when applicable.
+  artefact-full-name refers to the full basename of the file to search or the current buffer filename.
+  "
   (grails/--find-grails-file (grails/--grails-app-folder artefact-folder)
                              'grails/--base-name-matches-p
                              (or artefact-full-name
-                                 (concat (grails/--artifact-name (file-name-base (buffer-file-name)))
+                                 (concat (grails/--artefact-name-no-suffix (file-name-base (buffer-file-name)))
                                          artefact-suffix))))
 
 ;; --------------------------------
@@ -314,12 +327,31 @@
 ;; Folder helper functions
 ;; --------------------------------
 (defun grails/--project-sub-folder (folder-name)
-  "grails-app sub-folder path of the project."
+  "Grails project sub-folder."
   (file-name-as-directory (concat (projectile-project-root) folder-name)))
 
 (defun grails/--grails-app-folder (folder-name)
   "grails-app sub-folder path of the project."
   (grails/--project-sub-folder "grails-app"))
+
+(defun grails/--wrapper-exists-p (folder-name)
+  "Check whether the Grails wrapper exist in a given folder."
+  (file-exists-p (concat folder-name grails-wrapper-filename grails-executable-suffix)))
+
+(defun grails/--get-cmd (grails-command)
+  "Generate the grails command line string."
+  (let ((default-directory (expand-file-name (projectile-project-root)))
+        (grails-args (concat grails-jvm-opts " " grails-cmd-opts))
+        (grails-cmd-line (concat grails-executable grails-executable-suffix)))
+
+    (when use-grails-wrapper-when-possible
+      (when (grails/--wrapper-exists-p default-directory)
+        (setq grails-cmd-line (concat default-directory grails-wrapper-filename grails-executable-suffix))))
+
+    (when (file-exists-p (concat default-directory grails-projectile-filename))
+      (setq grails-args (grails/--read-grails-options-projectile-file (concat default-directory grails-projectile-filename))))
+
+    (concat grails-cmd-line " " grails-output-opts " " grails-args " " grails-command)))
 
 ;; --------------------------------
 ;; Main functions
@@ -327,19 +359,8 @@
 (defun grails/--command (str)
   "Run a Grails command."
 
-  (let ((default-directory (expand-file-name (projectile-project-root)))
-        (grails-args (concat grails-jvm-opts " " grails-cmd-opts))
-        (grails-cmd-line (concat grails-executable grails-executable-suffix)))
-
-    (when use-grails-wrapper-when-possible
-      (when (file-exists-p (concat default-directory grails-wrapper-filename grails-executable-suffix))
-        (setq grails-cmd-line (concat default-directory grails-wrapper-filename grails-executable-suffix))))
-
-    (when (file-exists-p (concat default-directory grails-projectile-filename))
-      (setq grails-args (grails/--read-grails-options-projectile-file (concat default-directory grails-projectile-filename))))
-
-    (let (( grails-command-line (concat grails-cmd-line " " grails-output-opts " " grails-args " " str)))
-      ;; runs the grails command from the project directory
+  (let ((grails-command-line (grails/--get-cmd str)))
+    (let ((default-directory (expand-file-name (projectile-project-root))))
       (compilation-start grails-command-line 'compilation-mode 'grails/--get-compilation-buffer-name))))
 
 (defun grails/--get-compilation-buffer-name (mode)
@@ -535,6 +556,36 @@
     ["Package Plugin"            grails/plugins-package-plugin   t]
     ))
 
+;; Projectile advices for compilation and test commands.
+(defvar projectile-grails-spec '("application.properties" "grails-app"))
+
+;;;###autoload
+(progn
+  (defadvice projectile-default-test-command
+      (around grails-projectile-default-test-command (project-type) )
+    "After execution of projectile-default-test-command."
+
+    (if (eq project-type 'grails)
+        (setq ad-return-value (grails/--get-cmd "test-app"))
+      ad-do-it))
+
+  (defadvice projectile-default-compilation-command
+      (around grails-projectile-default-compilation-command (project-type) )
+    "After execution of projectile-default-compilation-command."
+
+    (if (eq project-type 'grails)
+        (setq ad-return-value (grails/--get-cmd "compile"))
+      ad-do-it))
+
+  (defadvice projectile-project-type
+      (around grails-projectile-project-type () )
+    "After execution of projectile-project-type."
+
+    (if (projectile-verify-files projectile-grails-spec)
+        (setq ad-return-value 'grails)
+      ad-do-it))
+  )
+
 ;;;###autoload
 (define-minor-mode grails-projectile-mode
   "Grails Projectile Mode.
@@ -544,7 +595,19 @@
   :keymap  'grails-projectile-mode-map
   :group   'grails
   :require 'grails-projectile-mode
-  (easy-menu-add grails-projectile-mode-menu))
+
+  (progn
+    (cond
+     (grails-projectile-mode
+      (ad-activate 'projectile-project-type 'grails-projectile-project-type)
+      (ad-activate 'projectile-default-test-command 'grails-projectile-default-test-command)
+      (ad-activate 'projectile-default-compilation-command 'grails-projectile-default-compilation-command))
+     (t
+      (ad-deactivate 'projectile-project-type)
+      (ad-deactivate 'projectile-default-test-command)
+      (ad-deactivate 'projectile-default-compilation-command)))
+
+    (easy-menu-add grails-projectile-mode-menu)))
 
 ;;;###autoload
 (define-globalized-minor-mode grails-projectile-global-mode
