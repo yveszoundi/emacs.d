@@ -233,7 +233,8 @@
 (defun grails/--string/ends-with (s ending)
   "return non-nil if string S ends with ENDING."
   (let ((elength (length ending)))
-    (string= (substring s (- 0 elength)) ending)))
+    (if (< elength (length s))
+        (string= (substring s (- 0 elength)) ending))))
 
 (defun grails/--artifact-name (file-basename)
   (let ((artifact-name file-basename)
