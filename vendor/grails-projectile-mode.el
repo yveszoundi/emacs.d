@@ -289,8 +289,8 @@
   (grails/--find-artefact "services" "Service" service-name))
 
 (defun grails/find-service-for-file ()
-  (interactive)
   "Find a service class associated with the current file."
+  (interactive)  
   (grails/--find-artefact "services" "Service"))
 
 (defun grails/locate-controller (controller-name)
@@ -299,8 +299,8 @@
   (grails/--find-artefact "controllers" "Controller" controller-name))
 
 (defun grails/find-controller-for-file ()
-  (interactive)
   "Find a controller class associated with the current file."
+  (interactive)  
   (grails/--find-artefact "controllers" "Controller"))
 
 (defun grails/locate-domain (domain-name)
@@ -309,8 +309,8 @@
   (grails/--find-artefact "domain" "" domain-name))
 
 (defun grails/find-domain-for-file ()
-  (interactive)
   "Find a domain class associated with the current file."
+  (interactive)
   (grails/--find-artefact "domain" ""))
 
 (defun grails/locate-taglib (tag-lib-name)
@@ -319,8 +319,8 @@
   (grails/--find-artefact "taglib" "TagLib" tag-lib-name))
 
 (defun grails/find-taglib-for-file ()
-  (interactive)
   "Find a taglib class associated to the current file."
+  (interactive)  
   (grails/--find-artefact "taglib" "TagLib"))
 
 ;; --------------------------------
