@@ -227,7 +227,7 @@
 
 (defun grails/--test-matches-p (value expected)
   "Test whether a file basename matches a test class."
-  (or (string= (concat expected "Test") value)
+  (or (string= (concat expected "Tests") value)
       (string= (concat expected "Spec") value)))
 
 (defun grails/--string/ends-with (s ending)
@@ -245,7 +245,7 @@
   from the basename and return only Test.
   "
   (let ((artefact-name file-basename)
-        (artifact-suffixes '("Spec" "Test" "Service" "Controller" "TagLib" "Command")))
+        (artifact-suffixes '("Spec" "Tests" "Service" "Controller" "TagLib" "Command")))
 
     (dolist (elt artifact-suffixes)
       (when (grails/--string/ends-with artefact-name elt)
