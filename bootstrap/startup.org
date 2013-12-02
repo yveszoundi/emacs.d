@@ -325,47 +325,56 @@
 * Utility functions
   
   #+begin_src emacs-lisp
-  (defun ers/get-string-from-file (filePath)
-    "Return filePath's file content."
-    (with-temp-buffer
-      (insert-file-contents filePath)
-      (buffer-string)))
-
-  (defun ers/copy-symbol-at-point ()
-    "Copy the symbol at point."
-    (interactive)
-
-    (let ((b (bounds-of-thing-at-point 'symbol)))
-      (when b
-        (save-excursion
-          (kill-ring-save (car b) (cdr b))))))
-
-  (when (eq system-type 'darwin)
-    (defvar osx-pbpaste-cmd "/usr/bin/pbpaste"
-      "*command-line paste program")
-
-    (defvar osx-pbcopy-cmd "/usr/bin/pbcopy"
-      "*command-line copy program")
-
-    (defun osx-pbpaste ()
-      "paste the contents of the os x clipboard into the buffer at point."
+    (defun ers/get-string-from-file (filePath)
+      "Return filePath's file content."
+      (with-temp-buffer
+        (insert-file-contents filePath)
+        (buffer-string)))
+    
+    (defun ers/comment-or-uncomment-line-or-region ()
+      "Comment or uncomment the current line or region."
       (interactive)
-      (call-process osx-pbpaste-cmd nil t t))
-
-    (defun osx-pbcopy ()
-      "copy the contents of the region into the os x clipboard."
+    
+      (if (region-active-p)
+          (comment-or-uncomment-region)
+        (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+      )
+    
+    (defun ers/copy-symbol-at-point ()
+      "Copy the symbol at point."
       (interactive)
-      ;;  (if (region-exists-p)
-      (if (or (and (boundp 'mark-active) mark-active)
-              (and (fboundp 'region-exists-p) (region-exists-p)))
-          (call-process-region
-           (region-beginning) (region-end) osx-pbcopy-cmd nil t t)
-        (error "region not selected"))))
-
-  (defun ers/recompile-init-files()
-    "Recompile emacsd files."
-    (interactive)
-    (byte-recompile-directory user-emacs-directory 0 nil))
+    
+      (let ((b (bounds-of-thing-at-point 'symbol)))
+        (when b
+          (save-excursion
+            (kill-ring-save (car b) (cdr b))))))
+    
+    (when (eq system-type 'darwin)
+      (defvar osx-pbpaste-cmd "/usr/bin/pbpaste"
+        "*command-line paste program")
+    
+      (defvar osx-pbcopy-cmd "/usr/bin/pbcopy"
+        "*command-line copy program")
+    
+      (defun osx-pbpaste ()
+        "paste the contents of the os x clipboard into the buffer at point."
+        (interactive)
+        (call-process osx-pbpaste-cmd nil t t))
+    
+      (defun osx-pbcopy ()
+        "copy the contents of the region into the os x clipboard."
+        (interactive)
+        ;;  (if (region-exists-p)
+        (if (or (and (boundp 'mark-active) mark-active)
+                (and (fboundp 'region-exists-p) (region-exists-p)))
+            (call-process-region
+             (region-beginning) (region-end) osx-pbcopy-cmd nil t t)
+          (error "region not selected"))))
+    
+    (defun ers/recompile-init-files()
+      "Recompile emacsd files."
+      (interactive)
+      (byte-recompile-directory user-emacs-directory 0 nil))
   #+end_src
   
 * Encoding settings
@@ -867,7 +876,7 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                              (,(kbd "C-o")         . open-next-line)
                              (,(kbd "M-o")         . open-previous-line)
                              (,(kbd "C-x y")       . ers/copy-symbol-at-point)
-                             (,(kbd "C-x \\")      . comment-or-uncomment-region))))
+                             (,(kbd "C-x \\")      . ers/comment-or-uncomment-line-or-region))))
       (dolist (ers-keybinding ers-keybindings)
         (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
     
