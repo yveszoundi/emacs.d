@@ -3,41 +3,41 @@
 * Startup
 ** Pre-startup
    #+begin_src emacs-lisp
-  (defconst ers-bootstrap-dir (file-name-directory load-file-name))
-  (defconst ers-emacs-dir (file-name-directory (directory-file-name ers-bootstrap-dir)))
-  (defconst ers-user-filename "ers-user.el")
-
-  (defun ers/mkdir-p (dir-path)
-    (unless (file-exists-p dir-path)
-      (make-directory dir-path t)))
-
-  (defun ers/emacs-sub-dir (path-elements)
-      (let ( (ers-emacs-sub-folder ers-emacs-dir))
-        (dolist (p path-elements)
-          (setq ers-emacs-sub-folder (file-name-as-directory (concat ers-emacs-sub-folder p))))
-        ers-emacs-sub-folder))
-
-  (message "emacs-rimero-setup directory is %s" ers-emacs-dir)
-
-  (defun ers/emacs-file (sub-dir-list filename)
-    (expand-file-name (concat (ers/emacs-sub-dir sub-dir-list) filename)))
-
-  (defvar ers-user-file (concat user-emacs-directory ers-user-filename))
-
-  (mapc #'(lambda(p) (add-to-list 'load-path p))
-        `( ,(ers/emacs-sub-dir '("vendor"))))
-
-  ;; packages
-  (require 'package)
-
-  (setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
-                           ("marmalade" . "http://marmalade-repo.org/packages/")
-                           ("melpa"     . "http://melpa.milkbox.net/packages/")))
-
-  (package-initialize)
-
-  (unless package-archive-contents
-    (package-refresh-contents))
+     (defconst ers-bootstrap-dir (file-name-directory load-file-name))
+     (defconst ers-emacs-dir (file-name-directory (directory-file-name ers-bootstrap-dir)))
+     (defconst ers-user-filename "ers-user.el")
+     
+     (defun ers/mkdir-p (dir-path)
+       (unless (file-exists-p dir-path)
+         (make-directory dir-path t)))
+     
+     (defun ers/emacs-sub-dir (path-elements)
+       (let ( (ers-emacs-sub-folder ers-emacs-dir))
+         (dolist (p path-elements)
+           (setq ers-emacs-sub-folder (file-name-as-directory (concat ers-emacs-sub-folder p))))
+         ers-emacs-sub-folder))
+     
+     (message "emacs-rimero-setup directory is %s" ers-emacs-dir)
+     
+     (defun ers/emacs-file (sub-dir-list filename)
+       (expand-file-name (concat (ers/emacs-sub-dir sub-dir-list) filename)))
+     
+     (defvar ers-user-file (concat user-emacs-directory ers-user-filename))
+     
+     (mapc #'(lambda(p) (add-to-list 'load-path p))
+           `( ,(ers/emacs-sub-dir '("vendor"))))
+     
+     ;; packages
+     (require 'package)
+     
+     (setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
+                              ("marmalade" . "http://marmalade-repo.org/packages/")
+                              ("melpa"     . "http://melpa.milkbox.net/packages/")))
+     
+     (package-initialize)
+     
+     (unless package-archive-contents
+       (package-refresh-contents))
    #+end_src
    
 ** Global variables
@@ -259,7 +259,7 @@
                              htmlize
                              projectile workgroups2
                              powerline rainbow-delimiters guide-key
-                             helm helm-ag helm-projectile ac-helm
+                             helm helm-ag helm-projectile ac-helm helm-descbinds
                              dired-details undo-tree
                              auto-complete paredit yasnippet
                              markdown-mode groovy-mode inf-groovy
@@ -284,20 +284,27 @@
    
 ** Post-startup
    #+begin_src emacs-lisp
-  (when (eq system-type 'darwin)
-    (add-to-list 'ers-packages 'exec-path-from-shell))
-
-  (defun ers/package-install(package-name)
-    (unless (package-installed-p package-name)
-      (package-install package-name)))
-
-  (dolist (p ers-packages)
-    (ers/package-install p))
-
-  (require 'use-package)
-  (require 'netrc)
-
-  (ers/mkdir-p ers-org-directory)
+     (when (eq system-type 'darwin)
+       (add-to-list 'ers-packages 'exec-path-from-shell))
+     
+     (defun ers/package-install(package-name)
+       "Install a package."
+       (unless (package-installed-p package-name)
+         (package-install package-name)))
+     
+     (defun ers/packages-install (list-of-packages)
+       "Install a list of packages."
+       (if (listp list-of-packages)
+           (dolist (p list-of-packages)
+             (ers/package-install p)))
+       (message "The list of packages must be a list!"))
+     
+     (ers/packages-install ers-packages)
+     
+     (require 'use-package)
+     (require 'netrc)
+     
+     (ers/mkdir-p ers-org-directory)
    #+end_src
    
 * Backups
@@ -930,36 +937,37 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 ** Helm settings
    
    #+begin_src emacs-lisp
-  (use-package helm
-    :init
-    (progn
-      (setq helm-ff-transformer-show-only-basename nil
-            helm-adaptive-history-file             ers-helm-adaptive-history-file
-            helm-ff-lynx-style-map                 nil
-            helm-ff-auto-update-initial-value      nil
-            helm-yank-symbol-first                 t
-            helm-input-idle-delay                  0.1
-            helm-idle-delay                        0.1)
-
-      (use-package helm-config)
-      (use-package helm-ag)
-      (use-package ac-helm)
-
-      (helm-mode t)
-      (helm-adaptative-mode t)
-
-      (use-package helm-projectile
-        :bind ("C-x C-M-f" . helm-projectile))
-
-      (add-hook 'eshell-mode-hook
-                #'(lambda ()
-                    (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
-
-    :bind ( ("C-x r l" . helm-bookmarks)
-            ("C-x C-m" . execute-extended-command)
-            ("C-c o"   . helm-occur))
-
-    :diminish helm-mode)
+     (use-package helm
+       :init
+       (progn
+         (setq helm-ff-transformer-show-only-basename nil
+               helm-adaptive-history-file             ers-helm-adaptive-history-file
+               helm-boring-file-regexp-list           '("\\.git$" "\\.gradle$" "\\.svn$")
+               helm-yank-symbol-first                 t
+               helm-input-idle-delay                  0.1
+               helm-idle-delay                        0.1)
+     
+         (use-package helm-config)
+         (use-package helm-ag)
+         (use-package ac-helm)
+         (use-package helm-descbinds)
+     
+         (helm-mode t)
+         (helm-adaptative-mode t)
+     
+         (use-package helm-projectile
+           :bind ("C-x C-M-f" . helm-projectile))
+     
+         (add-hook 'eshell-mode-hook
+                   #'(lambda ()
+                       (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
+     
+       :bind ( ("C-x r l" . helm-bookmarks)
+               ("C-x C-m" . execute-extended-command)
+               ("C-h b"   . helm-descbinds)
+               ("C-c o"   . helm-occur))
+     
+       :diminish helm-mode)
    #+end_src
    
 * UI configuration
