@@ -1,4 +1,9 @@
-#+TITLE: Emacs customizations
+#+TITLE:       yveszoundi emacs Org startup file.
+#+EMAIL:       rimerosolutions AT gmail DOT com
+#+STARTUP:     odd hidestars fold
+#+LANGUAGE:    en
+#+OPTIONS:     skip:nil toc:nil
+#+HTML_HEAD:   <link rel="publisher" href="https://github.com/yveszoundi" />
 
 * Startup
 ** Pre-startup
@@ -472,30 +477,37 @@
 * Indentation settings
   
   #+begin_src emacs-lisp
-  (setq-default indent-tabs-mode nil)
-
-  (setq c-basic-offset            ers-tab-size
-        tab-width                 ers-tab-size
-        js2-basic-offset          ers-tab-size
-        js-indent-level           ers-tab-size
-        py-indent-offset          ers-tab-size
-        sgml-basic-offset         ers-tab-size
-        nxml-child-indent         ers-tab-size
-        nxml-outline-child-indent ers-tab-size)
-
-  (defun ers/indent-region-or-buffer ()
-    "Indents an entire buffer using the default intenting scheme."
-    (interactive)
-
-    (if (region-active-p)
-        (indent-region (region-beginning) (region-end))
-      (progn
-        (delete-trailing-whitespace)
-        (indent-region (point-min) (point-max) nil)
-        (untabify (point-min) (point-max)))))
-
-  (bind-key "C-x /" 'ers/indent-region-or-buffer)
-  (bind-key "RET"   'newline-and-indent)
+    (setq-default indent-tabs-mode nil)
+    
+    (defun ers/indentation-set-style ()
+      (setq c-basic-offset            ers-tab-size
+            tab-width                 ers-tab-size
+            js2-basic-offset          ers-tab-size
+            js-indent-level           ers-tab-size
+            py-indent-offset          ers-tab-size
+            sgml-basic-offset         ers-tab-size
+            nxml-child-indent         ers-tab-size
+            nxml-outline-child-indent ers-tab-size))
+    
+    (defun ers/indentation-reset-tab-size(new-tab-size)
+      (setq ers-tab-size new-tab-size)
+      (ers/indentation-set-style))
+    
+    (ers/indentation-set-style)
+    
+    (defun ers/indent-region-or-buffer ()
+      "Indents an entire buffer using the default intenting scheme."
+      (interactive)
+    
+      (if (region-active-p)
+          (indent-region (region-beginning) (region-end))
+        (progn
+          (delete-trailing-whitespace)
+          (indent-region (point-min) (point-max) nil)
+          (untabify (point-min) (point-max)))))
+    
+    (bind-key "C-x /" 'ers/indent-region-or-buffer)
+    (bind-key "RET"   'newline-and-indent)
   #+end_src
   
 * Org mode settings
