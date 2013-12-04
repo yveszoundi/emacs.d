@@ -301,8 +301,8 @@
        "Install a list of packages."
        (if (listp list-of-packages)
            (dolist (p list-of-packages)
-             (ers/package-install p)))
-       (message "The list of packages must be a list!"))
+             (ers/package-install p))
+       (message "The list of packages must be a list!")))
      
      (ers/packages-install ers-packages)
      
@@ -859,7 +859,18 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                   (goto-char (point-max))
                   (dired-previous-line 1))
     
+                (defun ers/copy-filename-at-point ()
+                  (interactive)
+    
+                  (save-excursion
+                    (end-of-line)
+                    (let ((b (bounds-of-thing-at-point 'filename)))
+                      (when b
+                        (save-excursion
+                          (kill-ring-save (car b) (cdr b)))))))
+    
                 (bind-key "."   'dired-up-directory dired-mode-map)
+                (bind-key "@"   'ers/copy-filename-at-point dired-mode-map)
                 (bind-key "C-a" 'ers/dired-go-to-first-item dired-mode-map)
                 (bind-key "C-e" 'ers/dired-go-to-last-item  dired-mode-map)))
     
