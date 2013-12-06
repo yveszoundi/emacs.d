@@ -249,11 +249,6 @@
     :type 'directory
     :group 'emacs-rimero-setup)
 
-  (defcustom ers-workgroups-file "~/.emacs.d/data/workgroups"
-    "Workgroups file."
-    :type 'file
-    :group 'emacs-rimero-setup)
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; packages
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -262,9 +257,9 @@
                              expand-region wrap-region
                              drag-stuff duplicate-thing
                              htmlize
-                             projectile workgroups2
+                             projectile
                              powerline rainbow-delimiters guide-key
-                             helm helm-ag helm-projectile ac-helm helm-descbinds
+                             helm helm-ag helm-projectile helm-descbinds
                              dired-details undo-tree
                              auto-complete paredit yasnippet
                              markdown-mode groovy-mode inf-groovy
@@ -320,7 +315,6 @@
       kept-new-versions              6
       kept-old-versions              2
       version-control                t
-      save-place-file                ers-place-file
       bookmark-default-file          ers-bookmarks-file
       url-cookie-file                ers-url-cookie-file
       auto-save-list-file-prefix     ers-auto-save-folder
@@ -513,93 +507,93 @@
 * Org mode settings
   
   #+begin_src emacs-lisp
-(setq org-directory ers-org-directory)
-
-;; default settings
-(setq org-archive-location (concat org-directory ers-org-archive-location-filename)
-      org-agenda-files (directory-files org-directory t "\.org$")
-      org-export-html-postamble nil
-      org-ers-notes-file (concat org-directory ers-org-notes-filename))
-
-;; org capture menu
-(setq org-capture-templates
-      '(("d" "Tasks" entry
-         (file+headline org-ers-notes-file "Tasks")
-         "* TODO %?
-SCHEDULED: %^t"          :clock-in t :clock-resume t)
-
-        ("e" "Quick task" entry
-         (file+headline org-ers-notes-file "Tasks")
-         "* TODO %^{Task}
-SCHEDULED: %^t"
-
-         :immediate-finish t)
-
-        ("f" "Orientation" entry (file org-ers-notes-file)
-         "* ORIENTATION %? :@orientation:
-SCHEDULED: %^t"  :clock-in t :clock-resume t)
-
-        ("g" "Coding" entry (file org-ers-notes-file)
-         "* CODING%? :@coding:
-SCHEDULED: %^t"  :clock-in t :clock-resume t)
-
-        ("h" "Help" entry (file org-ers-notes-file)
-         "* HELP %? :@help:
-SCHEDULED: %^t"  :clock-in t :clock-resume t)
-
-
-        ("i" "Phone call" entry (file org-ers-notes-file)
-         "* PHONE %? :@phone:
-SCHEDULED: %^t"   :clock-in t :clock-resume t)
-
-
-        ("j" "Mail browsing" entry (file org-ers-notes-file)
-         "* EMAIL Browsing :@email:
-SCHEDULED: %^t"    :clock-in t :clock-resume t)
-
-
-        ("k" "Mail reply" entry (file org-ers-notes-file)
-         "* EMAIL Reply %? :@email:
-SCHEDULED: %^t"    :clock-in t :clock-resume t)
-
-
-        ("k" "Team Meetings" entry (file org-ers-notes-file)
-         "* TEAM MEETING :@meeting:
-SCHEDULED: %^t"    :clock-in t :clock-resume t)
-
-
-        ("k" "Other meetings" entry (file org-ers-notes-file)
-         "* MEETING %? :@meeting:
-SCHEDULED: %^t"   :clock-in t :clock-resume t)
-
-
-        ("l" "Break" entry (file org-ers-notes-file)
-         "* BREAK :@break:
-SCHEDULED: %^t"    :clock-in t :clock-resume t)
-
-        ))
-
-;; todo states
-(setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "|" "WAITING(w)")
-                          (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
-                          (sequence "|" "CANCELED(c)")))
-
-;; tags
-(setq org-tag-alist '(("@orientation" . ?a)
-                      ("@coding" . ?b)
-                      ("@help" . ?c)
-                      ("@phone" . ?d)
-                      ("@documentation" . ?e)
-                      ("@meeting" . ?f)
-                      ("@email" . ?g)
-                      ("@break" . ?h)
-                      ))
-
-;; require htmlize.el
-(setq org-agenda-exporter-settings'((ps-number-of-columns 2)
-                                    (ps-landscape-mode t)
-                                    (org-agenda-add-entry-text-maxlines 5)
-                                    (htmlize-output-type 'css)))
+    (setq org-directory ers-org-directory)
+    
+    ;; default settings
+    (setq org-archive-location (concat org-directory ers-org-archive-location-filename)
+          org-agenda-files (directory-files org-directory t "\.org$")
+          org-export-html-postamble nil
+          org-ers-notes-file (concat org-directory ers-org-notes-filename))
+    
+    ;; org capture menu
+    (setq org-capture-templates
+          '(("d" "Tasks" entry
+             (file+headline org-ers-notes-file "Tasks")
+             "* TODO %?
+    SCHEDULED: %^t"          :clock-in t :clock-resume t)
+    
+            ("e" "Quick task" entry
+             (file+headline org-ers-notes-file "Tasks")
+             "* TODO %^{Task}
+    SCHEDULED: %^t"
+    
+             :immediate-finish t)
+    
+            ("f" "Orientation" entry (file org-ers-notes-file)
+             "* ORIENTATION %? :@orientation:
+    SCHEDULED: %^t"  :clock-in t :clock-resume t)
+    
+            ("g" "Coding" entry (file org-ers-notes-file)
+             "* CODING%? :@coding:
+    SCHEDULED: %^t"  :clock-in t :clock-resume t)
+    
+            ("h" "Help" entry (file org-ers-notes-file)
+             "* HELP %? :@help:
+    SCHEDULED: %^t"  :clock-in t :clock-resume t)
+    
+    
+            ("i" "Phone call" entry (file org-ers-notes-file)
+             "* PHONE %? :@phone:
+    SCHEDULED: %^t"   :clock-in t :clock-resume t)
+    
+    
+            ("j" "Mail browsing" entry (file org-ers-notes-file)
+             "* EMAIL Browsing :@email:
+    SCHEDULED: %^t"    :clock-in t :clock-resume t)
+    
+    
+            ("k" "Mail reply" entry (file org-ers-notes-file)
+             "* EMAIL Reply %? :@email:
+    SCHEDULED: %^t"    :clock-in t :clock-resume t)
+    
+    
+            ("k" "Team Meetings" entry (file org-ers-notes-file)
+             "* TEAM MEETING :@meeting:
+    SCHEDULED: %^t"    :clock-in t :clock-resume t)
+    
+    
+            ("k" "Other meetings" entry (file org-ers-notes-file)
+             "* MEETING %? :@meeting:
+    SCHEDULED: %^t"   :clock-in t :clock-resume t)
+    
+    
+            ("l" "Break" entry (file org-ers-notes-file)
+             "* BREAK :@break:
+    SCHEDULED: %^t"    :clock-in t :clock-resume t)
+    
+            ))
+    
+    ;; todo states
+    (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "|" "WAITING(w)")
+                              (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
+                              (sequence "|" "CANCELED(c)")))
+    
+    ;; tags
+    (setq org-tag-alist '(("@orientation" . ?a)
+                          ("@coding" . ?b)
+                          ("@help" . ?c)
+                          ("@phone" . ?d)
+                          ("@documentation" . ?e)
+                          ("@meeting" . ?f)
+                          ("@email" . ?g)
+                          ("@break" . ?h)
+                          ))
+        
+    ;; require htmlize.el
+    (setq org-agenda-exporter-settings'((ps-number-of-columns 2)
+                                        (ps-landscape-mode t)
+                                        (org-agenda-add-entry-text-maxlines 5)
+                                        (htmlize-output-type 'css)))
   #+end_src
   
 * Personal information
@@ -645,7 +639,7 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
    
    #+begin_src emacs-lisp
   (use-package grails-projectile-mode
-    :config (grails-projectile-global-mode t)
+    :init (grails-projectile-global-mode t)
     :diminish grails-projectile-mode)
    #+end_src
    
@@ -826,6 +820,16 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
       :bind ("C-c SPC" . ace-jump-mode)
       :diminish ace-jump-mode)
     
+    (use-package uniquify
+      :config (setq uniquify-separator "/"
+                    uniquify-buffer-name-style 'post-forward
+                    uniquify-after-kill-buffer-p t
+                    uniquify-ignore-buffers-re "^\\*"))
+    
+    (use-package saveplace
+      :init (progn (setq-default save-place t)
+                   (setq save-place-file ers-place-file)))
+    
     (use-package expand-region
       :bind ("C-c ," . er/expand-region))
     
@@ -873,9 +877,6 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
                 (bind-key "@"   'ers/copy-filename-at-point dired-mode-map)
                 (bind-key "C-a" 'ers/dired-go-to-first-item dired-mode-map)
                 (bind-key "C-e" 'ers/dired-go-to-last-item  dired-mode-map)))
-    
-    (use-package uniquify
-      :init (setq uniquify-buffer-name-style 'post-forward))
     
     (use-package drag-stuff
       :config (if window-system
@@ -960,37 +961,40 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 ** Helm settings
    
    #+begin_src emacs-lisp
-     (use-package helm
-       :init
-       (progn
-         (setq helm-ff-transformer-show-only-basename nil
-               helm-adaptive-history-file             ers-helm-adaptive-history-file
-               helm-boring-file-regexp-list           '("\\.git$" "\\.gradle$" "\\.svn$")
-               helm-yank-symbol-first                 t
-               helm-input-idle-delay                  0.1
-               helm-idle-delay                        0.1)
-     
-         (use-package helm-config)
-         (use-package helm-ag)
-         (use-package ac-helm)
-         (use-package helm-descbinds)
-     
-         (helm-mode t)
-         (helm-adaptative-mode t)
-     
-         (use-package helm-projectile
-           :bind ("C-x C-M-f" . helm-projectile))
-     
-         (add-hook 'eshell-mode-hook
-                   #'(lambda ()
-                       (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
-     
-       :bind ( ("C-x r l" . helm-bookmarks)
-               ("C-x C-m" . execute-extended-command)
-               ("C-h b"   . helm-descbinds)
-               ("C-c o"   . helm-occur))
-     
-       :diminish helm-mode)
+          (use-package helm
+            :init
+            (progn
+              (setq helm-ff-transformer-show-only-basename nil
+                    helm-adaptive-history-file             ers-helm-adaptive-history-file
+                    helm-boring-file-regexp-list           '("\\.git$" "\\.gradle$" "\\.svn$" "\\.grails$")
+                    helm-yank-symbol-first                 t
+                    helm-input-idle-delay                  0.1
+                    helm-idle-delay                        0.1)
+          
+              (use-package helm-config)
+          
+              (use-package helm-ag
+                :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
+                :bind ("C-c a" . helm-ag))
+          
+              (use-package helm-descbinds)
+          
+              (helm-mode t)
+              (helm-adaptative-mode t)
+          
+              (use-package helm-projectile
+                :bind ("C-c h" . helm-projectile))
+          
+              (add-hook 'eshell-mode-hook
+                        #'(lambda ()
+                            (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
+          
+            :bind ( ("C-x r l" . helm-bookmarks)
+                    ("C-x C-m" . execute-extended-command)
+                    ("C-h b"   . helm-descbinds)
+                    ("C-c o"   . helm-occur))
+          
+            :diminish helm-mode)
    #+end_src
    
 * UI configuration
@@ -1067,13 +1071,4 @@ SCHEDULED: %^t"    :clock-in t :clock-resume t)
 (when (file-exists-p ers-user-file)
   (load-file ers-user-file))
   #+end_src
-* Workgroups
-  
-  #+begin_src emacs-lisp
-  ;; TODO re-enable later - need to be flexible...
-  ;; (use-package workgroups2
-  ;;   :init (setq wg-prefix-key (kbd "C-c z")
-  ;;               wg-default-session-file ers-workgroups-file)
-  ;;   :config (workgroups-mode t)
-  ;;   :diminish workgroups-mode)
-  #+end_src
+
