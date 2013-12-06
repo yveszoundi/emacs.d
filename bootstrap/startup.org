@@ -1068,7 +1068,7 @@
 * User settings
   
   #+begin_src emacs-lisp
-(when (file-exists-p ers-user-file)
-  (load-file ers-user-file))
+    (when (file-exists-p ers-user-file)
+      (load-file ers-user-file))
   #+end_src
 
