@@ -993,7 +993,7 @@
             (progn
               (setq helm-ff-transformer-show-only-basename nil
                     helm-adaptive-history-file             ers-helm-adaptive-history-file
-                    helm-boring-file-regexp-list           '("\\.git$" "\\.gradle$" "\\.svn$" "\\.grails$" "\\.DS_STORE$")
+                    helm-boring-file-regexp-list           '("\\.git$" "\\.svn$")
                     helm-yank-symbol-first                 t
                     helm-input-idle-delay                  0.1
                     helm-idle-delay                        0.1)
