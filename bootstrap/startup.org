@@ -473,21 +473,31 @@
   #+begin_src emacs-lisp
     (setq-default indent-tabs-mode nil)
     
-    (defun ers/indentation-set-style ()
-      (setq c-basic-offset            ers-tab-size
-            tab-width                 ers-tab-size
-            js2-basic-offset          ers-tab-size
-            js-indent-level           ers-tab-size
-            py-indent-offset          ers-tab-size
-            sgml-basic-offset         ers-tab-size
-            nxml-child-indent         ers-tab-size
-            nxml-outline-child-indent ers-tab-size))
+    (defun ers/indentation-apply-style ()
+      (setq-default c-basic-offset            ers-tab-size)
+      (setq-default tab-width                 ers-tab-size)
+      (setq-default js2-basic-offset          ers-tab-size)
+      (setq-default js-indent-level           ers-tab-size)
+      (setq-default py-indent-offset          ers-tab-size)
+      (setq-default sgml-basic-offset         ers-tab-size)
+      (setq-default nxml-child-indent         ers-tab-size)
+      (setq-default nxml-outline-child-indent ers-tab-size)
     
-    (defun ers/indentation-reset-tab-size(new-tab-size)
+      (setq c-basic-offset            ers-tab-size)
+      (setq tab-width                 ers-tab-size)
+      (setq js2-basic-offset          ers-tab-size)
+      (setq js-indent-level           ers-tab-size)
+      (setq py-indent-offset          ers-tab-size)
+      (setq sgml-basic-offset         ers-tab-size)
+      (setq nxml-child-indent         ers-tab-size)
+      (setq nxml-outline-child-indent ers-tab-size))
+    
+    (defun ers/indentation-reset-tab-size (new-tab-size)
+      (interactive "nEnter new tab size:\n")
       (setq ers-tab-size new-tab-size)
-      (ers/indentation-set-style))
+      (ers/indentation-apply-style))
     
-    (ers/indentation-set-style)
+    (ers/indentation-apply-style)
     
     (defun ers/indent-region-or-buffer ()
       "Indents an entire buffer using the default intenting scheme."
@@ -609,12 +619,15 @@
 ** Version control
    
    #+begin_src emacs-lisp
-  (use-package vc-svn)
-  (autoload 'svn-status "dsvn" "Run `svn status'." t)
-  (autoload 'svn-update "dsvn" "Run `svn update'." t)
-
-  (use-package magit
-    :bind ("C-x g" . magit-status))
+     (use-package vc-svn)
+     (autoload 'svn-status "dsvn" "Run `svn status'." t)
+     (autoload 'svn-update "dsvn" "Run `svn update'." t)
+     
+     (use-package magit
+       :bind ("C-x g" . magit-status)
+       :config  (defadvice magit-status (after magit-status-advice (dir) activate)
+                  (when (window-parent)
+                    (delete-other-windows))))
    #+end_src
    
 ** Project management
@@ -662,27 +675,27 @@
 * Yasnippets configuration
   
   #+begin_src emacs-lisp
-(defvar yas-elpa-snippets-folder
-  (car (file-expand-wildcards
-        (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
-
-;; Setup yas-snippet-dirs
-;; - elpa default snippets from yasnippet package
-;; - User snippets in ~/.emacs.d/snippets
-;; - Shipped snippets folder in the emacs-rimero-setup distro.
-(let (( yas-folder-candidates `(,yas-elpa-snippets-folder
-                                ,(concat user-emacs-directory "snippets")
-                                ,(concat ers-emacs-dir "snippets"))))
-  (dolist (p yas-folder-candidates)
-    (unless (file-exists-p p)
-      (delq p yas-folder-candidates)))
-
-  (setq yas-snippet-dirs yas-folder-candidates))
-
-(use-package yasnippet
-  :init (setq yas-verbosity 1)
-  :config (yas-global-mode t)
-  :diminish yas-minor-mode)
+    (defvar yas-elpa-snippets-folder
+      (car (file-expand-wildcards
+            (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
+    
+    ;; Setup yas-snippet-dirs
+    ;; - elpa default snippets from yasnippet package
+    ;; - User snippets in ~/.emacs.d/snippets
+    ;; - Shipped snippets folder in the emacs-rimero-setup distro.
+    (let (( yas-folder-candidates `(,yas-elpa-snippets-folder
+                                    ,(concat user-emacs-directory "snippets")
+                                    ,(concat ers-emacs-dir "snippets"))))
+      (dolist (p yas-folder-candidates)
+        (unless (file-exists-p p)
+          (delq p yas-folder-candidates)))
+    
+      (setq yas-snippet-dirs yas-folder-candidates))
+    
+    (use-package yasnippet
+      :init (setq yas-verbosity 1)
+      :config (yas-global-mode t)
+      :diminish yas-minor-mode)
   #+end_src
   
 * Spellchecking configuration
@@ -784,7 +797,7 @@
     
     (defun open-next-line (arg)
       "Move to the next line and then opens a line.
-                    See also `newline-and-indent'."
+                        See also `newline-and-indent'."
       (interactive "p")
       (end-of-line)
       (open-line arg)
@@ -792,7 +805,7 @@
     
     (defun open-previous-line (arg)
       "Open a new line before the current one.
-                     See also `newline-and-indent'."
+                         See also `newline-and-indent'."
       (interactive "p")
       (beginning-of-line)
       (open-line arg))
@@ -833,10 +846,6 @@
     (use-package expand-region
       :bind ("C-c ," . er/expand-region))
     
-    (use-package dired-details
-      :init (setq-default dired-details-hidden-string "--- ")
-      :config (dired-details-install))
-    
     (use-package recentf
       :init (progn (setq recentf-max-menu-items 25
                          recentf-exclude '("/tmp" "/ssh:" "\\ido.last" "recentf")
@@ -851,6 +860,8 @@
                     ls-list-ignore-case t))
     
     (use-package dired
+      :defer t
+    
       :config (progn
                 (put 'dired-find-alternate-file 'disabled nil)
                 (defun ers/dired-go-to-first-item ()
@@ -877,6 +888,11 @@
                 (bind-key "@"   'ers/copy-filename-at-point dired-mode-map)
                 (bind-key "C-a" 'ers/dired-go-to-first-item dired-mode-map)
                 (bind-key "C-e" 'ers/dired-go-to-last-item  dired-mode-map)))
+    
+    (use-package dired-details
+      :ensure dired-details
+      :init (setq-default dired-details-hidden-string "--- ")
+      :config (dired-details-install))
     
     (use-package drag-stuff
       :config (if window-system
@@ -935,27 +951,27 @@
 ** Auto-complete settings
    
    #+begin_src emacs-lisp
-(use-package auto-complete-config
-  :init (set-default 'ac-sources
-                     '(ac-source-abbrev
-                       ac-source-dictionary
-                       ac-source-words-in-buffer
-                       ac-source-words-in-same-mode-buffers
-                       ac-source-semantic))
-  :config (progn
-            (setq ac-comphist-file ers-ac-histfile)
-            (ac-config-default)
-            (setq ac-use-menu-map t)
-
-            ;; Default settings
-            (define-key ac-menu-map "\C-n" 'ac-next)
-            (define-key ac-menu-map "\C-p" 'ac-previous)
-            (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
-
-            (auto-complete-mode t)
-            (global-auto-complete-mode t))
-
-  :diminish auto-complete-mode)
+     (use-package auto-complete-config
+       :init (set-default 'ac-sources
+                          '(ac-source-abbrev
+                            ac-source-dictionary
+                            ac-source-words-in-buffer
+                            ac-source-words-in-same-mode-buffers
+                            ac-source-semantic))
+       :config (progn
+                 (setq ac-comphist-file ers-ac-histfile)
+                 (ac-config-default)
+                 (setq ac-use-menu-map t)
+     
+                 ;; Default settings
+                 (define-key ac-menu-map "\C-n" 'ac-next)
+                 (define-key ac-menu-map "\C-p" 'ac-previous)
+                 (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
+     
+                 (auto-complete-mode t)
+                 (global-auto-complete-mode t))
+     
+       :diminish auto-complete-mode)
    #+end_src
    
 ** Helm settings
@@ -966,7 +982,7 @@
             (progn
               (setq helm-ff-transformer-show-only-basename nil
                     helm-adaptive-history-file             ers-helm-adaptive-history-file
-                    helm-boring-file-regexp-list           '("\\.git$" "\\.gradle$" "\\.svn$" "\\.grails$")
+                    helm-boring-file-regexp-list           '("\\.git$" "\\.gradle$" "\\.svn$" "\\.grails$" "\\.DS_STORE$")
                     helm-yank-symbol-first                 t
                     helm-input-idle-delay                  0.1
                     helm-idle-delay                        0.1)
