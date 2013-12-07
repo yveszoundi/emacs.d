@@ -293,6 +293,14 @@
                              'grails/--test-matches-p
                              (file-name-base (buffer-file-name))))
 
+(defun grails/locate-view ()
+  "Locate a view in the project."
+  (interactive)
+  (grails/--find-grails-file (grails/--grails-app-folder "views")
+                             'grails/--all-files
+                             ""
+                             t))
+
 (defun grails/locate-service ()
   "Locate a service class in the project."
   (interactive)
@@ -519,6 +527,7 @@
       (define-key prefix-map   (kbd "l d") 'grails/locate-domain)
       (define-key prefix-map   (kbd "l t") 'grails/locate-test)
       (define-key prefix-map   (kbd "l s") 'grails/locate-service)
+      (define-key prefix-map   (kbd "l v") 'grails/locate-view)
       (define-key prefix-map   (kbd "l c") 'grails/locate-controller)
 
       (define-key prefix-map   (kbd "n a") 'grails/wizard-new-app)

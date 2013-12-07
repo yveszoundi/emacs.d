@@ -8,9 +8,14 @@
 * Startup
 ** Pre-startup
    #+begin_src emacs-lisp
-     (defconst ers-bootstrap-dir (file-name-directory load-file-name))
-     (defconst ers-emacs-dir (file-name-directory (directory-file-name ers-bootstrap-dir)))
-     (defconst ers-user-filename "ers-user.el")
+     (defconst ers-bootstrap-dir (file-name-directory load-file-name)
+       "Emacs Rimero Setup bootstrap folder.")
+     
+     (defconst ers-emacs-dir (file-name-directory (directory-file-name ers-bootstrap-dir))
+       "Emacs Rimero Setup root folder.")
+     
+     (defconst ers-user-filename "ers-user.el"
+       "Emacs Rimero Setup user file.")
      
      (defun ers/mkdir-p (dir-path)
        (unless (file-exists-p dir-path)
@@ -35,9 +40,10 @@
      ;; packages
      (require 'package)
      
-     (setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
-                              ("marmalade" . "http://marmalade-repo.org/packages/")
-                              ("melpa"     . "http://melpa.milkbox.net/packages/")))
+     (let ((ers-package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
+                                   ("melpa"     . "http://melpa.milkbox.net/packages/"))))
+       (dolist (elt ers-package-archives)
+         (add-to-list 'package-archives elt)))
      
      (package-initialize)
      
@@ -262,7 +268,7 @@
                              helm helm-ag helm-projectile helm-descbinds
                              dired-details undo-tree
                              auto-complete paredit yasnippet
-                             markdown-mode groovy-mode inf-groovy
+                             markdown-mode groovy-mode
                              org2blog xml-rpc w3m
                              magit dsvn
                              base16-theme)
@@ -1066,19 +1072,14 @@
 ** Enable/Disable UI modes
    
    #+begin_src emacs-lisp
-(defun ers/apply-frame-settings ()
-  (dolist (mode '(menu-bar-mode
-                  tool-bar-mode
-                  scroll-bar-mode
-                  blink-cursor-mode))
-    (when (fboundp mode) (funcall mode -1)))
-
-  (dolist (mode '(show-paren-mode
-                  display-time-mode
-                  column-number-mode))
-    (when (fboundp mode) (funcall mode 1))))
-
-(ers/apply-frame-settings)
+     (defun ers/apply-frame-settings ()
+       (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode blink-cursor-mode))
+         (when (fboundp mode) (funcall mode -1)))
+     
+       (dolist (mode '(show-paren-mode display-time-mode column-number-mode))
+         (when (fboundp mode) (funcall mode 1))))
+     
+     (ers/apply-frame-settings)
    #+end_src
    
 * User settings
