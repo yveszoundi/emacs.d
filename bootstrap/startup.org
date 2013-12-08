@@ -336,6 +336,12 @@
 * Utility functions
   
   #+begin_src emacs-lisp
+    (defun ers/eval-and-replace (value)
+        "Evaluate the sexp at point and replace it with its value"
+          (interactive (list (eval-last-sexp nil)))
+            (kill-sexp -1)
+              (insert (format "%S" value)))
+    
     (defun ers/get-string-from-file (filePath)
       "Return filePath's file content."
       (with-temp-buffer
@@ -713,18 +719,21 @@
 ** Web browsing
    
    #+begin_src emacs-lisp
-  (setq browse-url-browser-function          ers-browser-program
-        browse-url-new-window-flag           t
-        browse-url-firefox-new-window-is-tab t)
-
-  ;; w3m
-  (setq w3m-coding-system           'utf-8
-        w3m-file-coding-system      'utf-8
-        w3m-file-name-coding-system 'utf-8
-        w3m-input-coding-system     'utf-8
-        w3m-output-coding-system    'utf-8
-        w3m-terminal-coding-system  'utf-8)
-
+     (setq browse-url-browser-function          ers-browser-program
+           browse-url-new-window-flag           t
+           browse-url-firefox-new-window-is-tab t)
+     (bind-key "C-c m ." 'browse-url-at-point)
+     
+     ;; w3m
+     (use-package w3m
+       :init (setq w3m-coding-system           'utf-8
+                   w3m-file-coding-system      'utf-8
+                   w3m-file-name-coding-system 'utf-8
+                   w3m-input-coding-system     'utf-8
+                   w3m-output-coding-system    'utf-8
+                   w3m-terminal-coding-system  'utf-8)
+       :bind ("C-c m w" . w3m-browse-url))
+     
    #+end_src
    
 ** IRC configuration
@@ -855,7 +864,7 @@
                    (setq save-place-file ers-place-file)))
     
     (use-package expand-region
-      :bind ("C-c ," . er/expand-region))
+      :bind ("C-c l" . er/expand-region))
     
     (use-package recentf
       :init (progn (setq recentf-max-menu-items 25
@@ -920,17 +929,16 @@
     (use-package rainbow-delimiters
       :defer t
       :config (progn
-                (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-                (add-hook 'prog-mode-hook 'linum-mode)))
+                (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
     
     (let ((ers-keybindings `((,(kbd "C-c <left>")  . windmove-left)
                              (,(kbd "C-c <right>") . windmove-right)
                              (,(kbd "C-c <up>")    . windmove-up)
                              (,(kbd "C-c <down>")  . windmove-down)
                              (,(kbd "C-c r")       . revert-buffer)
-                             (,(kbd "C-c g")       . goto-line)
-                             (,(kbd "C-c m")       . browse-url-at-point)
+                             (,(kbd "C-c g")       . goto-line)                             
                              (,(kbd "C-o")         . open-next-line)
+                             (,(kbd "C-c C-e")     . ers/eval-and-replace)
                              (,(kbd "M-o")         . open-previous-line)
                              (,(kbd "C-x y")       . ers/copy-symbol-at-point)
                              (,(kbd "C-x \\")      . ers/comment-or-uncomment-line-or-region))))
