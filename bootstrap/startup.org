@@ -988,40 +988,40 @@
 ** Helm settings
    
    #+begin_src emacs-lisp
-          (use-package helm
-            :init
-            (progn
-              (setq helm-ff-transformer-show-only-basename nil
-                    helm-adaptive-history-file             ers-helm-adaptive-history-file
-                    helm-boring-file-regexp-list           '("\\.git$" "\\.svn$")
-                    helm-yank-symbol-first                 t
-                    helm-input-idle-delay                  0.1
-                    helm-idle-delay                        0.1)
-          
-              (use-package helm-config)
-          
-              (use-package helm-ag
-                :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
-                :bind ("C-c a" . helm-ag))
-          
-              (use-package helm-descbinds)
-          
-              (helm-mode t)
-              (helm-adaptative-mode t)
-          
-              (use-package helm-projectile
-                :bind ("C-c h" . helm-projectile))
-          
-              (add-hook 'eshell-mode-hook
-                        #'(lambda ()
-                            (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
-          
-            :bind ( ("C-x r l" . helm-bookmarks)
-                    ("C-x C-m" . execute-extended-command)
-                    ("C-h b"   . helm-descbinds)
-                    ("C-c o"   . helm-occur))
-          
-            :diminish helm-mode)
+     (use-package helm
+       :init (progn
+               (setq helm-ff-transformer-show-only-basename nil
+                     helm-adaptive-history-file             ers-helm-adaptive-history-file
+                     helm-boring-file-regexp-list           '("\\.git$" "\\.svn$")
+                     helm-yank-symbol-first                 t
+                     helm-input-idle-delay                  0.1
+                     helm-idle-delay                        0.1)
+     
+               (use-package helm-config)
+     
+               (use-package helm-ag
+                 :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
+                 :bind ("C-c a" . helm-ag))
+     
+               (use-package helm-descbinds)
+     
+               (helm-mode t)
+               (helm-adaptative-mode t)
+     
+               (use-package helm-projectile
+                 :bind ("C-c h" . helm-projectile))
+     
+               (add-hook 'eshell-mode-hook
+                         #'(lambda ()
+                             (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
+     
+       :bind (("C-x r l" . helm-bookmarks)
+              ("C-x C-m" . execute-extended-command)
+              ("C-h b"   . helm-descbinds)
+              ("C-x C-b" . helm-buffers-list)
+              ("C-c o"   . helm-occur))
+     
+       :diminish helm-mode)
    #+end_src
    
 * UI configuration
