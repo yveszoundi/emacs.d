@@ -337,19 +337,18 @@
   
   #+begin_src emacs-lisp
     (defun ers/close-other-buffer ()
-      "Close other buffer."
+      "Close other buffer window."
       (interactive)
-      
       (when (window-parent)
         (other-window -1)
         (bury-buffer)
         (other-window -1)))
     
     (defun ers/eval-and-replace (value)
-        "Evaluate the sexp at point and replace it with its value"
-          (interactive (list (eval-last-sexp nil)))
-            (kill-sexp -1)
-              (insert (format "%S" value)))
+      "Evaluate the sexp at point and replace it with its value"
+      (interactive (list (eval-last-sexp nil)))
+      (kill-sexp -1)
+      (insert (format "%S" value)))
     
     (defun ers/get-string-from-file (filePath)
       "Return filePath's file content."
@@ -360,7 +359,6 @@
     (defun ers/comment-or-uncomment-line-or-region ()
       "Comment or uncomment the current line or region."
       (interactive)
-    
       (if (region-active-p)
           (comment-or-uncomment-region (region-beginning) (region-end))
         (comment-or-uncomment-region (line-beginning-position) (line-end-position))))
@@ -368,7 +366,6 @@
     (defun ers/copy-symbol-at-point ()
       "Copy the symbol at point."
       (interactive)
-    
       (let ((b (bounds-of-thing-at-point 'symbol)))
         (when b
           (save-excursion
@@ -389,7 +386,6 @@
       (defun osx-pbcopy ()
         "copy the contents of the region into the os x clipboard."
         (interactive)
-        ;;  (if (region-exists-p)
         (if (or (and (boundp 'mark-active) mark-active)
                 (and (fboundp 'region-exists-p) (region-exists-p)))
             (call-process-region
@@ -841,8 +837,7 @@
     (use-package browse-kill-ring
       :ensure t
       :defer t
-      :config
-      (browse-kill-ring-default-keybindings))
+      :config (browse-kill-ring-default-keybindings))
     
     (use-package anzu
       :config (global-anzu-mode t)
@@ -937,8 +932,7 @@
     
     (use-package rainbow-delimiters
       :defer t
-      :config (progn
-                (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
+      :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
     
     (let ((ers-keybindings `((,(kbd "C-c <left>")  . windmove-left)
                              (,(kbd "C-c <right>") . windmove-right)
