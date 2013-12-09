@@ -336,6 +336,15 @@
 * Utility functions
   
   #+begin_src emacs-lisp
+    (defun ers/close-other-buffer ()
+      "Close other buffer."
+      (interactive)
+      
+      (when (window-parent)
+        (other-window -1)
+        (bury-buffer)
+        (other-window -1)))
+    
     (defun ers/eval-and-replace (value)
         "Evaluate the sexp at point and replace it with its value"
           (interactive (list (eval-last-sexp nil)))
@@ -935,12 +944,13 @@
                              (,(kbd "C-c <right>") . windmove-right)
                              (,(kbd "C-c <up>")    . windmove-up)
                              (,(kbd "C-c <down>")  . windmove-down)
-                             (,(kbd "C-c r")       . revert-buffer)
-                             (,(kbd "C-c g")       . goto-line)                             
+                             (,(kbd "C-c g")       . goto-line)
                              (,(kbd "C-o")         . open-next-line)
-                             (,(kbd "C-c C-e")     . ers/eval-and-replace)
                              (,(kbd "M-o")         . open-previous-line)
+                             (,(kbd "C-x 4 k")     . ers/close-other-buffer)
+                             (,(kbd "C-c C-e")     . ers/eval-and-replace)
                              (,(kbd "C-x y")       . ers/copy-symbol-at-point)
+                             (,(kbd "C-c r")       . revert-buffer)
                              (,(kbd "C-x \\")      . ers/comment-or-uncomment-line-or-region))))
       (dolist (ers-keybinding ers-keybindings)
         (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
