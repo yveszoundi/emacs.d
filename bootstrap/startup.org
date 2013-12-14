@@ -27,11 +27,6 @@
            (setq ers-emacs-sub-folder (file-name-as-directory (concat ers-emacs-sub-folder p))))
          ers-emacs-sub-folder))
      
-     (message "emacs-rimero-setup directory is %s" ers-emacs-dir)
-     
-     (defun ers/emacs-file (sub-dir-list filename)
-       (expand-file-name (concat (ers/emacs-sub-dir sub-dir-list) filename)))
-     
      (defvar ers-user-file (concat user-emacs-directory ers-user-filename))
      
      (mapc #'(lambda(p) (add-to-list 'load-path p))
@@ -323,7 +318,7 @@
       bookmark-default-file          ers-bookmarks-file
       url-cookie-file                ers-url-cookie-file
       auto-save-list-file-prefix     ers-auto-save-folder
-      auto-save-file-name-transforms `((".*" ,ers-auto-save-folder t))
+      ;;auto-save-file-name-transforms `((".*" ,ers-auto-save-folder t))
       tramp-auto-save-directory      ers-auto-save-folder)
   #+end_src
   
@@ -770,20 +765,18 @@
 ** Blogging
    
    #+begin_src emacs-lisp
-  (use-package org2blog-autoloads
-    :config
-    (progn
-      (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
-            personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
-            org2blog/wp-blog-alist `((,corporate-blog-name
-                                      :url ,corporate-blog-url
-                                      :username (netrc-get corporate-blog "login")
-                                      :password (netrc-get corporate-blog "password"))
-                                     (,personal-blog-name
-                                      :url ,personal-blog-url
-                                      :username (netrc-get personal-blog "login")
-                                      :password (netrc-get personal-blog "password"))))))
-
+     (use-package org2blog
+       :config (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
+                     personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
+                     org2blog/wp-blog-alist `((,corporate-blog-name
+                                               :url ,corporate-blog-url
+                                               :username (netrc-get corporate-blog "login")
+                                               :password (netrc-get corporate-blog "password"))
+                                              (,personal-blog-name
+                                               :url ,personal-blog-url
+                                               :username (netrc-get personal-blog "login")
+                                               :password (netrc-get personal-blog "password")))))
+     
    #+end_src
    
 * Various utilities
@@ -816,7 +809,7 @@
     
     (defun open-next-line (arg)
       "Move to the next line and then opens a line.
-                        See also `newline-and-indent'."
+                            See also `newline-and-indent'."
       (interactive "p")
       (end-of-line)
       (open-line arg)
@@ -824,7 +817,7 @@
     
     (defun open-previous-line (arg)
       "Open a new line before the current one.
-                         See also `newline-and-indent'."
+                             See also `newline-and-indent'."
       (interactive "p")
       (beginning-of-line)
       (open-line arg))
@@ -1104,5 +1097,7 @@
   #+begin_src emacs-lisp
     (when (file-exists-p ers-user-file)
       (load-file ers-user-file))
+    
+    (message "emacs-rimero-setup done loading.")
   #+end_src
 
