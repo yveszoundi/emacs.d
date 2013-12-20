@@ -34,6 +34,7 @@
      
      ;; packages
      (require 'package)
+     (defalias 'plp 'package-list-packages)
      
      (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
        (dolist (elt ers-package-archives)
@@ -408,75 +409,71 @@
 * Eshell configuration
   
   #+begin_src emacs-lisp
-(setq eshell-directory-name ers-eshell-dir)
-
-;; Set environment variables
-(dolist (p ers-env-variables)
-  (setenv (car p) (cdr p)))
-
-(when (eq system-type 'darwin)
-  (use-package exec-path-from-shell
-    :init
-    (progn
-      ;; copy SHELL correctly
-      (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL"))
-      ;; copy shell PATH across to exec-path
-      (exec-path-from-shell-initialize))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; EShell settings
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'eshell)
-
-(require 'vc-git)
-(defun get-git-branch-name (path)
-  (let ((git-directory (concat path "/.git")))
-    (if (file-exists-p git-directory)
-        (concat " (" (vc-git-mode-line-string git-directory) ") ")
-      "")))
-
-(defun get-full-time()
-  "Full date and time"
-  (format-time-string "%a %d.%m.%y %H:%M:%S" (current-time)))
-
-(setq eshell-prompt-function (lambda nil
-                               (concat
-                                "\n"
-                                (concat "[" (eshell/pwd) "] - " (get-full-time))
-                                "\n"
-                                (user-login-name)
-                                "@"
-                                (system-name)
-                                (get-git-branch-name (eshell/pwd))
-                                " $ " )))
-
-(setq eshell-highlight-prompt nil
-      eshell-history-size 8000
-      eshell-path-env (getenv "PATH")
-      eshell-cmpl-cycle-completions nil
-      eshell-prompt-regexp "^[^#$]*[#$] ")
-
-(if (boundp 'eshell-save-history-on-exit)
-    (setq eshell-save-history-on-exit t)) ; Don't ask, just save
-
-(if (boundp 'eshell-ask-to-save-history)
-    (setq eshell-ask-to-save-history 'always)) ; For older(?) version
-
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-(defun up (&optional level)
-  "Change directory from one up to a specified number of folder levels"
-  (if level
-      (let (cdLevel)
-        (setq cdLevel level)
-        (let (path-string)
-          (setq path-string "")
-          (while (> cdLevel 0)
-            (setq cdLevel (- cdLevel 1))
-            (setq path-string (concat "../" path-string)))
-          (cd path-string)))
-    (cd "../")))
+    (setq eshell-directory-name ers-eshell-dir)
+    
+    ;; Set environment variables
+    (dolist (p ers-env-variables)
+      (setenv (car p) (cdr p)))
+    
+    (when (eq system-type 'darwin)
+      (use-package exec-path-from-shell
+        :init (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL"))
+        :config (exec-path-from-shell-initialize)))
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; EShell settings
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (require 'eshell)
+    
+    (require 'vc-git)
+    (defun get-git-branch-name (path)
+      (let ((git-directory (concat path "/.git")))
+        (if (file-exists-p git-directory)
+            (concat " (" (vc-git-mode-line-string git-directory) ") ")
+          "")))
+    
+    (defun get-full-time()
+      "Full date and time"
+      (format-time-string "%a %d.%m.%y %H:%M:%S" (current-time)))
+    
+    (setq eshell-prompt-function (lambda nil
+                                   (concat
+                                    "\n"
+                                    (concat "[" (eshell/pwd) "] - " (get-full-time))
+                                    "\n"
+                                    (user-login-name)
+                                    "@"
+                                    (system-name)
+                                    (get-git-branch-name (eshell/pwd))
+                                    " $ " )))
+    
+    (setq eshell-highlight-prompt       nil
+          eshell-history-size           8000
+          eshell-path-env               (getenv "PATH")
+          eshell-cmpl-cycle-completions nil
+          eshell-prompt-regexp          "^[^#$]*[#$] ")
+    
+    (if (boundp 'eshell-save-history-on-exit)
+        (setq eshell-save-history-on-exit t)) ; Don't ask, just save
+    
+    (if (boundp 'eshell-ask-to-save-history)
+        (setq eshell-ask-to-save-history 'always)) ; For older(?) version
+    
+    (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+    (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+    
+    (defun up (&optional level)
+      "Change directory from one up to a specified number of folder levels"
+      (if level
+          (let (cdLevel)
+            (setq cdLevel level)
+            (let (path-string)
+              (setq path-string "")
+              (while (> cdLevel 0)
+                (setq cdLevel (- cdLevel 1))
+                (setq path-string (concat "../" path-string)))
+              (cd path-string)))
+        (cd "../")))
   #+end_src
   
 * Indentation settings
@@ -630,12 +627,13 @@
 ** Version control
    
    #+begin_src emacs-lisp
-     (use-package vc-svn)
-     (autoload 'svn-status "dsvn" "Run `svn status'." t)
-     (autoload 'svn-update "dsvn" "Run `svn update'." t)
+     (use-package vc-svn
+       :init (progn
+               (autoload 'svn-status "dsvn" "Run `svn status'." t)
+               (autoload 'svn-update "dsvn" "Run `svn update'." t)))
      
      (use-package magit
-       :bind ("C-x g" . magit-status)
+       :bind    ("C-x g" . magit-status)
        :config  (defadvice magit-status (after magit-status-advice (dir) activate)
                   (when (window-parent)
                     (delete-other-windows))))
@@ -739,27 +737,27 @@
 ** IRC configuration
    
    #+begin_src emacs-lisp
-  (use-package erc
-    :config
-    (progn
-      (setq erc-kill-buffer-on-part t
-            erc-prompt-for-nickserv-password nil
-            erc-autojoin-channels-alist ers-erc-channel-list
-            erc-kill-queries-on-quit t
-            erc-kill-server-buffer-on-quit t)
-
-      ;; auto-fill buffer window
-      (add-hook 'window-configuration-change-hook
-                '(lambda () (setq erc-fill-column (- (window-width) 2)))))
-
-    :init
-    (defun ers/start-erc ()
-      (interactive)
-      (let ((erc-config (netrc-machine (netrc-parse ers-secrets-file) "erc-config" t)))
-        (erc :server ers-erc-server
-             :nick (netrc-get erc-config "login")
-             :password (netrc-get erc-config "password")))))
-
+     (use-package erc
+       :config
+       (progn
+         (setq erc-kill-buffer-on-part          t
+               erc-prompt-for-nickserv-password nil
+               erc-autojoin-channels-alist      ers-erc-channel-list
+               erc-kill-queries-on-quit         t
+               erc-kill-server-buffer-on-quit   t)
+     
+         ;; auto-fill buffer window
+         (add-hook 'window-configuration-change-hook
+                   '(lambda () (setq erc-fill-column (- (window-width) 2)))))
+     
+       :init
+       (defun ers/start-erc ()
+         (interactive)
+         (let ((erc-config (netrc-machine (netrc-parse ers-secrets-file) "erc-config" t)))
+           (erc :server   ers-erc-server
+                :nick     (netrc-get erc-config "login")
+                :password (netrc-get erc-config "password")))))
+     
    #+end_src
    
 ** Blogging
@@ -785,7 +783,7 @@
     (defun ers/insert-time (&optional date-pattern)
       "Inserts the time given an optional pattern."
       (interactive "P")
-      (let ( (current-date-pattern (or date-pattern "%a %d.%m.%y %H:%M:%S")))
+      (let ((current-date-pattern (or date-pattern "%a %d.%m.%y %H:%M:%S")))
         (insert (ers/get-date current-date-pattern))))
     
     (defun ers/get-date (date-pattern)
@@ -851,10 +849,10 @@
       :diminish ace-jump-mode)
     
     (use-package uniquify
-      :config (setq uniquify-separator "/"
-                    uniquify-buffer-name-style 'post-forward
+      :config (setq uniquify-separator           "/"
+                    uniquify-buffer-name-style   'post-forward
                     uniquify-after-kill-buffer-p t
-                    uniquify-ignore-buffers-re "^\\*"))
+                    uniquify-ignore-buffers-re   "^\\*"))
     
     (use-package saveplace
       :init (progn (setq-default save-place t)
@@ -865,7 +863,7 @@
     
     (use-package recentf
       :init (progn (setq recentf-max-menu-items 25
-                         recentf-exclude '("/tmp" "/ssh:" "\\ido.last" "recentf")
+                         recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
                          recentf-save-file ers-recentf-file)
                    (recentf-mode +1))
     
@@ -1002,16 +1000,16 @@
                      helm-input-idle-delay                  0.1
                      helm-idle-delay                        0.1)
      
-               (use-package helm-config)
+               (use-package helm-config
+                 :init (progn
+                         (helm-mode t)
+                         (helm-adaptative-mode t)))
      
                (use-package helm-ag
                  :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
                  :bind ("C-c a" . helm-ag))
      
                (use-package helm-descbinds)
-     
-               (helm-mode t)
-               (helm-adaptative-mode t)
      
                (use-package helm-projectile
                  :bind ("C-c h" . helm-projectile))
