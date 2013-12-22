@@ -998,6 +998,7 @@
                      helm-adaptive-history-file             ers-helm-adaptive-history-file
                      helm-boring-file-regexp-list           '("\\.git$" "\\.svn$")
                      helm-yank-symbol-first                 t
+                     helm-ff-auto-update-initial-value      t
                      helm-input-idle-delay                  0.1
                      helm-idle-delay                        0.1)
      
@@ -1019,10 +1020,14 @@
      
                (add-hook 'eshell-mode-hook
                          #'(lambda ()
-                             (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history))))
+                             (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
+     
+               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))
+     
      
        :bind (("C-x r l" . helm-bookmarks)
-              ("C-x C-m" . execute-extended-command)
+              ("C-x C-m" . helm-M-x)
+              ("C-x C-f" . helm-find-files)
               ("C-x C-b" . helm-buffers-list)
               ("C-c o"   . helm-occur))
      
