@@ -463,17 +463,13 @@
     (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
     
     (defun up (&optional level)
-      "Change directory from one up to a specified number of folder levels"
+      "Change directory from one up to a level of folders."
       (if level
-          (let (cdLevel)
-            (setq cdLevel level)
-            (let (path-string)
-              (setq path-string "")
-              (while (> cdLevel 0)
-                (setq cdLevel (- cdLevel 1))
-                (setq path-string (concat "../" path-string)))
-              (cd path-string)))
-        (cd "../")))
+          (let ((path-string ""))
+            (dotimes (i level)
+              (setq path-string (concat "../" path-string)))
+            (cd path-string))
+        (cd "..")))
   #+end_src
   
 * Indentation settings
