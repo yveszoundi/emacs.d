@@ -36,7 +36,7 @@
  ;; If there is more than one, they won't work right.
  )
 
-(require 'cl-lib)
+(require 'cl)
 (require 'org)
 (require 'ob-tangle)
 

@@ -37,8 +37,8 @@
      (defalias 'plp 'package-list-packages)
      
      (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
-       (dolist (elt ers-package-archives)
-         (add-to-list 'package-archives elt)))
+       (loop for elt in ers-package-archives
+             do (push elt package-archives)))
      
      (package-initialize)
      
@@ -266,7 +266,7 @@
                                 markdown-mode groovy-mode
                                 org2blog xml-rpc w3m
                                 magit dsvn
-                                base16-theme)
+                                zenburn-theme gruber-darker-theme)
        "A list of packages to ensure are installed."
        :type 'symbol
        :group 'emacs-rimero-setup)
@@ -308,6 +308,22 @@
      (ers/mkdir-p ers-org-directory)
    #+end_src
    
+
+* Sane defaults
+
+  #+begin_src emacs-lisp
+    ;; replace the active region just by typing text
+    (delete-selection-mode t)
+    
+    ;; Enable disabled commands
+    (put 'downcase-region  'disabled nil)
+    (put 'upcase-region    'disabled nil)
+    (put 'erase-buffer     'disabled nil)
+    
+    ;; Transparently open compressed files
+    (auto-compression-mode t)
+  #+end_src
+
 * Backups
   
   #+begin_src emacs-lisp
@@ -860,7 +876,7 @@
       :bind ("C-c l" . er/expand-region))
     
     (use-package recentf
-      :init (progn (setq recentf-max-menu-items 25
+      :init (progn (setq recentf-max-menu-items 30
                          recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
                          recentf-save-file ers-recentf-file)
                    (recentf-mode +1))
