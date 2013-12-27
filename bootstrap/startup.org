@@ -37,7 +37,7 @@
      (defalias 'plp 'package-list-packages)
      
      (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
-       (loop for elt in ers-package-archives
+       (cl-loop for elt in ers-package-archives
              do (push elt package-archives)))
      
      (package-initialize)
@@ -482,7 +482,7 @@
       "Change directory from one up to a level of folders."
       (if level
           (let ((path-string ""))
-            (dotimes (i level)
+            (cl-dotimes (i level)
               (setq path-string (concat "../" path-string)))
             (cd path-string))
         (cd "..")))
@@ -752,25 +752,24 @@
    
    #+begin_src emacs-lisp
      (use-package erc
-       :config
-       (progn
-         (setq erc-kill-buffer-on-part          t
-               erc-prompt-for-nickserv-password nil
-               erc-autojoin-channels-alist      ers-erc-channel-list
-               erc-kill-queries-on-quit         t
-               erc-kill-server-buffer-on-quit   t)
+       :config (progn
+                 (setq erc-kill-buffer-on-part          t
+                       erc-prompt-for-nickserv-password nil
+                       erc-autojoin-channels-alist      ers-erc-channel-list
+                       erc-kill-queries-on-quit         t
+                       erc-hide-list                    '("JOIN" "PART" "QUIT" "NICK")
+                       erc-kill-server-buffer-on-quit   t)
      
-         ;; auto-fill buffer window
-         (add-hook 'window-configuration-change-hook
-                   '(lambda () (setq erc-fill-column (- (window-width) 2)))))
+                 ;; auto-fill buffer window
+                 (add-hook 'window-configuration-change-hook
+                           '(lambda () (setq erc-fill-column (- (window-width) 2)))))
      
-       :init
-       (defun ers/start-erc ()
-         (interactive)
-         (let ((erc-config (netrc-machine (netrc-parse ers-secrets-file) "erc-config" t)))
-           (erc :server   ers-erc-server
-                :nick     (netrc-get erc-config "login")
-                :password (netrc-get erc-config "password")))))
+       :init (defun ers/start-erc ()
+               (interactive)
+               (let ((erc-config (netrc-machine (netrc-parse ers-secrets-file) "erc-config" t)))
+                 (erc :server   ers-erc-server
+                      :nick     (netrc-get erc-config "login")
+                      :password (netrc-get erc-config "password")))))
      
    #+end_src
    
@@ -876,7 +875,7 @@
       :bind ("C-c l" . er/expand-region))
     
     (use-package recentf
-      :init (progn (setq recentf-max-menu-items 30
+      :init (progn (setq recentf-max-menu-items 50
                          recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
                          recentf-save-file ers-recentf-file)
                    (recentf-mode +1))
