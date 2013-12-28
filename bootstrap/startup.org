@@ -413,13 +413,16 @@
 * Encoding settings
   
   #+begin_src emacs-lisp
-  (setq locale-coding-system 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (setq-default buffer-file-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8)
-  (set-language-environment "UTF-8")
+    (set-language-environment   'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+    (setq locale-coding-system  'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    
+    (unless (eq system-type 'windows-nt)
+      (set-selection-coding-system 'utf-8))
+    
+    (prefer-coding-system 'utf-8)    
   #+end_src
   
 * Eshell configuration
@@ -659,17 +662,21 @@
     :init (setq projectile-cache-file          ers-projectile-cache-file
                 projectile-known-projects-file ers-projectile-bookmarks-file
                 projectile-indexing-method     'native
+                projectile-completion-system   'helm-comp-read
                 projectile-enable-caching      t)
     :diminish projectile-mode)
    #+end_src
-   
-** Groovy mode
+  
+** Groovy and Grails 
+
+*** Groovy mode
    #+begin_src emacs-lisp
-  (use-package groovy-mode
-    :mode ("\\.\\(groovy\\|gradle\\)$" . groovy-mode))
+     (use-package groovy-mode
+       :defer t
+       :mode ("\\.\\(groovy\\|gradle\\)$" . groovy-mode))
    #+end_src
    
-** Grails settings
+*** Grails settings
    
    #+begin_src emacs-lisp
   (use-package grails-projectile-mode
@@ -680,9 +687,10 @@
 ** XML mode
    
    #+begin_src emacs-lisp
-  (use-package nxml-mode
-    :config (setq nxml-slash-auto-complete-flag t)
-    :mode ("\\.\\(pom\\|xsd\\|gsp\\)$" . nxml-mode))
+     (use-package nxml-mode
+       :defer t
+       :config (setq nxml-slash-auto-complete-flag t)
+       :mode ("\\.\\(pom\\|xsd\\|gsp\\)$" . nxml-mode))
    #+end_src
    
 ** Markdown keybindings
@@ -722,7 +730,7 @@
 * Spellchecking configuration
   
   #+begin_src emacs-lisp
-(setq ispell-program-name ers-spelling-aspell-path)
+    (setq ispell-program-name ers-spelling-aspell-path)
   #+end_src
   
 * Networking
@@ -877,7 +885,7 @@
     (use-package recentf
       :init (progn (setq recentf-max-menu-items 50
                          recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
-                         recentf-save-file ers-recentf-file)
+                         recentf-save-file      ers-recentf-file)
                    (recentf-mode +1))
     
       :bind ("C-x C-r" . helm-recentf))
@@ -914,8 +922,8 @@
     
                 (bind-key "."   'dired-up-directory dired-mode-map)
                 (bind-key "@"   'ers/copy-filename-at-point dired-mode-map)
-                (bind-key "C-a" 'ers/dired-go-to-first-item dired-mode-map)
-                (bind-key "C-e" 'ers/dired-go-to-last-item  dired-mode-map)))
+                (bind-key "M-P" 'ers/dired-go-to-first-item dired-mode-map)
+                (bind-key "M-N" 'ers/dired-go-to-last-item  dired-mode-map)))
     
     (use-package dired-details
       :ensure dired-details
@@ -1007,17 +1015,16 @@
      (use-package helm
        :config (setq helm-ff-transformer-show-only-basename nil
                      helm-adaptive-history-file             ers-helm-adaptive-history-file
-                     helm-boring-file-regexp-list           '("\\.git$" "\\.svn$")
+                     helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
                      helm-yank-symbol-first                 t
                      helm-ff-auto-update-initial-value      t
                      helm-input-idle-delay                  0.1
                      helm-idle-delay                        0.1)
      
        :init (progn
-               (use-package helm-config
-                 :init (progn
-                         (helm-mode t)
-                         (helm-adaptative-mode t)))
+               (require 'helm-config)
+               (helm-mode t)
+               (helm-adaptative-mode t)
      
                (use-package helm-ag
                  :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
