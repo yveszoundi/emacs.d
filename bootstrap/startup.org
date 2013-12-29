@@ -315,6 +315,9 @@
     ;; replace the active region just by typing text
     (delete-selection-mode t)
     
+    (bind-key* "C-s" 'isearch-forward-regexp)
+    (bind-key* "C-r" 'isearch-backward-regexp)
+    
     ;; Enable disabled commands
     (put 'downcase-region  'disabled nil)
     (put 'upcase-region    'disabled nil)
