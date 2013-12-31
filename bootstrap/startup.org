@@ -7,6 +7,8 @@
 
 * Startup
 ** Pre-startup
+   Setup global functions and constants.
+
    #+begin_src emacs-lisp
      (defconst ers-bootstrap-dir (file-name-directory load-file-name)
        "Emacs Rimero Setup bootstrap folder.")
@@ -47,6 +49,7 @@
    #+end_src
    
 ** Global variables
+   Setup customization variables.
    
    #+begin_src emacs-lisp
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -271,6 +274,9 @@
    #+end_src
    
 ** Post-startup
+ 
+   Define package utility methods and install default packages.
+
    #+begin_src emacs-lisp
      (defun ers/package-install(package-name)
        "Install a package."
@@ -295,6 +301,8 @@
 
 * Sane defaults
 
+  Setup some emacs defaults.
+
   #+begin_src emacs-lisp
     ;; replace the active region just by typing text
     (delete-selection-mode t)
@@ -312,7 +320,9 @@
   #+end_src
 
 * Backups
-  
+
+  Setup backups.
+
   #+begin_src emacs-lisp
 (setq backup-directory-alist         `(("." . ,ers-backup-dir))
       delete-old-versions            t
@@ -629,7 +639,9 @@
 * Programming and related
   
 ** Version control
-   
+
+   Setup svn and git.
+
    #+begin_src emacs-lisp
      (use-package vc-svn
        :ensure dsvn
@@ -646,7 +658,8 @@
    #+end_src
    
 ** Project management
-   
+   Use projectile for project management.
+
    #+begin_src emacs-lisp
   (use-package projectile
     :ensure projectile
@@ -659,6 +672,8 @@
    #+end_src
   
 ** Groovy and Grails 
+
+   Settings for Groovy and Grails development.
 
 *** Groovy mode
    #+begin_src emacs-lisp
@@ -680,9 +695,9 @@
    
    #+begin_src emacs-lisp
      (use-package nxml-mode
+       :init (setq nxml-slash-auto-complete-flag t)
        :defer t
-       :config (setq nxml-slash-auto-complete-flag t)
-       :mode ("\\.\\(pom\\|xsd\\|gsp\\)$" . nxml-mode))
+       :mode ("\\.\\(pom\\|xsd\\|xsl\\|xslt\\|gsp\\)$" . nxml-mode))
    #+end_src
    
 ** Markdown keybindings
@@ -1050,7 +1065,6 @@
                          #'(lambda ()
                              (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
      
-               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map)
                (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))
      
      
