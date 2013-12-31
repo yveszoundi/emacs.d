@@ -23,8 +23,8 @@
      
      (defun ers/emacs-sub-dir (path-elements)
        (let ( (ers-emacs-sub-folder ers-emacs-dir))
-         (dolist (p path-elements)
-           (setq ers-emacs-sub-folder (file-name-as-directory (concat ers-emacs-sub-folder p))))
+         (cl-loop for p in path-elements
+                  do (setq ers-emacs-sub-folder (file-name-as-directory (concat ers-emacs-sub-folder p))))
          ers-emacs-sub-folder))
      
      (defvar ers-user-file (concat user-emacs-directory ers-user-filename))
@@ -38,7 +38,7 @@
      
      (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
        (cl-loop for elt in ers-package-archives
-             do (push elt package-archives)))
+                do (push elt package-archives)))
      
      (package-initialize)
      
@@ -253,20 +253,7 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; packages
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     (defcustom ers-packages '(use-package ag
-                                anzu ace-jump-mode
-                                expand-region wrap-region
-                                drag-stuff duplicate-thing
-                                htmlize
-                                projectile dired-details
-                                powerline rainbow-delimiters guide-key
-                                helm helm-ag helm-projectile helm-descbinds
-                                browse-kill-ring undo-tree
-                                auto-complete paredit yasnippet
-                                markdown-mode groovy-mode
-                                org2blog xml-rpc w3m
-                                magit dsvn
-                                zenburn-theme gruber-darker-theme)
+     (defcustom ers-packages '(use-package)
        "A list of packages to ensure are installed."
        :type 'symbol
        :group 'emacs-rimero-setup)
@@ -285,9 +272,6 @@
    
 ** Post-startup
    #+begin_src emacs-lisp
-     (when (eq system-type 'darwin)
-       (add-to-list 'ers-packages 'exec-path-from-shell))
-     
      (defun ers/package-install(package-name)
        "Install a package."
        (unless (package-installed-p package-name)
@@ -437,14 +421,16 @@
     (dolist (p ers-env-variables)
       (setenv (car p) (cdr p)))
     
-    (when (eq system-type 'darwin)
-      (use-package exec-path-from-shell
-        :init (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL"))
-        :config (exec-path-from-shell-initialize)))
+    (use-package exec-path-from-shell
+      :ensure exec-path-from-shell
+      :init (when (eq system-type 'darwin)
+              (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL")))
+      :config (when (eq system-type 'darwin)
+                (exec-path-from-shell-initialize)))
     
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; EShell settings
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (require 'eshell)
     
     (require 'vc-git)
@@ -543,101 +529,101 @@
 * Org mode settings
   
   #+begin_src emacs-lisp
-    (setq org-directory ers-org-directory)
+    (use-package org
+      :ensure htmlize
+      :init (progn
+              (setq org-directory ers-org-directory)
     
-    ;; default settings
-    (setq org-archive-location (concat org-directory ers-org-archive-location-filename)
-          org-agenda-files (directory-files org-directory t "\.org$")
-          org-export-html-postamble nil
-          org-ers-notes-file (concat org-directory ers-org-notes-filename))
+              ;; default settings
+              (setq org-archive-location (concat org-directory ers-org-archive-location-filename)
+                    org-agenda-files (directory-files org-directory t "\.org$")
+                    org-export-html-postamble nil
+                    org-ers-notes-file (concat org-directory ers-org-notes-filename))
     
-    ;; org capture menu
-    (setq org-capture-templates
-          '(("d" "Tasks" entry
-             (file+headline org-ers-notes-file "Tasks")
-             "* TODO %?
+              ;; org capture menu
+              (setq org-capture-templates
+                    '(("d" "Tasks" entry
+                       (file+headline org-ers-notes-file "Tasks")
+                       "* TODO %?
     SCHEDULED: %^t"          :clock-in t :clock-resume t)
     
-            ("e" "Quick task" entry
-             (file+headline org-ers-notes-file "Tasks")
-             "* TODO %^{Task}
+                      ("e" "Quick task" entry
+                       (file+headline org-ers-notes-file "Tasks")
+                       "* TODO %^{Task}
     SCHEDULED: %^t"
     
-             :immediate-finish t)
+                       :immediate-finish t)
     
-            ("f" "Orientation" entry (file org-ers-notes-file)
-             "* ORIENTATION %? :@orientation:
+                      ("f" "Orientation" entry (file org-ers-notes-file)
+                       "* ORIENTATION %? :@orientation:
     SCHEDULED: %^t"  :clock-in t :clock-resume t)
     
-            ("g" "Coding" entry (file org-ers-notes-file)
-             "* CODING%? :@coding:
+                      ("g" "Coding" entry (file org-ers-notes-file)
+                       "* CODING%? :@coding:
     SCHEDULED: %^t"  :clock-in t :clock-resume t)
     
-            ("h" "Help" entry (file org-ers-notes-file)
-             "* HELP %? :@help:
+                      ("h" "Help" entry (file org-ers-notes-file)
+                       "* HELP %? :@help:
     SCHEDULED: %^t"  :clock-in t :clock-resume t)
     
     
-            ("i" "Phone call" entry (file org-ers-notes-file)
-             "* PHONE %? :@phone:
+                      ("i" "Phone call" entry (file org-ers-notes-file)
+                       "* PHONE %? :@phone:
     SCHEDULED: %^t"   :clock-in t :clock-resume t)
     
     
-            ("j" "Mail browsing" entry (file org-ers-notes-file)
-             "* EMAIL Browsing :@email:
+                      ("j" "Mail browsing" entry (file org-ers-notes-file)
+                       "* EMAIL Browsing :@email:
     SCHEDULED: %^t"    :clock-in t :clock-resume t)
     
     
-            ("k" "Mail reply" entry (file org-ers-notes-file)
-             "* EMAIL Reply %? :@email:
+                      ("k" "Mail reply" entry (file org-ers-notes-file)
+                       "* EMAIL Reply %? :@email:
     SCHEDULED: %^t"    :clock-in t :clock-resume t)
     
     
-            ("k" "Team Meetings" entry (file org-ers-notes-file)
-             "* TEAM MEETING :@meeting:
+                      ("k" "Team Meetings" entry (file org-ers-notes-file)
+                       "* TEAM MEETING :@meeting:
     SCHEDULED: %^t"    :clock-in t :clock-resume t)
     
     
-            ("k" "Other meetings" entry (file org-ers-notes-file)
-             "* MEETING %? :@meeting:
+                      ("k" "Other meetings" entry (file org-ers-notes-file)
+                       "* MEETING %? :@meeting:
     SCHEDULED: %^t"   :clock-in t :clock-resume t)
     
     
-            ("l" "Break" entry (file org-ers-notes-file)
-             "* BREAK :@break:
-    SCHEDULED: %^t"    :clock-in t :clock-resume t)
+                      ("l" "Break" entry (file org-ers-notes-file)
+                       "* BREAK :@break:
+    SCHEDULED: %^t"    :clock-in t :clock-resume t)))
     
-            ))
+              ;; todo states
+              (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "|" "WAITING(w)")
+                                        (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
+                                        (sequence "|" "CANCELED(c)")))
     
-    ;; todo states
-    (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "|" "WAITING(w)")
-                              (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
-                              (sequence "|" "CANCELED(c)")))
+              ;; tags
+              (setq org-tag-alist '(("@orientation" . ?a)
+                                    ("@coding" . ?b)
+                                    ("@help" . ?c)
+                                    ("@phone" . ?d)
+                                    ("@documentation" . ?e)
+                                    ("@meeting" . ?f)
+                                    ("@email" . ?g)
+                                    ("@break" . ?h)))
     
-    ;; tags
-    (setq org-tag-alist '(("@orientation" . ?a)
-                          ("@coding" . ?b)
-                          ("@help" . ?c)
-                          ("@phone" . ?d)
-                          ("@documentation" . ?e)
-                          ("@meeting" . ?f)
-                          ("@email" . ?g)
-                          ("@break" . ?h)
-                          ))
-        
-    ;; require htmlize.el
-    (setq org-agenda-exporter-settings'((ps-number-of-columns 2)
-                                        (ps-landscape-mode t)
-                                        (org-agenda-add-entry-text-maxlines 5)
-                                        (htmlize-output-type 'css)))
+              ;; require htmlize.el
+              (setq org-agenda-exporter-settings'((ps-number-of-columns 2)
+                                                  (ps-landscape-mode t)
+                                                  (org-agenda-add-entry-text-maxlines 5)
+                                                  (htmlize-output-type 'css)))))
   #+end_src
   
 * Personal information
   
   #+begin_src emacs-lisp
-(setq user-mail-address ers-pim-mail-address
-      user-full-name ers-pim-full-name
-      message-signature-file "~/.signature")
+    (setq user-mail-address ers-pim-mail-address
+          user-full-name ers-pim-full-name
+          message-signature-file "~/.signature")
   #+end_src
   
 * Programming and related
@@ -646,11 +632,13 @@
    
    #+begin_src emacs-lisp
      (use-package vc-svn
+       :ensure dsvn
        :init (progn
                (autoload 'svn-status "dsvn" "Run `svn status'." t)
                (autoload 'svn-update "dsvn" "Run `svn update'." t)))
      
      (use-package magit
+       :ensure magit
        :bind    ("C-x g" . magit-status)
        :config  (defadvice magit-status (after magit-status-advice (dir) activate)
                   (when (window-parent)
@@ -661,11 +649,11 @@
    
    #+begin_src emacs-lisp
   (use-package projectile
+    :ensure projectile
     :config (projectile-global-mode t)
     :init (setq projectile-cache-file          ers-projectile-cache-file
                 projectile-known-projects-file ers-projectile-bookmarks-file
-                projectile-indexing-method     'native
-                projectile-completion-system   'helm-comp-read
+                projectile-indexing-method     'native                
                 projectile-enable-caching      t)
     :diminish projectile-mode)
    #+end_src
@@ -675,6 +663,7 @@
 *** Groovy mode
    #+begin_src emacs-lisp
      (use-package groovy-mode
+       :ensure groovy-mode
        :defer t
        :mode ("\\.\\(groovy\\|gradle\\)$" . groovy-mode))
    #+end_src
@@ -699,34 +688,33 @@
 ** Markdown keybindings
    
    #+begin_src emacs-lisp
-  (use-package markdown-mode
-    :defer t
-    :mode ("\\.\\(markdown\\|mdown\\|md\\)$" . markdown-mode))
+     (use-package markdown-mode
+       :ensure markdown-mode
+       :defer t
+       :mode ("\\.\\(markdown\\|mdown\\|md\\)$" . markdown-mode))
    #+end_src
    
 * Yasnippets configuration
   
   #+begin_src emacs-lisp
-    (defvar yas-elpa-snippets-folder
-      (car (file-expand-wildcards
-            (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
-    
-    ;; Setup yas-snippet-dirs
-    ;; - elpa default snippets from yasnippet package
-    ;; - User snippets in ~/.emacs.d/snippets
-    ;; - Shipped snippets folder in the emacs-rimero-setup distro.
-    (let (( yas-folder-candidates `(,yas-elpa-snippets-folder
-                                    ,(concat user-emacs-directory "snippets")
-                                    ,(concat ers-emacs-dir "snippets"))))
-      (dolist (p yas-folder-candidates)
-        (unless (file-exists-p p)
-          (delq p yas-folder-candidates)))
-    
-      (setq yas-snippet-dirs yas-folder-candidates))
-    
     (use-package yasnippet
+      :ensure yasnippet
       :init (setq yas-verbosity 1)
-      :config (yas-global-mode t)
+      :config (progn
+                (yas-global-mode t)
+    
+                (let* ((yas-elpa-snippets-folder (car (file-expand-wildcards
+                                                       (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
+                       (yas-folder-candidates  `(,yas-elpa-snippets-folder
+                                                 ,(concat user-emacs-directory "snippets")
+                                                 ,(concat ers-emacs-dir "snippets"))))
+                  (cl-loop for p in yas-folder-candidates
+                           do (progn
+                                (unless (file-exists-p p)
+                                  (cl-delete p yas-folder-candidates))))
+    
+                  (setq yas-snippet-dirs yas-folder-candidates))
+                (yas-reload-all))
       :diminish yas-minor-mode)
   #+end_src
   
@@ -747,6 +735,7 @@
      
      ;; w3m
      (use-package w3m
+       :ensure w3m
        :init (setq w3m-coding-system             'utf-8
                    w3m-file-coding-system        'utf-8
                    w3m-file-name-coding-system   'utf-8
@@ -788,6 +777,7 @@
    
    #+begin_src emacs-lisp
      (use-package org2blog
+       :ensure org2blog
        :config (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
                      personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
                      org2blog/wp-blog-alist `((,corporate-blog-name
@@ -845,30 +835,35 @@
       (open-line arg))
     
     (use-package guide-key
+      :ensure guide-key
       :init (setq guide-key/guide-key-sequence '("C-c z"))
       :config (guide-key-mode t)
       :diminish guide-key-mode)
     
     (use-package browse-kill-ring
-      :ensure t
+      :ensure browse-kill-ring
       :defer t
       :config (browse-kill-ring-default-keybindings))
     
     (use-package anzu
+      :ensure anzu
       :config (global-anzu-mode t)
       :diminish anzu-mode)
     
     (use-package wrap-region
+      :ensure wrap-region
       :config (wrap-region-global-mode t)
       :diminish wrap-region-mode)
     
     (use-package undo-tree
+      :ensure undo-tree
       :config (global-undo-tree-mode t)
       :init (setq undo-tree-visualizer-relative-timestamps  t
                   undo-tree-visualizer-timestamps           t)
       :diminish undo-tree-mode)
     
     (use-package ace-jump-mode
+      :ensure ace-jump-mode
       :bind ("C-c SPC" . ace-jump-mode)
       :diminish ace-jump-mode)
     
@@ -883,10 +878,11 @@
                    (setq save-place-file ers-place-file)))
     
     (use-package expand-region
+      :ensure expand-region
       :bind ("C-c l" . er/expand-region))
     
     (use-package recentf
-      :init (progn (setq recentf-max-menu-items 50
+      :init (progn (setq recentf-max-menu-items 100
                          recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
                          recentf-save-file      ers-recentf-file)
                    (recentf-mode +1))
@@ -934,6 +930,7 @@
       :config (dired-details-install))
     
     (use-package drag-stuff
+      :ensure drag-stuff
       :config (if window-system
                   (progn
                     (global-set-key (kbd "<M-up>")     'drag-stuff-up)
@@ -943,9 +940,11 @@
                   (global-set-key (kbd "<ESC> <down>") 'drag-stuff-down))))
     
     (use-package duplicate-thing
+      :ensure duplicate-thing
       :bind ("C-c d" . duplicate-thing))
     
     (use-package rainbow-delimiters
+      :ensure rainbow-delimiters
       :defer t
       :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
     
@@ -990,6 +989,7 @@
    
    #+begin_src emacs-lisp
      (use-package auto-complete-config
+       :ensure auto-complete
        :init (set-default 'ac-sources
                           '(ac-source-abbrev
                             ac-source-dictionary
@@ -1016,6 +1016,8 @@
    
    #+begin_src emacs-lisp
      (use-package helm
+       :ensure helm
+     
        :config (setq helm-ff-transformer-show-only-basename nil
                      helm-adaptive-history-file             ers-helm-adaptive-history-file
                      helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
@@ -1030,19 +1032,25 @@
                (helm-adaptative-mode t)
      
                (use-package helm-ag
-                 :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
+                 :ensure helm-ag
+                 :init (progn
+                         (bind-key "C-c p A" 'helm-ag projectile-mode-map)
+                         (defalias 'ag 'helm-ag))
                  :bind ("C-c a" . helm-ag))
      
                (use-package helm-descbinds
+                 :ensure helm-descbinds
                  :bind ("C-h b"   . helm-descbinds))
      
                (use-package helm-projectile
+                 :ensure helm-projectile
                  :bind ("C-c h" . helm-projectile))
      
                (add-hook 'eshell-mode-hook
                          #'(lambda ()
                              (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
      
+               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map)
                (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))
      
      
@@ -1082,11 +1090,12 @@
 ** Modeline
    
    #+begin_src emacs-lisp
-  (when (boundp 'ers-powerline-enabled)
-    (when ers-powerline-enabled
-      (use-package powerline
-        :init (setq powerline-arrow-shape 'curve)
-        :config (powerline-default-theme))))
+     (when (boundp 'ers-powerline-enabled)
+       (when ers-powerline-enabled
+         (use-package powerline
+           :ensure powerline
+           :init (setq powerline-arrow-shape 'curve)
+           :config (powerline-default-theme))))
    #+end_src
    
 ** Fonts
