@@ -496,23 +496,17 @@
     (setq-default indent-tabs-mode nil)
     
     (defun ers/indentation-apply-style ()
-      (setq-default c-basic-offset            ers-tab-size)
-      (setq-default tab-width                 ers-tab-size)
-      (setq-default js2-basic-offset          ers-tab-size)
-      (setq-default js-indent-level           ers-tab-size)
-      (setq-default py-indent-offset          ers-tab-size)
-      (setq-default sgml-basic-offset         ers-tab-size)
-      (setq-default nxml-child-indent         ers-tab-size)
-      (setq-default nxml-outline-child-indent ers-tab-size)
-    
-      (setq c-basic-offset            ers-tab-size)
-      (setq tab-width                 ers-tab-size)
-      (setq js2-basic-offset          ers-tab-size)
-      (setq js-indent-level           ers-tab-size)
-      (setq py-indent-offset          ers-tab-size)
-      (setq sgml-basic-offset         ers-tab-size)
-      (setq nxml-child-indent         ers-tab-size)
-      (setq nxml-outline-child-indent ers-tab-size))
+      (cl-loop for elt in '("c-basic-offset"
+                            "tab-width"
+                            "js2-basic-offset"
+                            "js-indent-level"
+                            "py-indent-offset"
+                            "sgml-basic-offset"
+                            "nxml-child-indent"
+                            "nxml-outline-child-indent")
+               do (progn
+                    (eval `(setq-default ,(intern elt) ers-tab-size))
+                    (eval `(setq ,(intern elt) ers-tab-size)))))
     
     (defun ers/indentation-reset-tab-size (new-tab-size)
       (interactive "nEnter new tab size:\n")
@@ -849,12 +843,6 @@
       (beginning-of-line)
       (open-line arg))
     
-    (use-package guide-key
-      :ensure guide-key
-      :init (setq guide-key/guide-key-sequence '("C-c z"))
-      :config (guide-key-mode t)
-      :diminish guide-key-mode)
-    
     (use-package browse-kill-ring
       :ensure browse-kill-ring
       :defer t
@@ -967,7 +955,7 @@
                              (,(kbd "C-c <right>") . windmove-right)
                              (,(kbd "C-c <up>")    . windmove-up)
                              (,(kbd "C-c <down>")  . windmove-down)
-                             (,(kbd "C-c C-g")     . goto-line)
+                             (,(kbd "C-c g")       . goto-line)
                              (,(kbd "C-o")         . open-next-line)
                              (,(kbd "M-o")         . open-previous-line)
                              (,(kbd "C-x 4 k")     . ers/close-other-buffer)
