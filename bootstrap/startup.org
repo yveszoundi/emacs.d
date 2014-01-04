@@ -278,17 +278,17 @@
    Define package utility methods and install default packages.
 
    #+begin_src emacs-lisp
-     (defun ers/package-install(package-name)
+     (defun ers/package-install (pkg)
        "Install a package."
-       (unless (package-installed-p package-name)
-         (package-install package-name)))
+       (unless (package-installed-p pkg)
+         (package-install pkg)))
      
-     (defun ers/packages-install (list-of-packages)
+     (defun ers/packages-install (pkgs)
        "Install a list of packages."
-       (if (listp list-of-packages)
-           (dolist (p list-of-packages)
-             (ers/package-install p))
-       (message "The list of packages must be a list!")))
+       (if (sequencep pkgs)
+           (cl-loop for pkg in pkgs
+                    do (ers/package-install pkg))
+         (message "The list of packages must be a list!")))
      
      (ers/packages-install ers-packages)
      
@@ -967,7 +967,7 @@
                              (,(kbd "C-c <right>") . windmove-right)
                              (,(kbd "C-c <up>")    . windmove-up)
                              (,(kbd "C-c <down>")  . windmove-down)
-                             (,(kbd "C-c g")       . goto-line)
+                             (,(kbd "C-c C-g")     . goto-line)
                              (,(kbd "C-o")         . open-next-line)
                              (,(kbd "M-o")         . open-previous-line)
                              (,(kbd "C-x 4 k")     . ers/close-other-buffer)
@@ -980,6 +980,8 @@
     
     (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
     (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+    
+    (diminish 'eldoc-mode)
   #+end_src
   
 * Completion, matching and suggestions
@@ -1005,21 +1007,20 @@
    #+begin_src emacs-lisp
      (use-package auto-complete-config
        :ensure auto-complete
-       :init (set-default 'ac-sources
-                          '(ac-source-abbrev
-                            ac-source-dictionary
-                            ac-source-words-in-buffer
-                            ac-source-words-in-same-mode-buffers
-                            ac-source-semantic))
+       :init (set-default 'ac-sources '(ac-source-abbrev
+                                        ac-source-dictionary
+                                        ac-source-words-in-buffer
+                                        ac-source-words-in-same-mode-buffers
+                                        ac-source-semantic))
        :config (progn
                  (setq ac-comphist-file ers-ac-histfile)
                  (ac-config-default)
                  (setq ac-use-menu-map t)
      
                  ;; Default settings
-                 (define-key ac-menu-map "\C-n" 'ac-next)
-                 (define-key ac-menu-map "\C-p" 'ac-previous)
-                 (define-key ac-mode-map (kbd "M-TAB") 'auto-complete)
+                 (bind-key "C-n" 'ac-next     ac-menu-map)
+                 (bind-key "C-p" 'ac-previous ac-menu-map)
+                 (bind-key "M-TAB" 'auto-complete ac-menu-map)
      
                  (auto-complete-mode t)
                  (global-auto-complete-mode t))
@@ -1066,8 +1067,7 @@
                              (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
      
                (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))
-     
-     
+          
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
               ("C-x C-f" . helm-find-files)
@@ -1114,18 +1114,18 @@
    
 ** Fonts
    #+begin_src emacs-lisp
-(defun ers/fontify-frame (frame)
-  (set-frame-parameter frame 'font ers-ui-font))
-
-(defun ers/set-current-font ()
-  (interactive)
-  ;; Fontify current frame
-  (ers/fontify-frame nil)
-  ;; Fontify any future frames
-  (push 'ers/fontify-frame after-make-frame-functions))
-
-  (if window-system
-      (ers/set-current-font))
+     (defun ers/fontify-frame (frame)
+       (set-frame-parameter frame 'font ers-ui-font))
+     
+     (defun ers/set-current-font ()
+       (interactive)
+       ;; Fontify current frame
+       (ers/fontify-frame nil)
+       ;; Fontify any future frames
+       (push 'ers/fontify-frame after-make-frame-functions))
+     
+     (if window-system
+         (ers/set-current-font))
    #+end_src
    
 ** Enable/Disable UI modes
@@ -1145,7 +1145,7 @@
   
   #+begin_src emacs-lisp
     (when (file-exists-p ers-user-file)
-      (load-file ers-user-file))
+      (load ers-user-file 'noerror))
     
     (message "emacs-rimero-setup done loading.")
   #+end_src

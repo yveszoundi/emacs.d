@@ -229,7 +229,6 @@
   "Match two strings."
   (string= expected value))
 
-
 (defun grails/--test-matches-p (value expected)
   "Test whether a file basename matches a test class."
   (or (string= (concat expected "Tests") value)
@@ -389,9 +388,9 @@
 ;; --------------------------------
 (defun grails/--command (str)
   "Run a Grails command."
-  (let ((grails-command-line (grails/--get-cmd str)))
-    (let ((default-directory (expand-file-name (projectile-project-root))))
-      (compilation-start grails-command-line 'compilation-mode 'grails/--get-compilation-buffer-name))))
+  (let ((grails-command-line (grails/--get-cmd str))
+        (default-directory (expand-file-name (projectile-project-root))))
+    (compilation-start grails-command-line 'compilation-mode 'grails/--get-compilation-buffer-name)))
 
 (defun grails/--get-compilation-buffer-name (mode)
   "The buffer name to use for Grails Commands."
@@ -598,8 +597,7 @@
     "After execution of projectile-project-type."
     (if (projectile-verify-files projectile-grails-spec)
         (setq ad-return-value 'grails)
-      ad-do-it))
-  )
+      ad-do-it)))
 
 ;;;###autoload
 (define-minor-mode grails-projectile-mode
