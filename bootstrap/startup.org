@@ -303,10 +303,7 @@
 
   Setup some emacs defaults.
 
-  #+begin_src emacs-lisp
-    ;; replace the active region just by typing text
-    (delete-selection-mode t)
-    
+  #+begin_src emacs-lisp    
     (bind-key* "C-s" 'isearch-forward-regexp)
     (bind-key* "C-r" 'isearch-backward-regexp)
     
@@ -717,10 +714,9 @@
                        (yas-folder-candidates  `(,yas-elpa-snippets-folder
                                                  ,(concat user-emacs-directory "snippets")
                                                  ,(concat ers-emacs-dir "snippets"))))
+    
                   (cl-loop for p in yas-folder-candidates
-                           do (progn
-                                (unless (file-exists-p p)
-                                  (cl-delete p yas-folder-candidates))))
+                           when (not (file-exists-p p)) do (cl-delete p yas-folder-candidates))
     
                   (setq yas-snippet-dirs yas-folder-candidates))
                 (yas-reload-all))
@@ -843,6 +839,10 @@
       (beginning-of-line)
       (open-line arg))
     
+    (use-package switch-window
+      :ensure switch-window
+      :bind ("C-c e w" . switch-window))
+    
     (use-package browse-kill-ring
       :ensure browse-kill-ring
       :defer t
@@ -865,9 +865,13 @@
                   undo-tree-visualizer-timestamps           t)
       :diminish undo-tree-mode)
     
+    (use-package expand-region
+      :ensure expand-region
+      :bind ("C-c e e" . er/expand-region))
+    
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ("C-c SPC" . ace-jump-mode)
+      :bind ("C-c e j" . ace-jump-mode)
       :diminish ace-jump-mode)
     
     (use-package uniquify
@@ -879,10 +883,6 @@
     (use-package saveplace
       :init (progn (setq-default save-place t)
                    (setq save-place-file ers-place-file)))
-    
-    (use-package expand-region
-      :ensure expand-region
-      :bind ("C-c l" . er/expand-region))
     
     (use-package recentf
       :init (progn (setq recentf-max-menu-items 100
@@ -899,7 +899,8 @@
     
     (use-package dired
       :defer t
-    
+      :init (setq dired-recursive-deletes 'always
+                  dired-recursive-copies  'always)
       :config (progn
                 (put 'dired-find-alternate-file 'disabled nil)
                 (defun ers/dired-go-to-first-item ()
@@ -969,7 +970,9 @@
     (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
     (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
     
-    (diminish 'eldoc-mode)
+    (use-package eldoc
+      :defer t
+      :diminish eldoc-mode)
   #+end_src
   
 * Completion, matching and suggestions
