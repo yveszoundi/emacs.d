@@ -913,15 +913,25 @@
                   (goto-char (point-max))
                   (dired-previous-line 1))
     
-                (defun ers/copy-filename-at-point ()
-                  (interactive)
+                (defun ers/copy-filename-at-point (arg)
+                  (interactive "P")
     
-                  (save-excursion
-                    (end-of-line)
-                    (let ((b (bounds-of-thing-at-point 'filename)))
-                      (when b
-                        (save-excursion
-                          (kill-ring-save (car b) (cdr b)))))))
+                  (let ((f-name-prefix ""))
+                    (when arg
+                      (setq f-name-prefix default-directory))
+    
+                    (save-excursion
+                      (end-of-line)
+                      (let ((b (bounds-of-thing-at-point 'filename)))
+                        (when b
+                          (save-excursion
+                            (let* ((beg (decf (car b)))
+                                   (end (decf (cdr b))))
+                              (kill-new
+                               (concat f-name-prefix
+                                       (substring-no-properties (buffer-string)
+                                                                beg
+                                                                end))))))))))
     
                 (bind-key "."   'dired-up-directory dired-mode-map)
                 (bind-key "@"   'ers/copy-filename-at-point dired-mode-map)
