@@ -430,14 +430,14 @@
     
     (use-package exec-path-from-shell
       :ensure exec-path-from-shell
-      :init (when (eq system-type 'darwin)
-              (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL")))
-      :config (when (eq system-type 'darwin)
+      :if (eq system-type 'darwin)
+      :config (progn
+                (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL"))
                 (exec-path-from-shell-initialize)))
     
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; EShell settings
-        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (require 'eshell)
     
     (require 'vc-git)
@@ -1096,12 +1096,13 @@
 ** Modeline
    
    #+begin_src emacs-lisp
-     (when (boundp 'ers-powerline-enabled)
-       (when ers-powerline-enabled
-         (use-package powerline
-           :ensure powerline
-           :init (setq powerline-arrow-shape 'curve)
-           :config (powerline-default-theme))))
+     (use-package powerline
+       :ensure powerline
+       :if (and (boundp 'ers-powerline-enabled)
+                ers-powerline-enabled)
+       :config (progn
+                 (setq powerline-arrow-shape 'curve)
+                 (powerline-default-theme)))
    #+end_src
    
 ** Fonts
