@@ -480,9 +480,8 @@
     (defun up (&optional level)
       "Change directory from one up to a level of folders."
       (if level
-          (let ((path-string ""))
-            (cl-dotimes (i level)
-              (setq path-string (concat "../" path-string)))
+          (let* ((path-levels (cl-loop for i from level downto 1 collect "../"))
+                 (path-string (mapconcat #'identity path-levels "")))
             (cd path-string))
         (cd "..")))
   #+end_src
