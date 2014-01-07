@@ -481,7 +481,7 @@
       "Change directory from one up to a level of folders."
       (if level
           (let* ((path-levels (cl-loop for i from level downto 1 collect "../"))
-                 (path-string (reduce #'concat path-levels)))
+                 (path-string (apply #'concat path-levels)))
             (cd path-string))
         (cd "..")))
   #+end_src
