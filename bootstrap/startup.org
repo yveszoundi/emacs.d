@@ -304,35 +304,46 @@
   Setup some emacs defaults.
 
   #+begin_src emacs-lisp    
-    (bind-key* "C-s" 'isearch-forward-regexp)
-    (bind-key* "C-r" 'isearch-backward-regexp)
+    ;; Rebind some keys.
+    (let ((key-bindings '(("C-s" . isearch-forward-regexp)
+                          ("C-r" . isearch-backward-regexp))))
+      (dolist (key-binding key-bindings)
+        `(bind-key* ,(car key-binding) (cdr key-binding))))
     
-    ;; Enable disabled commands
+    ;; Enable disabled commands.
     (put 'downcase-region  'disabled nil)
     (put 'upcase-region    'disabled nil)
     (put 'erase-buffer     'disabled nil)
     
-    ;; Transparently open compressed files
+    ;; Transparently open compressed files.
     (auto-compression-mode t)
+    
   #+end_src
 
-* Backups
+* Backups and bookmarks
 
   Setup backups.
 
   #+begin_src emacs-lisp
-(setq backup-directory-alist         `(("." . ,ers-backup-dir))
-      delete-old-versions            t
-      kept-new-versions              6
-      kept-old-versions              2
-      version-control                t
-      bookmark-default-file          ers-bookmarks-file
-      url-cookie-file                ers-url-cookie-file
-      auto-save-list-file-prefix     ers-auto-save-folder
-      ;;auto-save-file-name-transforms `((".*" ,ers-auto-save-folder t))
-      tramp-auto-save-directory      ers-auto-save-folder)
+    (setq backup-directory-alist         `(("." . ,ers-backup-dir))
+          delete-old-versions            t
+          kept-new-versions              6
+          kept-old-versions              2
+          version-control                t
+          url-cookie-file                ers-url-cookie-file
+          auto-save-list-file-prefix     ers-auto-save-folder
+          tramp-auto-save-directory      ers-auto-save-folder)
   #+end_src
   
+** Bookmarks
+
+   Set the bookmarks file and turn-on autosave.
+
+  #+begin_src emacs-lisp
+    (setq bookmark-default-file ers-bookmarks-file
+          bookmark-save-flag    1)
+  #+end_src
+
 * Aliases
   #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -1082,14 +1093,14 @@
 ** Themes
    
    #+begin_src emacs-lisp
-  (defun ers/load-theme (theme-symbol)
-    (when (boundp theme-symbol)
-      (when (symbol-value theme-symbol)
-        (funcall 'load-theme (symbol-value theme-symbol) t))))
-
-  (if window-system
-      (ers/load-theme 'ers-ui-theme)
-    (ers/load-theme 'ers-ui-theme-console))
+     (defun ers/load-theme (theme-symbol)
+       (when (boundp theme-symbol)
+         (when (symbol-value theme-symbol)
+         (funcall 'load-theme (symbol-value theme-symbol) t))))
+     
+     (if window-system
+         (ers/load-theme 'ers-ui-theme)
+       (ers/load-theme 'ers-ui-theme-console))
    #+end_src
    
 ** Modeline
