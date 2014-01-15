@@ -212,6 +212,11 @@
        :type 'file
        :group 'emacs-rimero-setup)
      
+     (defcustom ers-max-recent-files 300
+       "Max number of recent files."
+       :type 'integer
+       :group 'emacs-rimero-setup)
+     
      (defcustom ers-helm-adaptive-history-file "~/.emacs.d/data/helm-adaptative-history-file"
        "Helm adaptative history file"
        :type 'file
@@ -256,7 +261,7 @@
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; packages
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     (defcustom ers-packages '(use-package)
+     (defcustom ers-packages '()
        "A list of packages to ensure are installed."
        :type 'symbol
        :group 'emacs-rimero-setup)
@@ -290,7 +295,7 @@
                     do (ers/package-install pkg))
          (message "The list of packages must be a list!")))
      
-     (ers/packages-install ers-packages)
+     (ers/packages-install (cons 'use-package ers-packages))
      
      (require 'use-package)
      (require 'netrc)
@@ -895,7 +900,7 @@
                    (setq save-place-file ers-place-file)))
     
     (use-package recentf
-      :init (progn (setq recentf-max-menu-items 100
+      :init (progn (setq recentf-max-menu-items ers-max-recent-files
                          recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
                          recentf-save-file      ers-recentf-file)
                    (recentf-mode +1))

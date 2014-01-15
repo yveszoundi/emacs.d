@@ -2,13 +2,14 @@
 ;;
 ;; Copyright (C) 2013 Rimero Solutions
 ;;
-;; Version: 20131205.144106
+;; Version: 20140109.190629
 ;; X-Original-Version: 1.0.0
 ;; Keywords: elisp, grails, projectile
 ;; Author: Yves Zoundi <rimerosolutions@gmail.com>
 ;; Maintainer: Yves Zoundi
+;; Package-Requires: ((projectile "0.8") (emacs "24"))
 ;; Contributors: The internet and people who surf it.
-;; Last updated: 2013-12-05
+;; Last updated: 2014-01-09
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -54,13 +55,14 @@
 
 (defcustom grails-projectile-keymap-prefix (kbd "C-c ;")
   "Grails Projectile keymap prefix."
-  :group 'projectile
-  :type 'string)
+  :group 'grails-projectile
+  :type 'string
+  :link '(url-link :tag "Github" "https://github.com/rimerosolutions/emacs-grails-mode-ext"))
 
 (defcustom grails-projectile-mode-line " Grails"
   "Grails projectile modeline."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defvar grails-executable-suffix
   (if (eq system-type 'windows-nt)
@@ -70,65 +72,65 @@
 (defcustom grails-compilation-buffer-name "*Grails*"
   "Buffer name for Grails commands."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom use-grails-wrapper-when-possible t
   "Use the Grails wrapper whenever available."
   :type 'boolean
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-output-opts ""
   "Output options such as --plain-output."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-cmd-opts "--non-interactive --stacktrace"
   "Grails command line options."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-wrapper-filename "grailsw"
   "Grails Wrapper file name."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-projectile-filename ".grails-projectile"
   "Project file to define custom grails command and JVM options.
    The contents of this file override both grails-cmd-opts and grails-jvm-opts.
    Everything must hold within a single line, no newline at the end of the file."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-jvm-opts "-DXmx1g"
   "Grails command line options"
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-executable "grails"
   "Path to Grails executable.
   By default, it's assumed that grails is in your PATH variable."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-url-wikidocs "http://grails.org/Documentation"
   "Grails Wiki documentation URL."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-url-apidocs "http://grails.org/doc/latest/api/"
   "Grails documentation URL."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-plugins-base-url "http://grails.org/plugins/"
   "Grails plugins base URL."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defcustom grails-url-guide "http://grails.org/doc/latest/guide/single.html"
   "Grails Latest Guide URL."
   :type 'string
-  :group 'grails)
+  :group 'grails-projectile)
 
 (defun grails/--join-lines (beg end)
   "Apply join-line over region."
@@ -218,12 +220,12 @@
 
 (defun grails/--find-grails-files (dirname file-basename pred-fn)
   "Jump to a filename from a given base folder."
-  (let ((folder-files (projectile-files-in-project-directory dirname)))
-    (let ((filtered-folder-files '()))
-      (dolist (elt folder-files)
-        (when (funcall pred-fn (file-name-base elt) file-basename)
-          (add-to-list 'filtered-folder-files elt)))
-      filtered-folder-files)))
+  (let ((folder-files (projectile-files-in-project-directory dirname))
+        (filtered-folder-files '())
+        (dolist (elt folder-files)
+          (when (funcall pred-fn (file-name-base elt) file-basename)
+            (add-to-list 'filtered-folder-files elt)))
+        filtered-folder-files)))
 
 (defun grails/--base-name-matches-p (value expected)
   "Match two strings."
@@ -374,12 +376,14 @@
         (grails-args (concat grails-jvm-opts " " grails-cmd-opts))
         (grails-cmd-line (concat grails-executable grails-executable-suffix)))
 
-    (when use-grails-wrapper-when-possible
-      (when (grails/--wrapper-exists-p default-directory)
-        (setq grails-cmd-line (concat default-directory grails-wrapper-filename grails-executable-suffix))))
+    (when (and use-grails-wrapper-when-possible
+               (grails/--wrapper-exists-p default-directory))
+      (let ((grailsw-file (concat default-directory grails-wrapper-filename grails-executable-suffix)))
+        (setq grails-cmd-line grailsw-file)))
 
     (when (file-exists-p (concat default-directory grails-projectile-filename))
-      (setq grails-args (grails/--read-grails-options-projectile-file (concat default-directory grails-projectile-filename))))
+      (let ((grails-projectile-file (concat default-directory grails-projectile-filename)))
+        (setq grails-args (grails/--read-grails-options-projectile-file grails-projectile-file))))
 
     (concat grails-cmd-line " " grails-output-opts " " grails-args " " grails-command)))
 
@@ -487,21 +491,21 @@
   (interactive "sPlugin name or query: \n")
   (if (boundp 'grails-plugins-base-url)
       (grails/--search-plugin grails-plugins-base-url query-string)
-    (message "No Grails plugins base URL set. Customize the 'grails' group")))
+    (message "No Grails plugins base URL set. Customize the 'grails-projectile' group")))
 
 (defun grails/search-plugin-tag (query-string)
   "Search Grails plugins."
   (interactive "sPlugin tag: \n")
   (if (boundp 'grails-plugins-base-url)
       (grails/--search-plugin ((concat grails-plugins-base-url "tag/") query-string))
-    (message "No Grails plugins base URL set. Customize the 'grails' group")))
+    (message "No Grails plugins base URL set. Customize the 'grails-projectile' group")))
 
 (defun grails/browse-latest-guide ()
   "Browse the official Grails Guide."
   (interactive)
   (if (boundp 'grails-url-guide)
       (browse-url grails-url-guide)
-    (message "No Grails URL guide set. Customize the 'grails' group")))
+    (message "No Grails URL guide set. Customize the 'grails-projectile' group")))
 
 
 ;;; Minor mode
@@ -606,7 +610,7 @@
   \\{grails-projectile-mode-map}"
   :lighter grails-projectile-mode-line
   :keymap  'grails-projectile-mode-map
-  :group   'grails
+  :group   'grails-projectile
   :require 'grails-projectile-mode
 
   (progn
@@ -644,3 +648,5 @@
   (grails-projectile-global-mode -1))
 
 (provide 'grails-projectile-mode)
+
+;;; grails-projectile-mode.el ends here
