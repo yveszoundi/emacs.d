@@ -312,13 +312,12 @@
     ;; Rebind some keys.
     (let ((key-bindings '(("C-s" . isearch-forward-regexp)
                           ("C-r" . isearch-backward-regexp))))
-      (dolist (key-binding key-bindings)
-        `(bind-key* ,(car key-binding) (cdr key-binding))))
+      (cl-loop for key-binding in key-bindings
+               do `(bind-key* ,(car key-binding) (cdr key-binding))))
     
     ;; Enable disabled commands.
-    (put 'downcase-region  'disabled nil)
-    (put 'upcase-region    'disabled nil)
-    (put 'erase-buffer     'disabled nil)
+    (cl-loop for fn in '(downcase-region upcase-region erase-buffer)
+             do (put fn 'disabled nil))
     
     ;; Transparently open compressed files.
     (auto-compression-mode t)
@@ -973,14 +972,14 @@
       :defer t
       :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
     
-    (let ((ers-keybindings `((,(kbd "C-c g")       . goto-line)
-                             (,(kbd "C-o")         . open-next-line)
-                             (,(kbd "M-o")         . open-previous-line)
-                             (,(kbd "C-x 4 k")     . ers/close-other-buffer)
-                             (,(kbd "C-c C-e")     . ers/eval-and-replace)
-                             (,(kbd "C-x y")       . ers/copy-symbol-at-point)
-                             (,(kbd "C-c r")       . revert-buffer)
-                             (,(kbd "C-x \\")      . ers/comment-or-uncomment-line-or-region))))
+    (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
+                             (,(kbd "C-o")     . open-next-line)
+                             (,(kbd "M-o")     . open-previous-line)
+                             (,(kbd "C-x 4 k") . ers/close-other-buffer)
+                             (,(kbd "C-c C-e") . ers/eval-and-replace)
+                             (,(kbd "C-x y")   . ers/copy-symbol-at-point)
+                             (,(kbd "C-c r")   . revert-buffer)
+                             (,(kbd "C-x \\")  . ers/comment-or-uncomment-line-or-region))))
       (dolist (ers-keybinding ers-keybindings)
         (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
     
@@ -1026,12 +1025,12 @@
                  (setq ac-use-menu-map t)
      
                  ;; Default settings
-                 (bind-key "C-n" 'ac-next     ac-menu-map)
-                 (bind-key "C-p" 'ac-previous ac-menu-map)
+                 (bind-key "C-n"   'ac-next       ac-menu-map)
+                 (bind-key "C-p"   'ac-previous   ac-menu-map)
                  (bind-key "M-TAB" 'auto-complete ac-menu-map)
      
-                 (auto-complete-mode t)
-                 (global-auto-complete-mode t))
+                 (dolist (fn '(auto-complete-mode global-auto-complete-mode))
+                   (funcall fn t)))
      
        :diminish auto-complete-mode)
    #+end_src
