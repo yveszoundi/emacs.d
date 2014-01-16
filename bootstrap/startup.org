@@ -731,7 +731,8 @@
                                                  ,(concat ers-emacs-dir "snippets"))))
     
                   (cl-loop for p in yas-folder-candidates
-                           when (not (file-exists-p p)) do (cl-delete p yas-folder-candidates))
+                           unless (file-exists-p p)
+                           do (cl-delete p yas-folder-candidates))
     
                   (setq yas-snippet-dirs yas-folder-candidates))
                 (yas-reload-all))
