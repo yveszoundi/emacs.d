@@ -856,7 +856,7 @@
     
     (use-package switch-window
       :ensure switch-window
-      :bind ("C-c e w" . switch-window))
+      :bind ("C-c w" . switch-window))
     
     (use-package browse-kill-ring
       :ensure browse-kill-ring
@@ -882,11 +882,11 @@
     
     (use-package expand-region
       :ensure expand-region
-      :bind ("C-c e e" . er/expand-region))
+      :bind ("C-c e" . er/expand-region))
     
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ("C-c e j" . ace-jump-mode)
+      :bind ("C-c j" . ace-jump-mode)
       :diminish ace-jump-mode)
     
     (use-package uniquify
@@ -1113,6 +1113,7 @@
    #+begin_src emacs-lisp
      (use-package powerline
        :ensure powerline
+       :defer t
        :if (and (boundp 'ers-powerline-enabled)
                 ers-powerline-enabled)
        :config (progn
