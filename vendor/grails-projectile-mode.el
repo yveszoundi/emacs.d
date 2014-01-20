@@ -221,11 +221,11 @@
 (defun grails/--find-grails-files (dirname file-basename pred-fn)
   "Jump to a filename from a given base folder."
   (let ((folder-files (projectile-files-in-project-directory dirname))
-        (filtered-folder-files '())
+        (filtered-folder-files '()))
         (dolist (elt folder-files)
           (when (funcall pred-fn (file-name-base elt) file-basename)
             (add-to-list 'filtered-folder-files elt)))
-        filtered-folder-files)))
+        filtered-folder-files))
 
 (defun grails/--base-name-matches-p (value expected)
   "Match two strings."

@@ -357,7 +357,7 @@
 * Utility functions
   
   #+begin_src emacs-lisp
-    (defun ers/close-other-buffer ()
+    (defun ers/burry-other-buffer ()
       "Close other buffer window."
       (interactive)
       (when (window-parent)
@@ -537,7 +537,7 @@
           (indent-region (point-min) (point-max) nil)
           (untabify (point-min) (point-max)))))
     
-    (bind-key "C-x /" 'ers/indent-region-or-buffer)
+    (bind-key "C-c i" 'ers/indent-region-or-buffer)
     (bind-key "RET"   'newline-and-indent)
   #+end_src
   
@@ -547,6 +547,7 @@
     (use-package org
       :ensure htmlize
       :init (progn
+              (setq org-src-fontify-natively t)
               (setq org-directory ers-org-directory)
     
               ;; default settings
@@ -975,11 +976,11 @@
     (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
                              (,(kbd "C-o")     . open-next-line)
                              (,(kbd "M-o")     . open-previous-line)
-                             (,(kbd "C-x 4 k") . ers/close-other-buffer)
+                             (,(kbd "C-x 4 k") . ers/burry-other-buffer)
                              (,(kbd "C-c C-e") . ers/eval-and-replace)
                              (,(kbd "C-x y")   . ers/copy-symbol-at-point)
                              (,(kbd "C-c r")   . revert-buffer)
-                             (,(kbd "C-x \\")  . ers/comment-or-uncomment-line-or-region))))
+                             (,(kbd "C-c /")   . ers/comment-or-uncomment-line-or-region))))
       (dolist (ers-keybinding ers-keybindings)
         (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
     
