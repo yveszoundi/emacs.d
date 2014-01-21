@@ -781,6 +781,8 @@
                        erc-hide-list                    '("JOIN" "PART" "QUIT" "NICK")
                        erc-kill-server-buffer-on-quit   t)
      
+                 (setq erc-prompt  (lambda () (concat (buffer-name) "> ")))
+     
                  ;; auto-fill buffer window
                  (add-hook 'window-configuration-change-hook
                            '(lambda () (setq erc-fill-column (- (window-width) 2)))))
