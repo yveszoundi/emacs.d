@@ -892,6 +892,12 @@
       :bind ("C-c j" . ace-jump-mode)
       :diminish ace-jump-mode)
     
+    (use-package buffer-stack
+      :ensure buffer-stack
+      :bind (("C-c [" . buffer-stack-down)
+             ("C-c ]" . buffer-stack-up))
+      :init (buffer-stack-track))
+    
     (use-package uniquify
       :config (setq uniquify-separator           "/"
                     uniquify-buffer-name-style   'forward
