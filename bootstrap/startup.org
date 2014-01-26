@@ -290,10 +290,9 @@
      
      (defun ers/packages-install (pkgs)
        "Install a list of packages."
-       (if (sequencep pkgs)
-           (cl-loop for pkg in pkgs
-                    do (ers/package-install pkg))
-         (message "The list of packages must be a list!")))
+       (if (listp pkgs)
+           (mapc #'ers/package-install pkgs)
+         (error "The list of packages must be a list!")))
      
      (ers/packages-install (cons 'use-package ers-packages))
      
