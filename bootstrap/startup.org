@@ -59,7 +59,7 @@
        "Emacs rimero setup group."
        :group 'customize
        :prefix "ers-")
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Credentials file for netrc authentication
      ;; Also symblink .authinfo to .netrc for offlineimap
@@ -68,7 +68,7 @@
        "Secrets file."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; environment variables
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,20 +80,25 @@
        "Environment variables."
        :type 'symbol
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Projects
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     (defcustom ers-projectile-cache-file "~/.emacs.d/data/projectile.cache"
-       "Projectile Cache file"
-       :type 'file
+     (defcustom ers-projectile-folder "~/.emacs.d/data/projectile"
+       "Projectile folder."
+       :type 'directory
        :group 'emacs-rimero-setup)
-
-     (defcustom ers-projectile-bookmarks-file "~/.emacs.d/data/projectile-bookmarks.eld"
-       "Projectile Bookmarks file"
-       :type 'file
+     
+     (defcustom ers-projectile-cache-filename "projectile.cache"
+       "Projectile Cache filename"
+       :type 'string
        :group 'emacs-rimero-setup)
-
+     
+     (defcustom ers-projectile-bookmarks-filename "projectile-bookmarks.eld"
+       "Projectile Bookmarks filename"
+       :type 'string
+       :group 'emacs-rimero-setup)
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; blogging
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -101,7 +106,7 @@
      (defvar corporate-blog-name "wordpress-your-netrc-entry-in-dot-autinfo")
      (defvar personal-blog-url "http://wordpress-site/xmlrpc.php")
      (defvar corporate-blog-url "http://wordpress-site/xmlrpc.php")
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; indentation
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -109,7 +114,7 @@
        "Number of spaces for tabs."
        :type 'integer
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; ui settings
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -121,22 +126,22 @@
        "Font to use."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-ui-theme nil
        "GUI Theme to use."
        :type 'symbol
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-ui-theme-console nil
        "Console theme to use."
        :type 'symbol
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-powerline-enabled nil
        "Whether or not powerline is enabled."
        :type 'boolean
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; spelling
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -144,7 +149,7 @@
        "Aspell location for spell-checking."
        :type 'file
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; personal information
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -152,22 +157,22 @@
        "Email address."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-pim-public-mail-address "me.spam@gmail.com"
        "Public spam email address used for emacs-lisp snippets."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-pim-full-name "MeFirstname MeLastName"
        "Full name."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-pim-organization "My Company"
        "Organization name."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; org-mode
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -175,17 +180,17 @@
        "Org-mode folder."
        :type 'directory
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-org-archive-location-filename "archive.org::"
        "Org-mode archive location."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-org-notes-filename "notes.org"
        "Org-mode notes file name."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; erc
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -193,12 +198,12 @@
        "IRC server to use for erc."
        :type 'string
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-erc-channel-list '(("freenode.net" "##java" "#emacs"))
        "ERC connection information server and channels."
        :type 'symbol
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Files
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -206,22 +211,22 @@
        "Auto-complete completion data."
        :type 'file
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-recentf-file "~/.emacs.d/data/recentf"
        "Recent file list."
        :type 'file
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-max-recent-files 300
        "Max number of recent files."
        :type 'integer
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-helm-adaptive-history-file "~/.emacs.d/data/helm-adaptative-history-file"
        "Helm adaptative history file"
        :type 'file
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Backups
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -229,27 +234,27 @@
        "Bookmarks"
        :type 'file
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-place-file (expand-file-name  "~/.emacs.d/data/saved-places")
        "Places file."
        :type 'directory
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-backup-dir (expand-file-name "~/.emacs.d/data/backups")
        "Backups folder."
        :type 'directory
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-auto-save-folder (expand-file-name "~/.emacs.d/data/auto-save-list/")
        "Auto-save folder."
        :type 'directory
        :group 'emacs-rimero-setup)
-
+     
      (defcustom ers-url-cookie-file "~/.emacs.d/data/cookies"
        "Cookies file for url connections."
        :type 'file
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; eshell
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -257,7 +262,7 @@
        "Eshell data folder."
        :type 'directory
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; packages
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -265,7 +270,7 @@
        "A list of packages to ensure are installed."
        :type 'symbol
        :group 'emacs-rimero-setup)
-
+     
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Programs
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -666,14 +671,22 @@
    Use projectile for project management.
 
    #+begin_src emacs-lisp
-  (use-package projectile
-    :ensure projectile
-    :config (projectile-global-mode t)
-    :init (setq projectile-cache-file          ers-projectile-cache-file
-                projectile-known-projects-file ers-projectile-bookmarks-file
-                projectile-indexing-method     'native
-                projectile-enable-caching      t)
-    :diminish projectile-mode)
+     (use-package projectile
+       :ensure projectile
+       :config (projectile-global-mode t)
+       :init (progn
+               ;; create projectile data folder if non-existent
+               (ers/mkdir-p ers-projectile-folder)
+     
+               ;; set projectile custom variables
+               (let* ((ers-projectile-dir (file-name-as-directory ers-projectile-folder))
+                      (ers-projectile-cache-file (concat ers-projectile-dir ers-projectile-cache-filename))
+                      (ers-projectile-bookmarks-file (concat ers-projectile-dir ers-projectile-bookmarks-filename)))
+                 (setq projectile-cache-file          ers-projectile-cache-file
+                       projectile-known-projects-file ers-projectile-bookmarks-file
+                       projectile-indexing-method     'native
+                       projectile-enable-caching      t)))
+       :diminish projectile-mode)
    #+end_src
 
 ** Groovy and Grails
