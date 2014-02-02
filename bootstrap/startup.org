@@ -1077,7 +1077,6 @@
      
                (use-package helm-ag
                  :ensure helm-ag
-                 :init (bind-key "C-c p A" 'helm-ag projectile-mode-map)
                  :bind ("C-c a" . helm-ag))
      
                (use-package helm-descbinds
