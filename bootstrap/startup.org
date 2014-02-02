@@ -735,17 +735,17 @@
       :init (setq yas-verbosity 1)
       :config (progn
                 (yas-global-mode t)
-
+    
                 (let* ((yas-elpa-snippets-folder (car (file-expand-wildcards
                                                        (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
                        (yas-folder-candidates  `(,yas-elpa-snippets-folder
                                                  ,(concat user-emacs-directory "snippets")
                                                  ,(concat ers-emacs-dir "snippets"))))
-
+    
                   (cl-loop for p in yas-folder-candidates
                            unless (file-exists-p p)
                            do (cl-delete p yas-folder-candidates))
-
+    
                   (setq yas-snippet-dirs yas-folder-candidates))
                 (yas-reload-all))
       :diminish yas-minor-mode)
@@ -867,13 +867,7 @@
                              See also `newline-and-indent'."
       (interactive "p")
       (beginning-of-line)
-      (open-line arg))
-    
-    (use-package hl-line
-      :init (add-hook 'prog-mode-hook 'hl-line-mode))
-    
-    (use-package linum
-      :init (add-hook 'prog-mode-hook 'linum-mode))
+      (open-line arg))    
     
     (use-package switch-window
       :ensure switch-window
