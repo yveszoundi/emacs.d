@@ -36,9 +36,8 @@
  ;; If there is more than one, they won't work right.
  )
 
-(require 'cl-lib)
-(require 'org)
-(require 'ob-tangle)
+;; require few libs
+(mapc #'require '(org ob-tangle cl-lib))
 
 ;; Just for testing, for the typical setup see the README file, use the full path to startup.org..
 (org-babel-load-file (expand-file-name
