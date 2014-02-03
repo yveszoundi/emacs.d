@@ -1076,8 +1076,10 @@
                (helm-adaptative-mode t)
      
                (use-package helm-ag
+                 :init (use-package ag
+                         :ensure ag)
                  :ensure helm-ag
-                 :bind ("C-c a" . helm-ag))
+                 :bind ("C-c a" . helm-ag))     
      
                (use-package helm-descbinds
                  :ensure helm-descbinds
@@ -1095,9 +1097,7 @@
                  :ensure helm-swoop
                  :bind ("C-c o" . helm-swoop))
      
-               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))
-     
-     
+               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))     
      
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
