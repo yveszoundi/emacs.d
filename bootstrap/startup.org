@@ -867,7 +867,7 @@
                              See also `newline-and-indent'."
       (interactive "p")
       (beginning-of-line)
-      (open-line arg))    
+      (open-line arg))
     
     (use-package switch-window
       :ensure switch-window
@@ -898,6 +898,13 @@
     (use-package expand-region
       :ensure expand-region
       :bind ("C-c e" . er/expand-region))
+    
+    (use-package hl-line
+      :init (add-hook 'prog-mode-hook 'hl-line-mode))
+    
+    (use-package linum
+      :init (setq linum-format (quote "%2d "))
+      :config (add-hook 'prog-mode-hook 'linum-mode))
     
     (use-package ace-jump-mode
       :ensure ace-jump-mode
