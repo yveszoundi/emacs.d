@@ -903,12 +903,13 @@
       :init (add-hook 'prog-mode-hook 'hl-line-mode))
     
     (use-package linum
-      :init (setq linum-format (quote "%2d "))
-      :config (add-hook 'prog-mode-hook 'linum-mode))
+      :init (progn (setq linum-format (quote "%2d "))
+                   (add-hook 'prog-mode-hook 'linum-mode)))
     
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ("C-c j" . ace-jump-mode)
+      :bind (("C-c j w" . ace-jump-mode)
+             ("C-c j c" . ace-jump-char-mode))
       :diminish ace-jump-mode)
     
     (use-package buffer-stack
