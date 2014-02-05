@@ -903,8 +903,8 @@
       :init (add-hook 'prog-mode-hook 'hl-line-mode))
     
     (use-package linum
-      :init (progn (setq linum-format (quote "%2d "))
-                   (add-hook 'prog-mode-hook 'linum-mode)))
+      :init (setq linum-format (quote "%4d "))
+      :config (add-hook 'prog-mode-hook 'linum-mode))
     
     (use-package ace-jump-mode
       :ensure ace-jump-mode
