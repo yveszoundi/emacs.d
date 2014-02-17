@@ -684,7 +684,7 @@
                       (ers-projectile-bookmarks-file (concat ers-projectile-dir ers-projectile-bookmarks-filename)))
                  (setq projectile-cache-file          ers-projectile-cache-file
                        projectile-known-projects-file ers-projectile-bookmarks-file
-                       projectile-indexing-method     'native
+                       projectile-indexing-method     'alien
                        projectile-enable-caching      t)))
        :diminish projectile-mode)
    #+end_src
@@ -976,10 +976,11 @@
                                                                 beg
                                                                 end))))))))))
     
-                (bind-key "."   'dired-up-directory dired-mode-map)
-                (bind-key "@"   'ers/copy-filename-at-point dired-mode-map)
-                (bind-key "M-P" 'ers/dired-go-to-first-item dired-mode-map)
-                (bind-key "M-N" 'ers/dired-go-to-last-item  dired-mode-map)))
+                (bind-keys :map dired-mode-map
+                           ("."   .  dired-up-directory)
+                           ("@"   . ers/copy-filename-at-point )
+                           ("M-P" . ers/dired-go-to-first-item )
+                           ("M-N" . ers/dired-go-to-last-item ))))
     
     (use-package dired-details
       :ensure dired-details
@@ -1051,15 +1052,16 @@
                  (setq ac-comphist-file ers-ac-histfile)
                  (ac-config-default)
                  (setq ac-use-menu-map t)
-
+     
                  ;; Default settings
-                 (bind-key "C-n"   'ac-next       ac-menu-map)
-                 (bind-key "C-p"   'ac-previous   ac-menu-map)
-                 (bind-key "M-TAB" 'auto-complete ac-menu-map)
-
+                 (bind-keys :map ac-menu-map
+                            ("C-n"   . ac-next)
+                            ("C-p"   . ac-previous)
+                            ("M-TAB" . auto-complete))
+     
                  (dolist (fn '(auto-complete-mode global-auto-complete-mode))
                    (funcall fn t)))
-
+     
        :diminish auto-complete-mode)
    #+end_src
 
