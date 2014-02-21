@@ -442,34 +442,34 @@
   
   #+begin_src emacs-lisp
     (setq eshell-directory-name ers-eshell-dir)
-
+    
     ;; Set environment variables
     (cl-loop for env-var in ers-env-variables
              do (setenv (car env-var) (cdr env-var)))
-
+    
     (use-package exec-path-from-shell
       :ensure exec-path-from-shell
       :if (eq system-type 'darwin)
       :config (progn
                 (setq exec-path-from-shell-variables '("PATH" "MANPATH" "SHELL"))
                 (exec-path-from-shell-initialize)))
-
+    
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; EShell settings
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (require 'eshell)
-
+    
     (require 'vc-git)
     (defun get-git-branch-name (path)
       (let ((git-directory (concat path "/.git")))
         (if (file-exists-p git-directory)
             (concat " (" (vc-git-mode-line-string git-directory) ") ")
           "")))
-
+    
     (defun get-full-time()
       "Full date and time"
       (format-time-string "%a %d.%m.%y %H:%M:%S" (current-time)))
-
+    
     (setq eshell-prompt-function (lambda nil
                                    (concat
                                     "\n"
@@ -480,29 +480,28 @@
                                     (system-name)
                                     (get-git-branch-name (eshell/pwd))
                                     " $ " )))
-
+    
     (setq eshell-highlight-prompt       nil
           eshell-history-size           8000
           eshell-path-env               (getenv "PATH")
           eshell-cmpl-cycle-completions nil
           eshell-prompt-regexp          "^[^#$]*[#$] ")
-
+    
     (if (boundp 'eshell-save-history-on-exit)
         (setq eshell-save-history-on-exit t)) ; Don't ask, just save
-
+    
     (if (boundp 'eshell-ask-to-save-history)
         (setq eshell-ask-to-save-history 'always)) ; For older(?) version
-
+    
     (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
     (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
+    
     (defun up (&optional level)
       "Change directory from one up to a level of folders."
-      (if level
-          (let* ((path-levels (cl-loop for i from level downto 1 collect "../"))
-                 (path-string (apply #'concat path-levels)))
-            (cd path-string))
-        (cd "..")))
+      (let* ((path-level (or level 1))
+             (path-levels-list (cl-loop for i from path-level downto 1 collect "../"))
+             (path-string (apply #'concat path-levels-list)))
+        (cd path-string)))
   #+end_src
   
 * Indentation settings
