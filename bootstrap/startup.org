@@ -292,18 +292,17 @@
        "Install a package."
        (unless (package-installed-p pkg)
          (package-install pkg)))
-
+     
      (defun ers/packages-install (pkgs)
        "Install a list of packages."
        (if (listp pkgs)
            (mapc #'ers/package-install pkgs)
          (error "The list of packages must be a list!")))
-
+     
      (ers/packages-install (cons 'use-package ers-packages))
-
-     (require 'use-package)
-     (require 'netrc)
-
+     
+     (mapc #'require '(use-package netrc))
+     
      (ers/mkdir-p ers-org-directory)
    #+end_src
 
