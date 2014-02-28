@@ -455,6 +455,12 @@
   (interactive)
   (grails/--command "compile"))
 
+(defun grails/run-app ()
+  "Run the application."
+  (interactive)
+  (grails/--command "run-app"))
+
+
 (defun grails/clean ()
   "Clean."
   (interactive)
@@ -533,6 +539,8 @@
       (define-key prefix-map   (kbd "l v") 'grails/locate-view)
       (define-key prefix-map   (kbd "l c") 'grails/locate-controller)
 
+      (define-key prefix-map   (kbd "r a") 'grails/run-app)
+      
       (define-key prefix-map   (kbd "n a") 'grails/wizard-new-app)
       (define-key prefix-map   (kbd "n p") 'grails/wizard-new-plugin)
 
@@ -548,6 +556,7 @@
   '("Grails"
     ["Execute Command"           grails/icommand                 t]
     ["Compile"                   grails/compile                  t]
+    ["Run app"                   grails/run-app                  t]
     ["Clean"                     grails/clean                    t]
 
     ["--"                        'ignore                          ]
