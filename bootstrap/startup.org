@@ -854,7 +854,7 @@
     
     (defun open-next-line (arg)
       "Move to the next line and then opens a line.
-                            See also `newline-and-indent'."
+                                See also `newline-and-indent'."
       (interactive "p")
       (end-of-line)
       (open-line arg)
@@ -862,7 +862,7 @@
     
     (defun open-previous-line (arg)
       "Open a new line before the current one.
-                             See also `newline-and-indent'."
+                                 See also `newline-and-indent'."
       (interactive "p")
       (beginning-of-line)
       (open-line arg))
@@ -992,13 +992,8 @@
     
     (use-package duplicate-thing
       :ensure duplicate-thing
-      :bind ("C-c d" . duplicate-thing))
-    
-    (use-package rainbow-delimiters
-      :ensure rainbow-delimiters
-      :defer t
-      :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-    
+      :bind ("C-c d" . duplicate-thing))    
+        
     (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
                              (,(kbd "C-o")     . open-next-line)
                              (,(kbd "M-o")     . open-previous-line)
