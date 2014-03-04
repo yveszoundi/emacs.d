@@ -12,7 +12,8 @@
      ("LANG" . "en"))))
  '(ers-erc-channel-list
    (quote
-    (("freenode.net" "##java" "#freebsd" "#grails" "#emacs"))))
+    ((".*" "##java" "#freebsd" "#grails" "#emacs"))))
+ '(erc-autojoin-mode 1)
  '(ers-powerline-enabled t)
  '(ers-tab-size 4)
  '(ers-ui-font "Monospace-12")

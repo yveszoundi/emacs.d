@@ -788,6 +788,7 @@
                        erc-prompt-for-nickserv-password nil
                        erc-autojoin-channels-alist      ers-erc-channel-list
                        erc-kill-queries-on-quit         t
+                       erc-default-coding-system        '(utf-8 . utf-8)
                        erc-hide-list                    '("JOIN" "PART" "QUIT" "NICK")
                        erc-kill-server-buffer-on-quit   t)
 
@@ -799,6 +800,7 @@
 
        :init (defun ers/start-erc ()
                (interactive)
+               (erc-autojoin-mode 1)
                (let ((erc-config (netrc-machine (netrc-parse ers-secrets-file) "erc-config" t)))
                  (erc :server   ers-erc-server
                       :nick     (netrc-get erc-config "login")
