@@ -990,10 +990,14 @@
       :bind (("M-P" . drag-stuff-up)
              ("M-N" . drag-stuff-down)))
     
+    (use-package rainbow-delimiters
+      :ensure rainbow-delimiters
+      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+    
     (use-package duplicate-thing
       :ensure duplicate-thing
-      :bind ("C-c d" . duplicate-thing))    
-        
+      :bind ("C-c d" . duplicate-thing))
+    
     (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
                              (,(kbd "C-o")     . open-next-line)
                              (,(kbd "M-o")     . open-previous-line)
@@ -1005,8 +1009,8 @@
       (dolist (ers-keybinding ers-keybindings)
         (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
     
-    (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
-    (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+    (add-hook 'emacs-lisp-mode-hook       'eldoc-mode)
+    (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
     
     (use-package eldoc
       :defer t
