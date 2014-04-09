@@ -829,179 +829,181 @@
 * Various utilities
 
   #+begin_src emacs-lisp
-    (defun ers/insert-time (&optional date-pattern)
-      "Inserts the time given an optional pattern."
-      (interactive "P")
-      (let ((current-date-pattern (or date-pattern "%a %d.%m.%y %H:%M:%S")))
-        (insert (ers/get-date current-date-pattern))))
-    
-    (defun ers/get-date (date-pattern)
-      "Returns a formatted date for a given pattern."
-      (format-time-string date-pattern (current-time)))
-    
-    (defun ers/insert-date-simple ()
-      "Inserts the time in year-month-date format."
-      (interactive)
-      (ers/insert-time "%Y-%m-%d"))
-    
-    (defun ers/insert-date-raw ()
-      "Insert the time in raw format."
-      (interactive)
-      (ers/insert-time "%Y%m%d.%H%M%S"))
-    
-    (defun ers/insert-date-full()
-      "Inserts the full date and time."
-      (interactive)
-      (ers/insert-time "%a %d.%m.%y %T"))
-    
-    (defun open-next-line (arg)
-      "Move to the next line and then opens a line.
-                                See also `newline-and-indent'."
-      (interactive "p")
-      (end-of-line)
-      (open-line arg)
-      (forward-line 1))
-    
-    (defun open-previous-line (arg)
-      "Open a new line before the current one.
-                                 See also `newline-and-indent'."
-      (interactive "p")
-      (beginning-of-line)
-      (open-line arg))
-    
-    (use-package switch-window
-      :ensure switch-window
-      :bind ("C-c w" . switch-window))
-    
-    (use-package browse-kill-ring
-      :ensure browse-kill-ring
-      :defer t
-      :config (browse-kill-ring-default-keybindings))
-    
-    (use-package anzu
-      :ensure anzu
-      :config (global-anzu-mode t)
-      :diminish anzu-mode)
-    
-    (use-package wrap-region
-      :ensure wrap-region
-      :config (wrap-region-global-mode t)
-      :diminish wrap-region-mode)
-    
-    (use-package undo-tree
-      :ensure undo-tree
-      :config (global-undo-tree-mode t)
-      :init (setq undo-tree-visualizer-relative-timestamps  t
-                  undo-tree-visualizer-timestamps           t)
-      :diminish undo-tree-mode)
-    
-    (use-package expand-region
-      :ensure expand-region
-      :bind ("C-c e" . er/expand-region))
-    
-    (use-package hl-line
-      :init (add-hook 'prog-mode-hook 'hl-line-mode))
-    
-    (use-package linum
-      :init (setq linum-format (quote "%4d "))
-      :config (add-hook 'prog-mode-hook 'linum-mode))
-    
-    (use-package ace-jump-mode
-      :ensure ace-jump-mode
-      :bind ("C-c j" . ace-jump-mode)
-      :diminish ace-jump-mode)
-    
-    (use-package buffer-stack
-      :ensure buffer-stack
-      :bind (("C-c [" . buffer-stack-down)
-             ("C-c ]" . buffer-stack-up))
-      :init (buffer-stack-track))
-    
-    (use-package uniquify
-      :config (setq uniquify-separator           "/"
-                    uniquify-buffer-name-style   'forward
-                    uniquify-after-kill-buffer-p t
-                    uniquify-ignore-buffers-re   "^\\*"))
-    
-    (use-package saveplace
-      :init (progn (setq-default save-place t)
-                   (setq save-place-file ers-place-file)))
-    
-    (use-package recentf
-      :init (progn (setq recentf-max-menu-items ers-max-recent-files
-                         recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
-                         recentf-save-file      ers-recentf-file)
-                   (recentf-mode +1))
-    
-      :bind ("C-x C-r" . helm-recentf))
-    
-    (use-package ls-lisp
-      :config (setq ls-lisp-use-insert-directory-program nil
-                    ls-lisp-dirs-first t
-                    ls-list-ignore-case t))
-    
-    (use-package dired
-      :defer t
-      :init (setq dired-recursive-deletes 'always
-                  dired-recursive-copies  'always)
-      :config (progn
-                (put 'dired-find-alternate-file 'disabled nil)
-                (defun ers/dired-go-to-first-item ()
-                  (interactive)
-                  (goto-char (point-min))
-                  (dired-next-line 3))
-    
-                (defun ers/dired-go-to-last-item ()
-                  (interactive)
-                  (goto-char (point-max))
-                  (dired-previous-line 1))
-    
-                (defun ers/copy-filename-at-point (arg)
-                  (interactive "P")
-    
-                  (let ((f-name-prefix ""))
-                    (when arg
-                      (setq f-name-prefix default-directory))
-    
-                    (save-excursion
-                      (end-of-line)
-                      (let ((b (bounds-of-thing-at-point 'filename)))
-                        (when b
-                          (save-excursion
-                            (let ((beg (decf (car b)))
-                                  (end (decf (cdr b))))
-                              (kill-new
-                               (concat f-name-prefix
-                                       (substring-no-properties (buffer-string)
-                                                                beg
-                                                                end))))))))))
-    
-                (bind-keys :map dired-mode-map
-                           ("."   .  dired-up-directory)
-                           ("@"   . ers/copy-filename-at-point )
-                           ("M-P" . ers/dired-go-to-first-item )
-                           ("M-N" . ers/dired-go-to-last-item ))))
-    
-    (use-package dired-details
-      :ensure dired-details
-      :init (setq-default dired-details-hidden-string "--- ")
-      :config (dired-details-install))
-    
-    (use-package drag-stuff
-      :ensure drag-stuff
-      :bind (("M-P" . drag-stuff-up)
-             ("M-N" . drag-stuff-down)))
-    
-    (use-package rainbow-delimiters
-      :ensure rainbow-delimiters
-      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-    
-    (use-package duplicate-thing
-      :ensure duplicate-thing
-      :bind ("C-c d" . duplicate-thing))
-    
+        (defun ers/insert-time (&optional date-pattern)
+          "Inserts the time given an optional pattern."
+          (interactive "P")
+          (let ((current-date-pattern (or date-pattern "%a %d.%m.%y %H:%M:%S")))
+            (insert (ers/get-date current-date-pattern))))
+        
+        (defun ers/get-date (date-pattern)
+          "Returns a formatted date for a given pattern."
+          (format-time-string date-pattern (current-time)))
+        
+        (defun ers/insert-date-simple ()
+          "Inserts the time in year-month-date format."
+          (interactive)
+          (ers/insert-time "%Y-%m-%d"))
+        
+        (defun ers/insert-date-raw ()
+          "Insert the time in raw format."
+          (interactive)
+          (ers/insert-time "%Y%m%d.%H%M%S"))
+        
+        (defun ers/insert-date-full()
+          "Inserts the full date and time."
+          (interactive)
+          (ers/insert-time "%a %d.%m.%y %T"))
+        
+        (defun open-next-line (arg)
+          "Move to the next line and then opens a line.
+                                    See also `newline-and-indent'."
+          (interactive "p")
+          (end-of-line)
+          (open-line arg)
+          (forward-line 1))
+        
+        (defun open-previous-line (arg)
+          "Open a new line before the current one.
+                                     See also `newline-and-indent'."
+          (interactive "p")
+          (beginning-of-line)
+          (open-line arg))
+        
+        (use-package switch-window
+          :ensure switch-window
+          :bind ("C-c w" . switch-window))
+        
+        (use-package browse-kill-ring
+          :ensure browse-kill-ring
+          :defer t
+          :config (browse-kill-ring-default-keybindings))
+        
+        (use-package anzu
+          :ensure anzu
+          :config (global-anzu-mode t)
+          :diminish anzu-mode)
+        
+        (use-package wrap-region
+          :ensure wrap-region
+          :config (wrap-region-global-mode t)
+          :diminish wrap-region-mode)
+        
+        (use-package undo-tree
+          :ensure undo-tree
+          :config (global-undo-tree-mode t)
+          :init (setq undo-tree-visualizer-relative-timestamps  t
+                      undo-tree-visualizer-timestamps           t)
+          :diminish undo-tree-mode)
+        
+        (use-package expand-region
+          :ensure expand-region
+          :bind ("C-c e" . er/expand-region))
+        
+        (use-package hl-line
+          :init (add-hook 'prog-mode-hook 'hl-line-mode))
+        
+        (use-package linum
+          :init (setq linum-format (quote "%4d "))
+          :config (add-hook 'prog-mode-hook 'linum-mode))
+        
+        (use-package ace-jump-mode
+          :ensure ace-jump-mode
+          :bind ("C-c j" . ace-jump-mode)
+          :diminish ace-jump-mode)
+        
+        (use-package buffer-stack
+          :ensure buffer-stack
+          :bind (("C-c [" . buffer-stack-down)
+                 ("C-c ]" . buffer-stack-up))
+          :init (buffer-stack-track))
+        
+        (use-package uniquify
+          :config (setq uniquify-separator           "/"
+                        uniquify-buffer-name-style   'forward
+                        uniquify-after-kill-buffer-p t
+                        uniquify-ignore-buffers-re   "^\\*"))
+        
+        (use-package saveplace
+          :init (progn (setq-default save-place t)
+                       (setq save-place-file ers-place-file)))
+        
+        (use-package recentf
+          :init (progn (setq recentf-max-menu-items ers-max-recent-files
+                             recentf-exclude        '("/tmp" "/ssh:" "\\ido.last" "recentf")
+                             recentf-save-file      ers-recentf-file)
+                       (recentf-mode +1))
+        
+          :bind ("C-x C-r" . helm-recentf))
+        
+        (use-package ls-lisp
+          :config (setq ls-lisp-use-insert-directory-program nil
+                        ls-lisp-dirs-first t
+                        ls-list-ignore-case t))
+        
+        (use-package dired
+          :defer t
+          :init (setq dired-recursive-deletes 'always
+                      dired-recursive-copies  'always)
+          :config (progn
+                    (put 'dired-find-alternate-file 'disabled nil)
+                    (defun ers/dired-go-to-first-item ()
+                      (interactive)
+                      (goto-char (point-min))
+                      (dired-next-line 3))
+        
+                    (defun ers/dired-go-to-last-item ()
+                      (interactive)
+                      (goto-char (point-max))
+                      (dired-previous-line 1))
+        
+                    (defun ers/copy-filename-at-point (arg)
+                      (interactive "P")
+        
+                      (let ((f-name-prefix ""))
+                        (when arg
+                          (setq f-name-prefix default-directory))
+        
+                        (save-excursion
+                          (end-of-line)
+                          (let ((b (bounds-of-thing-at-point 'filename)))
+                            (when b
+                              (save-excursion
+                                (let ((beg (decf (car b)))
+                                      (end (decf (cdr b))))
+                                  (kill-new
+                                   (concat f-name-prefix
+                                           (substring-no-properties (buffer-string)
+                                                                    beg
+                                                                    end))))))))))
+        
+                    (bind-keys :map dired-mode-map
+                               ("."   .  dired-up-directory)
+                               ("@"   . ers/copy-filename-at-point )
+                               ("M-P" . ers/dired-go-to-first-item )
+                               ("M-N" . ers/dired-go-to-last-item ))))
+        
+        (use-package dired-details
+          :ensure dired-details
+          :init (setq-default dired-details-hidden-string "--- ")
+          :config (dired-details-install))
+        
+        (use-package drag-stuff
+          :ensure drag-stuff
+          :bind (("M-P" . drag-stuff-up)
+                 ("M-N" . drag-stuff-down)))
+        
+        (use-package rainbow-delimiters
+          :ensure rainbow-delimiters
+          :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+        
+        (use-package duplicate-thing
+          :ensure duplicate-thing
+          :bind ("C-c d" . duplicate-thing))
+        
     (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
                              (,(kbd "C-o")     . open-next-line)
+                             (,(kbd "C-x d")   . dired)
+                             (,(kbd "C-x 4 d") . dired-other-window)
                              (,(kbd "M-o")     . open-previous-line)
                              (,(kbd "C-x 4 k") . ers/burry-other-buffer)
                              (,(kbd "C-c C-e") . ers/eval-and-replace)
@@ -1010,13 +1012,13 @@
                              (,(kbd "C-c /")   . ers/comment-or-uncomment-line-or-region))))
       (dolist (ers-keybinding ers-keybindings)
         (global-set-key (car ers-keybinding) (cdr ers-keybinding))))
-    
-    (add-hook 'emacs-lisp-mode-hook       'eldoc-mode)
-    (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
-    
-    (use-package eldoc
-      :defer t
-      :diminish eldoc-mode)
+        
+        (add-hook 'emacs-lisp-mode-hook       'eldoc-mode)
+        (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
+        
+        (use-package eldoc
+          :defer t
+          :diminish eldoc-mode)
   #+end_src
 
 * Completion, matching and suggestions
@@ -1130,10 +1132,10 @@
 
    #+begin_src emacs-lisp
      (defun ers/load-theme (theme-symbol)
-       (when (boundp theme-symbol)
-         (when (symbol-value theme-symbol)
-         (funcall 'load-theme (symbol-value theme-symbol) t))))
-
+       (when (and (boundp theme-symbol)
+                  (symbol-value theme-symbol))
+         (funcall 'load-theme (symbol-value theme-symbol) t)))
+     
      (if window-system
          (ers/load-theme 'ers-ui-theme)
        (ers/load-theme 'ers-ui-theme-console))
@@ -1147,9 +1149,8 @@
        :defer t
        :if (and (boundp 'ers-powerline-enabled)
                 ers-powerline-enabled)
-       :config (progn
-                 (setq powerline-arrow-shape 'curve)
-                 (powerline-default-theme)))
+       :init   (setq powerline-arrow-shape 'curve)
+       :config (powerline-default-theme))
    #+end_src
 
 ** Fonts
