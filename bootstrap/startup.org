@@ -869,9 +869,9 @@
           (beginning-of-line)
           (open-line arg))
         
-        (use-package switch-window
-          :ensure switch-window
-          :bind ("C-c w" . switch-window))
+        (use-package ace-window
+          :ensure ace-window
+          :bind ("C-c w" . ace-window))
         
         (use-package browse-kill-ring
           :ensure browse-kill-ring
@@ -1002,8 +1002,6 @@
         
     (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
                              (,(kbd "C-o")     . open-next-line)
-                             (,(kbd "C-x d")   . dired)
-                             (,(kbd "C-x 4 d") . dired-other-window)
                              (,(kbd "M-o")     . open-previous-line)
                              (,(kbd "C-x 4 k") . ers/burry-other-buffer)
                              (,(kbd "C-c C-e") . ers/eval-and-replace)
