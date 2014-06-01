@@ -1127,10 +1127,22 @@
 ** Misc
 
    #+begin_src emacs-lisp
-  (setq visible-bell             t
-        display-time-24hr-format t
-        use-dialog-box           nil
-        default-frame-alist      `((font . ,ers-ui-font)))
+     (setq visible-bell             t
+           display-time-24hr-format t
+           use-dialog-box           nil
+           default-frame-alist      `((font . ,ers-ui-font)))
+
+     (use-package popwin
+       :ensure popwin
+       :config (setq display-buffer-function 'popwin:display-buffer))
+
+     (defun turn-on-linum-hl-mode-hook ()
+       (hl-line-mode 1)
+       (linum-mode 1))
+
+     (use-package nxml-mode
+       :init (add-hook 'nxml-mode-hook 'turn-on-linum-hl-mode-hook))
+
    #+end_src
 
 ** Themes
