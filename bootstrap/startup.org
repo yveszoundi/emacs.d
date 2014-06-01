@@ -549,7 +549,6 @@
     (use-package org
       :ensure htmlize
       :init (progn
-              (setq org-src-fontify-natively t)
               (setq org-directory ers-org-directory)
 
               ;; default settings
@@ -707,9 +706,9 @@
 *** Grails settings
 
    #+begin_src emacs-lisp
-  (use-package grails-projectile-mode
-    :init (grails-projectile-global-mode t)
-    :diminish grails-projectile-mode)
+     (use-package grails-projectile-mode
+       :init (grails-projectile-global-mode t)
+       :diminish grails-projectile-mode)
    #+end_src
 
 ** XML mode
