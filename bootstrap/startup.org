@@ -734,22 +734,25 @@
   #+begin_src emacs-lisp
     (use-package yasnippet
       :ensure yasnippet
-      :init (setq yas-verbosity 1)
+      :init (progn
+              (setq yas-verbosity 1)
+              (global-unset-key (kbd "TAB")))
       :config (progn
-                (yas-global-mode t)
-    
+                (yas-global-mode 1)
+
                 (let* ((yas-elpa-snippets-folder (car (file-expand-wildcards
                                                        (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
                        (yas-folder-candidates  `(,yas-elpa-snippets-folder
                                                  ,(concat user-emacs-directory "snippets")
                                                  ,(concat ers-emacs-dir "snippets"))))
-    
+
                   (cl-loop for p in yas-folder-candidates
                            unless (file-exists-p p)
                            do (cl-delete p yas-folder-candidates))
-    
+
                   (setq yas-snippet-dirs yas-folder-candidates))
-                (yas-reload-all))
+                (yas-reload-all)
+                (define-key yas-minor-mode-map (kbd "<tab>") 'yas/insert-snippet))
       :diminish yas-minor-mode)
   #+end_src
 
