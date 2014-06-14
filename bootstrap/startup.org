@@ -736,7 +736,7 @@
       :ensure yasnippet
       :init (progn
               (setq yas-verbosity 1)
-              (global-unset-key (kbd "TAB")))
+              )
       :config (progn
                 (yas-global-mode 1)
 
@@ -1048,28 +1048,11 @@
 ** Auto-complete settings
 
    #+begin_src emacs-lisp
-     (use-package auto-complete-config
-       :ensure auto-complete
-       :init (set-default 'ac-sources '(ac-source-abbrev
-                                        ac-source-dictionary
-                                        ac-source-words-in-buffer
-                                        ac-source-words-in-same-mode-buffers
-                                        ac-source-semantic))
-       :config (progn
-                 (setq ac-comphist-file ers-ac-histfile)
-                 (ac-config-default)
-                 (setq ac-use-menu-map t)
-     
-                 ;; Default settings
-                 (bind-keys :map ac-menu-map
-                            ("C-n"   . ac-next)
-                            ("C-p"   . ac-previous)
-                            ("M-TAB" . auto-complete))
-     
-                 (dolist (fn '(auto-complete-mode global-auto-complete-mode))
-                   (funcall fn t)))
-     
-       :diminish auto-complete-mode)
+     (use-package company
+       :ensure company
+       :init (setq company-begin-commands '())
+       :config (add-hook 'after-init-hook 'global-company-mode)
+       :bind ("C-c TAB" . company-complete))
    #+end_src
 
 ** Helm settings
