@@ -1060,7 +1060,7 @@
    #+begin_src emacs-lisp
      (use-package helm
        :ensure helm
-     
+
        :config (setq helm-ff-transformer-show-only-basename nil
                      helm-adaptive-history-file             ers-helm-adaptive-history-file
                      helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
@@ -1068,41 +1068,43 @@
                      helm-ff-auto-update-initial-value      t
                      helm-input-idle-delay                  0.1
                      helm-idle-delay                        0.1)
-     
+
        :init (progn
                (require 'helm-config)
                (helm-mode t)
                (helm-adaptative-mode t)
-     
+
                (use-package helm-ag
                  :init (use-package ag
                          :ensure ag)
                  :ensure helm-ag
                  :bind ("C-c a" . helm-ag))     
-     
+
                (use-package helm-descbinds
                  :ensure helm-descbinds
                  :bind ("C-h b"   . helm-descbinds))
-     
+
                (use-package helm-projectile
                  :ensure helm-projectile
                  :bind ("C-c h" . helm-projectile))
-     
+
                (add-hook 'eshell-mode-hook
                          #'(lambda ()
                              (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
-     
+
                (use-package helm-swoop
                  :ensure helm-swoop
-                 :bind ("C-c o" . helm-swoop))
-     
+                 :bind (("C-c o" . helm-swoop)
+                        ("C-c M-o" . helm-multi-swoop)))
+                        
+
                (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))     
-     
+
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
               ("C-x C-f" . helm-find-files)
               ("C-x C-b" . helm-buffers-list))
-     
+
        :diminish helm-mode)
    #+end_src
 
