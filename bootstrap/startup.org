@@ -1004,6 +1004,9 @@
       :ensure rainbow-delimiters
       :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
+    (use-package ag
+      :ensure ag)
+
     (use-package duplicate-thing
       :ensure duplicate-thing
       :bind ("C-c d" . duplicate-thing))
@@ -1075,8 +1078,6 @@
                (helm-adaptative-mode t)
 
                (use-package helm-ag
-                 :init (use-package ag
-                         :ensure ag)
                  :ensure helm-ag
                  :bind ("C-c a" . helm-ag))     
 
