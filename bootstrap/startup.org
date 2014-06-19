@@ -1055,7 +1055,8 @@
        :ensure company
        :init (setq company-begin-commands '())
        :config (add-hook 'after-init-hook 'global-company-mode)
-       :bind ("C-c TAB" . company-complete))
+       :bind ("C-c TAB" . company-complete)
+       :diminish company-mode)
    #+end_src
 
 ** Helm settings
