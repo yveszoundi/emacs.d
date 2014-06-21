@@ -882,8 +882,7 @@
 
     (use-package browse-kill-ring
       :ensure browse-kill-ring
-      :defer t
-      :config (browse-kill-ring-default-keybindings))
+      :init (bind-key* "M-y" 'browse-kill-ring))
 
     (use-package anzu
       :ensure anzu
@@ -915,8 +914,9 @@
 
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ( ("C-c j" . ace-jump-mode)
-              ("C-x j" . ace-jump-char-mode))
+      :bind ( ("C-c ,;" . ace-jump-mode)
+              ("C-c ,l" . ace-jump-line-mode)
+              ("C-c ,m" . ace-jump-char-mode))
       :diminish ace-jump-mode)
 
     (use-package buffer-stack
@@ -1125,6 +1125,7 @@
        :config (setq display-buffer-function 'popwin:display-buffer))
 
      (defun turn-on-linum-hl-mode-hook ()
+       (interactive)
        (hl-line-mode 1)
        (linum-mode 1))
 
