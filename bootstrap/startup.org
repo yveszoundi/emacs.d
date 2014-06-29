@@ -36,7 +36,7 @@
 
      ;; packages
      (require 'package)
-     (defalias 'plp 'package-list-packages)
+     (defalias 'plpl 'package-list-packages)
 
      (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
        (cl-loop for elt in ers-package-archives
@@ -914,9 +914,9 @@
 
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ( ("C-c ,;" . ace-jump-mode)
+      :bind ( ("C-c ,w" . ace-jump-mode)
               ("C-c ,l" . ace-jump-line-mode)
-              ("C-c ,m" . ace-jump-char-mode))
+              ("C-c ,c" . ace-jump-char-mode))
       :diminish ace-jump-mode)
 
     (use-package buffer-stack
