@@ -1028,6 +1028,12 @@
     (use-package eldoc
       :defer t
       :diminish eldoc-mode)
+
+    (use-package multiple-cursors
+      :ensure multiple-cursors
+      :config (setq mc/list-file "~/.emacs.d/data/multiple-cursors-all-or-once.el")
+      :bind (("C-x j" . mc/edit-lines)         
+             ("C-c C-<" . mc/mark-all-like-this)))
   #+end_src
 
 * Completion, matching and suggestions
