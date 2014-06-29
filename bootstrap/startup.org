@@ -792,14 +792,14 @@
      (use-package erc
        :config (progn
                  (setq erc-kill-buffer-on-part          t
+                       erc-server-auto-reconnect        t
                        erc-prompt-for-nickserv-password nil
                        erc-autojoin-channels-alist      ers-erc-channel-list
                        erc-kill-queries-on-quit         t
                        erc-default-coding-system        '(utf-8 . utf-8)
                        erc-hide-list                    '("JOIN" "PART" "QUIT" "NICK")
-                       erc-kill-server-buffer-on-quit   t)
-
-                 (setq erc-prompt  (lambda () (concat (buffer-name) "> ")))
+                       erc-kill-server-buffer-on-quit   t
+                       erc-prompt                       (lambda () (concat (buffer-name) "> ")))
 
                  ;; auto-fill buffer window
                  (add-hook 'window-configuration-change-hook
@@ -1037,13 +1037,14 @@
 
     (use-package smartparens
       :ensure smartparens
-
       :init (progn
-              (smartparens-global-mode 1))
+              (require 'smartparens)
+              (load-library "smartparens-config"))
 
       :config (progn
+                (smartparens-global-mode t)
                 (sp-with-modes '(html-mode sgml-mode)
-                               (sp-local-pair "<" ">"))
+                  (sp-local-pair "<" ">"))
 
                 (define-key sp-keymap (kbd "C-M-f") 'sp-forward-sexp)
                 (define-key sp-keymap (kbd "C-M-b") 'sp-backward-sexp)
@@ -1053,7 +1054,7 @@
 
                 (define-key sp-keymap (kbd "C-M-u") 'sp-backward-up-sexp)
                 (define-key sp-keymap (kbd "C-M-a") 'sp-backward-down-sexp)
-                
+
                 (define-key sp-keymap (kbd "C-S-a") 'sp-beginning-of-sexp)
                 (define-key sp-keymap (kbd "C-S-d") 'sp-end-of-sexp)
 
