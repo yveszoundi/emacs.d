@@ -1097,8 +1097,7 @@
                (use-package helm-swoop
                  :ensure helm-swoop
                  :bind (("C-c o" . helm-swoop)
-                        ("C-c M-o" . helm-multi-swoop)))
-                        
+                        ("C-c M-o" . helm-multi-swoop)))                   
 
                (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))     
 
