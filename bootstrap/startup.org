@@ -877,7 +877,7 @@
 
     (use-package ace-window
       :ensure ace-window
-      :bind ("C-c w" . ace-window))
+      :bind ("C-x o" . ace-window))
 
     (use-package browse-kill-ring
       :ensure browse-kill-ring
