@@ -35,8 +35,7 @@
            `( ,(ers/emacs-sub-dir '("vendor"))))
 
      ;; packages
-     (require 'package)
-     (defalias 'plpl 'package-list-packages)
+     (require 'package)     
 
      (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
        (cl-loop for elt in ers-package-archives
@@ -914,9 +913,9 @@
 
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ( ("C-c ,w" . ace-jump-mode)
-              ("C-c ,l" . ace-jump-line-mode)
-              ("C-c ,c" . ace-jump-char-mode))
+      :bind ( ("C-h 2" . ace-jump-mode)
+              ("C-h 3" . ace-jump-line-mode)
+              ("C-h 1" . ace-jump-char-mode))
       :diminish ace-jump-mode)
 
     (use-package buffer-stack
@@ -1074,18 +1073,18 @@
 ** Hippie-expand
 
    #+begin_src emacs-lisp
-  (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                           try-expand-dabbrev-all-buffers
-                                           try-expand-dabbrev-from-kill
-                                           try-complete-file-name-partially
-                                           try-complete-file-name
-                                           try-expand-all-abbrevs
-                                           try-expand-list
-                                           try-expand-line
-                                           try-complete-lisp-symbol-partially
-                                           try-complete-lisp-symbol))
+     (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                              try-expand-dabbrev-all-buffers
+                                              try-expand-dabbrev-from-kill
+                                              try-complete-file-name-partially
+                                              try-complete-file-name
+                                              try-expand-all-abbrevs
+                                              try-expand-list
+                                              try-expand-line
+                                              try-complete-lisp-symbol-partially
+                                              try-complete-lisp-symbol))
 
-  (global-set-key "\M- " 'hippie-expand)
+     (global-set-key "\M- " 'hippie-expand)
    #+end_src
 
 ** Auto-complete settings
@@ -1143,6 +1142,7 @@
 
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
+              ("C-h a"   . helm-apropos)
               ("C-x C-f" . helm-find-files)
               ("C-x C-b" . helm-buffers-list))
 
