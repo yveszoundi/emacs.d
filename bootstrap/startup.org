@@ -690,6 +690,86 @@
        :diminish projectile-mode)
    #+end_src
 
+** Completion, matching and suggestions
+*** Hippie-expand
+
+   #+begin_src emacs-lisp
+     (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                              try-expand-dabbrev-all-buffers
+                                              try-expand-dabbrev-from-kill
+                                              try-complete-file-name-partially
+                                              try-complete-file-name
+                                              try-expand-all-abbrevs
+                                              try-expand-list
+                                              try-expand-line
+                                              try-complete-lisp-symbol-partially
+                                              try-complete-lisp-symbol))
+
+     (global-set-key "\M- " 'hippie-expand)
+   #+end_src
+
+*** Auto-complete settings
+
+   #+begin_src emacs-lisp
+     (use-package company
+       :ensure company
+       :init (setq company-begin-commands '())
+       :config (add-hook 'after-init-hook 'global-company-mode)
+       :bind ("C-c TAB" . company-complete)
+       :diminish company-mode)
+   #+end_src
+
+*** Helm settings
+
+   #+begin_src emacs-lisp
+     (use-package helm
+       :ensure helm
+
+       :config (setq helm-ff-transformer-show-only-basename nil
+                     helm-adaptive-history-file             ers-helm-adaptive-history-file
+                     helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
+                     helm-yank-symbol-first                 t
+                     helm-ff-auto-update-initial-value      t
+                     helm-input-idle-delay                  0.1
+                     helm-idle-delay                        0.1)
+
+       :init (progn
+               (require 'helm-config)
+               (helm-mode t)
+               (helm-adaptative-mode t)
+
+               (use-package helm-ag
+                 :ensure helm-ag
+                 :bind ("C-c a" . helm-ag))     
+
+               (use-package helm-descbinds
+                 :ensure helm-descbinds
+                 :bind ("C-h b"   . helm-descbinds))
+
+               (use-package helm-projectile
+                 :ensure helm-projectile
+                 :bind ("C-c h" . helm-projectile))
+
+               (add-hook 'eshell-mode-hook
+                         #'(lambda ()
+                             (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
+
+               (use-package helm-swoop
+                 :ensure helm-swoop
+                 :bind (("C-c o" . helm-swoop)
+                        ("C-c M-o" . helm-multi-swoop)))                   
+
+               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))     
+
+       :bind (("C-x r l" . helm-bookmarks)
+              ("C-x C-m" . helm-M-x)
+              ("C-h a"   . helm-apropos)
+              ("C-x C-f" . helm-find-files)
+              ("C-x C-b" . helm-buffers-list))
+
+       :diminish helm-mode)
+   #+end_src
+
 ** Groovy and Grails
 
    Settings for Groovy and Grails development.
@@ -718,6 +798,86 @@
        :defer t
        :mode ("\\.\\(pom\\|xsd\\|xsl\\|xslt\\|gsp\\)$" . nxml-mode))
    #+end_src
+
+** Clojure
+
+  #+begin_src emacs-lisp
+    (use-package clojure-mode
+      :ensure clojure-mode
+      :mode ("\\.\\(clj\\|cljs\\)$" . clojure-mode)
+      :config (add-hook 'clojure-mode-hook
+                        (lambda()
+                          (setq mode-name "CLJ"))))
+
+    (use-package cider
+      :ensure cider
+      :config (progn
+                (defalias 'cji 'cider-jack-in)
+                (setq cider-words-of-inspiration '("NREPL is ready!!")))
+      :init (progn
+              (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+
+              (defun cider-completion-complete-op-fn (str)
+                "Return a list of completions for STR using the nREPL \"complete\" op."
+                (let ((strlst (plist-get
+                               (nrepl-send-request-sync
+                                (list "op"      "complete"
+                                      "session" (nrepl-current-session)
+                                      "ns"      nrepl-buffer-ns
+                                      "symbol"  str))
+                               :value)))
+                  (when strlst
+                    strlst)))
+
+              (defun cider-dispatch-complete-symbol (str)
+                "Return a list of completions for STR.
+    Dispatch to the nREPL \"complete\" op if supported,
+    otherwise dispatch to internal completion function."
+                (let ((str (substring-no-properties str)))
+                  (cider-ensure-op-supported "complete")
+                  (cider-completion-complete-op-fn str))))
+      :diminish (cider-mode . ""))
+
+    (use-package company-cider
+      :ensure company-cider
+      :init (eval-after-load 'company '(add-to-list 'company-backends 'company-cider)))
+  #+end_src
+
+** Web
+  #+begin_src emacs-lisp
+
+    (use-package web-mode
+      :ensure web-mode
+      :ensure emmet-mode
+      :init (add-hook 'html-mode-hook 'emmet-mode)
+      :config (setq web-mode-style-padding  ers-tab-size
+                    web-mode-script-padding ers-tab-size)
+      :mode ("\\.\\(html\\|htm\\)$" . web-mode))
+
+    (use-package json-mode
+      :ensure json-mode
+      :mode ("\\.\\(json\\)$" . json-mode))
+
+    (use-package js3-mode
+      :ensure js3-mode
+      :init (setq js3-indent-level          ers-tab-size
+                  js3-mode-dev-mode-p       t
+                  js3-auto-indent-p         t
+                  js3-enter-indents-newline t
+                  js3-indent-on-enter-key   t)
+      :mode ("\\.\\(js\\|tern-project\\)$" . js3-mode))
+
+    (use-package company-tern
+      :ensure company-tern
+      :ensure tern-mode
+      :init (progn
+              (let* ((tern-app-location "~/Tools/nodeapps/node_modules/tern/bin/")
+                     (tern-cmd-path (concat tern-app-location "tern")))
+                (setq tern-command (cons (expand-file-name tern-cmd-path) '())))
+              (add-to-list 'company-backends 'company-tern))
+      :config (add-hook 'js3-mode-hook 'tern-mode))
+
+  #+end_src
 
 ** Markdown keybindings
 
@@ -813,6 +973,26 @@
                       :password (netrc-get erc-config "password")))))
 
    #+end_src
+
+** Google Talk
+  #+begin_src emacs-lisp
+    (use-package jabber
+      :ensure jabber
+      :init  (let ((cred (netrc-machine (netrc-parse ers-secrets-file) "jabber" t))
+                   (jabber-server "talk.google.com")
+                   (jabber-port   5223))
+               (setq jabber-account-list `((,(netrc-get cred "login")
+                                            (:password        . ,(netrc-get cred "password"))
+                                            (:network-server  . ,jabber-server)
+                                            (:connection-type . ssl)
+                                            (:port            . ,jabber-port))))
+               jabber-history-enabled         t
+               jabber-use-global-history      nil
+               jabber-history-dir             "~/.emacs.d/data/jabber-history"
+               jabber-vcard-avatars-retrieve  nil
+               jabber-chat-buffer-show-avatar nil))
+
+  #+end_src
 
 ** Blogging
 
@@ -1068,86 +1248,6 @@
       :diminish smartparens-mode)
 
   #+end_src
-
-* Completion, matching and suggestions
-** Hippie-expand
-
-   #+begin_src emacs-lisp
-     (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                              try-expand-dabbrev-all-buffers
-                                              try-expand-dabbrev-from-kill
-                                              try-complete-file-name-partially
-                                              try-complete-file-name
-                                              try-expand-all-abbrevs
-                                              try-expand-list
-                                              try-expand-line
-                                              try-complete-lisp-symbol-partially
-                                              try-complete-lisp-symbol))
-
-     (global-set-key "\M- " 'hippie-expand)
-   #+end_src
-
-** Auto-complete settings
-
-   #+begin_src emacs-lisp
-     (use-package company
-       :ensure company
-       :init (setq company-begin-commands '())
-       :config (add-hook 'after-init-hook 'global-company-mode)
-       :bind ("C-c TAB" . company-complete)
-       :diminish company-mode)
-   #+end_src
-
-** Helm settings
-
-   #+begin_src emacs-lisp
-     (use-package helm
-       :ensure helm
-
-       :config (setq helm-ff-transformer-show-only-basename nil
-                     helm-adaptive-history-file             ers-helm-adaptive-history-file
-                     helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
-                     helm-yank-symbol-first                 t
-                     helm-ff-auto-update-initial-value      t
-                     helm-input-idle-delay                  0.1
-                     helm-idle-delay                        0.1)
-
-       :init (progn
-               (require 'helm-config)
-               (helm-mode t)
-               (helm-adaptative-mode t)
-
-               (use-package helm-ag
-                 :ensure helm-ag
-                 :bind ("C-c a" . helm-ag))     
-
-               (use-package helm-descbinds
-                 :ensure helm-descbinds
-                 :bind ("C-h b"   . helm-descbinds))
-
-               (use-package helm-projectile
-                 :ensure helm-projectile
-                 :bind ("C-c h" . helm-projectile))
-
-               (add-hook 'eshell-mode-hook
-                         #'(lambda ()
-                             (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
-
-               (use-package helm-swoop
-                 :ensure helm-swoop
-                 :bind (("C-c o" . helm-swoop)
-                        ("C-c M-o" . helm-multi-swoop)))                   
-
-               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))     
-
-       :bind (("C-x r l" . helm-bookmarks)
-              ("C-x C-m" . helm-M-x)
-              ("C-h a"   . helm-apropos)
-              ("C-x C-f" . helm-find-files)
-              ("C-x C-b" . helm-buffers-list))
-
-       :diminish helm-mode)
-   #+end_src
 
 * UI configuration
 
