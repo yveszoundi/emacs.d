@@ -663,6 +663,7 @@
      (use-package magit
        :ensure magit
        :bind    ("C-x g" . magit-status)
+       :diminish magit-auto-revert-mode
        :config  (defadvice magit-status (after magit-status-advice (dir) activate)
                   (when (window-parent)
                     (delete-other-windows))))
