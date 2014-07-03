@@ -856,6 +856,8 @@
 
     (use-package json-mode
       :ensure json-mode
+      :config (bind-keys :map json-mode-map
+                         ("C-c i" . json-mode-beautify))
       :mode ("\\.\\(json\\)$" . json-mode))
 
     (use-package js3-mode
