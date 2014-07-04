@@ -136,10 +136,6 @@
        :type 'symbol
        :group 'emacs-rimero-setup)
      
-     (defcustom ers-powerline-enabled nil
-       "Whether or not powerline is enabled."
-       :type 'boolean
-       :group 'emacs-rimero-setup)
      
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; spelling
@@ -764,6 +760,7 @@
 
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
+              ("C-h i"   . helm-info)
               ("C-h a"   . helm-apropos)
               ("C-x C-f" . helm-find-files)
               ("C-x C-b" . helm-buffers-list))
@@ -1315,6 +1312,14 @@
       :ensure cl-lib-highlight
       :init   (cl-lib-highlight-initialize))
 
+    (use-package ispell
+      :init (defun ispell-line()
+              (interactive)
+              (ispell-region (line-beginning-position) (line-end-position)))
+      :bind (("C-c sr" . ispell-region)
+             ("C-c sb" . ispell-buffer)
+             ("C-c sw" . ispell-word)
+             ("C-c sl" . ispell-line)))
   #+end_src
 
 * UI configuration
@@ -1352,18 +1357,6 @@
      (if window-system
          (ers/load-theme 'ers-ui-theme)
        (ers/load-theme 'ers-ui-theme-console))
-   #+end_src
-
-** Modeline
-
-   #+begin_src emacs-lisp
-     (use-package powerline
-       :ensure powerline
-       :defer t
-       :if (and (boundp 'ers-powerline-enabled)
-                ers-powerline-enabled)
-       :init   (setq powerline-arrow-shape 'curve)
-       :config (powerline-default-theme))
    #+end_src
 
 ** Fonts
