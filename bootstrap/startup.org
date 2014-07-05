@@ -1154,9 +1154,9 @@
 
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind (("C-c SPC"     . ace-jump-word-mode)
-             ("C-c c SPC"   . ace-jump-char-mode)
-             ("C-c c c SPC" . ace-jump-line-mode))
+      :bind (("C-c 1" . ace-jump-word-mode)
+             ("C-c 2" . ace-jump-char-mode)
+             ("C-c 3" . ace-jump-line-mode))
       :diminish ace-jump-mode)
 
     (use-package buffer-stack
@@ -1284,7 +1284,7 @@
 
       :config (progn
                 (smartparens-global-mode t)
-                (sp-with-modes '(html-mode sgml-mode)
+                (sp-with-modes '(html-mode sgml-mode nxml-mode web-mode)
                   (sp-local-pair "<" ">"))
 
                 (define-key sp-keymap (kbd "C-M-f") 'sp-forward-sexp)
@@ -1335,7 +1335,9 @@
 
      (use-package popwin
        :ensure popwin
-       :config (setq display-buffer-function 'popwin:display-buffer))
+       :config (progn
+                 (setq display-buffer-function 'popwin:display-buffer)
+                 (popwin-mode 1)))
 
      (defun turn-on-linum-hl-mode-hook ()
        (interactive)
