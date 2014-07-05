@@ -1154,9 +1154,9 @@
 
     (use-package ace-jump-mode
       :ensure ace-jump-mode
-      :bind ( ("C-h 2" . ace-jump-mode)
-              ("C-h 3" . ace-jump-line-mode)
-              ("C-h 1" . ace-jump-char-mode))
+      :bind (("C-c SPC"     . ace-jump-word-mode)
+             ("C-c c SPC"   . ace-jump-char-mode)
+             ("C-c c c SPC" . ace-jump-line-mode))
       :diminish ace-jump-mode)
 
     (use-package buffer-stack
@@ -1256,6 +1256,7 @@
                              (,(kbd "M-o")     . open-previous-line)
                              (,(kbd "C-x 4 k") . ers/burry-other-buffer)
                              (,(kbd "C-c C-e") . ers/eval-and-replace)
+                             (,(kbd "C-c j")   . join-line)
                              (,(kbd "C-x y")   . ers/copy-symbol-at-point)
                              (,(kbd "C-c r")   . revert-buffer)
                              (,(kbd "C-c /")   . ers/comment-or-uncomment-line-or-region))))
@@ -1396,3 +1397,4 @@
 
     (message "emacs-rimero-setup done loading.")
   #+end_src
+
