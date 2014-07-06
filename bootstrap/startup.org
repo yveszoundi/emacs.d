@@ -710,7 +710,8 @@
    #+begin_src emacs-lisp
      (use-package company
        :ensure company
-       :init (setq company-begin-commands '())
+       :init (setq company-begin-commands '()
+                   company-dabbrev-downcase nil)
        :config (add-hook 'after-init-hook 'global-company-mode)
        :bind ("C-c TAB" . company-complete)
        :diminish company-mode)
