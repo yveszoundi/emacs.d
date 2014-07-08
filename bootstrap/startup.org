@@ -710,10 +710,12 @@
    #+begin_src emacs-lisp
      (use-package company
        :ensure company
-       :init (setq company-begin-commands '()
-                   company-dabbrev-downcase nil)
+       :init (setq company-begin-commands           '()
+                   company-show-numbers              t
+                   company-tooltip-align-annotations t
+                   company-dabbrev-downcase          nil)
        :config (add-hook 'after-init-hook 'global-company-mode)
-       :bind ("C-c TAB" . company-complete)
+       :bind ("C-\\" . company-complete)
        :diminish company-mode)
    #+end_src
 
@@ -841,7 +843,10 @@
     otherwise dispatch to internal completion function."
                 (let ((str (substring-no-properties str)))
                   (cider-ensure-op-supported "complete")
-                  (cider-completion-complete-op-fn str))))
+                  (cider-completion-complete-op-fn str)))
+
+              (bind-keys :map clojure-mode-map
+                         ("C-h j" . cider-restart)))
       :diminish (cider-mode . ""))
 
     (use-package company-cider
