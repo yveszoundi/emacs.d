@@ -774,6 +774,7 @@
               ("M-y"     . helm-show-kill-ring)
               ("C-h a"   . helm-apropos)
               ("C-x C-f" . helm-find-files)
+              ("C-x p" .   helm-top)
               ("C-x C-b" . helm-buffers-list))
 
        :diminish helm-mode)
