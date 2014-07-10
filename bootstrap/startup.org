@@ -1346,6 +1346,13 @@
            use-dialog-box           nil
            default-frame-alist      `((font . ,ers-ui-font)))
 
+     (use-package powerline
+       :ensure powerline
+       :config (progn
+                 ;; Ensure selected window - emacs --daemon
+                 (powerline-set-selected-window)
+                 (powerline-default-theme)))
+
      (use-package popwin
        :ensure popwin
        :config (progn
