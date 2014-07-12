@@ -323,6 +323,8 @@
     (cl-loop for fn in '(downcase-region upcase-region erase-buffer)
              do (put fn 'disabled nil))
 
+    (setq global-auto-revert-non-file-buffers t)
+
     ;; Transparently open compressed files.
     (auto-compression-mode t)
 
@@ -354,8 +356,8 @@
 
 * Aliases
   #+begin_src emacs-lisp
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (defalias 'serc        'ers/start-erc)
+    (defalias 'yes-or-no-p 'y-or-n-p)
+    (defalias 'serc        'ers/start-erc)
   #+end_src
 
 * Utility functions
@@ -720,7 +722,8 @@
                    company-show-numbers              t
                    company-selection-wrap-around     t
                    company-tooltip-align-annotations t
-                   company-dabbrev-downcase          nil)
+                   company-dabbrev-downcase          nil
+                   company-dabbrev-ignore-case       nil)
        :config (add-hook 'after-init-hook 'global-company-mode)
        :bind ("C-c TAB" . company-complete)
        :diminish company-mode)
@@ -913,9 +916,7 @@
   #+begin_src emacs-lisp
     (use-package yasnippet
       :ensure yasnippet
-      :init (progn
-              (setq yas-verbosity 1)
-              )
+      :init (setq yas-verbosity 1)
       :config (progn
                 (yas-global-mode 1)
 
