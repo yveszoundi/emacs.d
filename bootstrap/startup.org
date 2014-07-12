@@ -911,6 +911,15 @@
        :mode ("\\.\\(markdown\\|mdown\\|md\\)$" . markdown-mode))
    #+end_src
 
+** YAML
+  YAML markup.
+
+  #+begin_src emacs-lisp
+    (use-package yaml-mode
+      :ensure yaml-mode
+      :mode ("\\.yml$" . yaml-mode))
+  #+end_src
+
 * Yasnippets configuration
 
   #+begin_src emacs-lisp
