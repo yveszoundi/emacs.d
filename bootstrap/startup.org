@@ -725,7 +725,7 @@
                    company-dabbrev-downcase          nil
                    company-dabbrev-ignore-case       nil)
        :config (add-hook 'after-init-hook 'global-company-mode)
-       :bind ("C-c TAB" . company-complete)
+       :bind ("C-h TAB" . company-complete)
        :diminish company-mode)
    #+end_src
 
@@ -941,7 +941,7 @@
 
                   (setq yas-snippet-dirs yas-folder-candidates))
                 (yas-reload-all)
-                (define-key yas-minor-mode-map (kbd "<tab>") 'yas/insert-snippet))
+                (define-key yas-minor-mode-map (kbd "C-c <tab>") 'yas/insert-snippet))
       :diminish yas-minor-mode)
   #+end_src
 
@@ -986,7 +986,7 @@
                        erc-autojoin-channels-alist      ers-erc-channel-list
                        erc-kill-queries-on-quit         t
                        erc-default-coding-system        '(utf-8 . utf-8)
-                       erc-hide-list                    '("JOIN" "PART" "QUIT" "NICK")
+                       erc-hide-list                    '("JOIN" "PART" "QUIT" "NICK" "MODE")
                        erc-kill-server-buffer-on-quit   t
                        erc-prompt                       (lambda () (concat (buffer-name) "> ")))
 
@@ -1357,12 +1357,10 @@
            use-dialog-box           nil
            default-frame-alist      `((font . ,ers-ui-font)))
 
-     (use-package powerline
-       :ensure powerline
-       :config (progn
-                 ;; Ensure selected window - emacs --daemon
-                 (powerline-set-selected-window)
-                 (powerline-default-theme)))
+     (use-package smart-mode-line
+       :ensure smart-mode-line
+       :init   (setq sml/theme 'respectful)
+       :config (sml/setup))
 
      (use-package popwin
        :ensure popwin
