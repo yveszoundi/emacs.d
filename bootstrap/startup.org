@@ -773,7 +773,7 @@
 
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
-              ("C-h i"   . helm-info)
+              ("C-h i"   . helm-google)
               ("M-y"     . helm-show-kill-ring)
               ("C-h a"   . helm-apropos)
               ("C-x C-f" . helm-find-files)
