@@ -278,7 +278,8 @@
        :group 'emacs-rimero-setup)
 
      ;; JS
-     (defcustom ers-tern-executable (executable-find "tern")
+     (defcustom ers-tern-executable (or (executable-find "tern")
+                                        "tern")
        "Tern executable for Javascript completion."
        :type 'string
        :group 'emacs-rimero-setup)
