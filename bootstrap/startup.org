@@ -869,11 +869,16 @@
 
 ** Web
   #+begin_src emacs-lisp
+    (use-package css-mode
+      :config (setq css-indent-offset ers-tab-size))
+
+    (use-package emmet-mode
+      :ensure emmet-mode
+      :defer  t)
 
     (use-package web-mode
       :ensure web-mode
-      :ensure emmet-mode
-      :init (add-hook 'html-mode-hook 'emmet-mode)
+      :init   (add-hook 'html-mode-hook 'emmet-mode)
       :config (setq web-mode-style-padding  ers-tab-size
                     web-mode-script-padding ers-tab-size)
       :mode ("\\.\\(html\\|htm\\)$" . web-mode))
@@ -886,19 +891,20 @@
 
     (use-package js3-mode
       :ensure js3-mode
-      :init (setq js3-indent-level          ers-tab-size
-                  js3-mode-dev-mode-p       t
-                  js3-auto-indent-p         t
-                  js3-enter-indents-newline t
-                  js3-indent-on-enter-key   t)
+      :init   (setq js3-indent-level          ers-tab-size
+                    js3-mode-dev-mode-p       t
+                    js3-auto-indent-p         t
+                    js3-enter-indents-newline t
+                    js3-indent-on-enter-key   t)
       :mode ("\\.\\(js\\|tern-project\\)$" . js3-mode))
+
+    (use-package tern
+      :ensure tern
+      :config (setq tern-command (cons (expand-file-name ers-tern-executable) '())))
 
     (use-package company-tern
       :ensure company-tern
-      :ensure tern-mode
-      :init (progn
-              (setq tern-command (cons (expand-file-name ers-tern-executable) '()))
-              (add-to-list 'company-backends 'company-tern))
+      :init   (add-to-list 'company-backends 'company-tern)
       :config (add-hook 'js3-mode-hook 'tern-mode))
 
   #+end_src
