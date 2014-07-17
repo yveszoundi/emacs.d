@@ -837,34 +837,9 @@
                 (setq cider-words-of-inspiration '("NREPL is ready!!")))
       :init (progn
               (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-
-              (defun cider-completion-complete-op-fn (str)
-                "Return a list of completions for STR using the nREPL \"complete\" op."
-                (let ((strlst (plist-get
-                               (nrepl-send-request-sync
-                                (list "op"      "complete"
-                                      "session" (nrepl-current-session)
-                                      "ns"      nrepl-buffer-ns
-                                      "symbol"  str))
-                               :value)))
-                  (when strlst
-                    strlst)))
-
-              (defun cider-dispatch-complete-symbol (str)
-                "Return a list of completions for STR.
-    Dispatch to the nREPL \"complete\" op if supported,
-    otherwise dispatch to internal completion function."
-                (let ((str (substring-no-properties str)))
-                  (cider-ensure-op-supported "complete")
-                  (cider-completion-complete-op-fn str)))
-
-              (bind-keys :map clojure-mode-map
-                         ("C-h j" . cider-restart)))
+              (bind-keys :map clojure-mode-map ("C-h j" . cider-restart)))
       :diminish (cider-mode . ""))
 
-    (use-package company-cider
-      :ensure company-cider
-      :init (eval-after-load 'company '(add-to-list 'company-backends 'company-cider)))
   #+end_src
 
 ** Web
