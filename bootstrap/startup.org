@@ -1204,31 +1204,21 @@
                   (goto-char (point-max))
                   (dired-previous-line 1))
 
-                (defun ers/copy-filename-at-point (arg)
-                  (interactive "P")
-
-                  (let ((f-name-prefix ""))
-                    (when arg
-                      (setq f-name-prefix default-directory))
-
-                    (save-excursion
-                      (end-of-line)
-                      (let ((b (bounds-of-thing-at-point 'filename)))
-                        (when b
-                          (save-excursion
-                            (let ((beg (decf (car b)))
-                                  (end (decf (cdr b))))
-                              (kill-new
-                               (concat f-name-prefix
-                                       (substring-no-properties (buffer-string)
-                                                                beg
-                                                                end))))))))))
+                (defun copy-file-name-to-clipboard ()
+                  "Copy the current buffer file name to the clipboard."
+                  (interactive)
+                  (let ((filename (if (equal major-mode 'dired-mode)
+                                      (dired-filename-at-point)
+                                    (buffer-file-name))))
+                    (when filename
+                      (kill-new filename)
+                      (message "Copied buffer file name '%s' to the clipboard." filename))))
 
                 (bind-keys :map dired-mode-map
                            ("."   .  dired-up-directory)
-                           ("@"   . ers/copy-filename-at-point )
-                           ("M-P" . ers/dired-go-to-first-item )
-                           ("M-N" . ers/dired-go-to-last-item ))))
+                           ("@"   .  copy-file-name-to-clipboard )
+                           ("M-P" .  ers/dired-go-to-first-item )
+                           ("M-N" .  ers/dired-go-to-last-item ))))
 
     (use-package dired-details
       :ensure    dired-details
@@ -1271,45 +1261,45 @@
     (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
 
     (use-package eldoc
-      :defer t
-      :diminish eldoc-mode)
+      :defer     t
+      :diminish  eldoc-mode)
 
     (use-package multiple-cursors
-      :ensure multiple-cursors
-      :config (setq mc/list-file "~/.emacs.d/data/mc.el")
-      :bind (("C-c me" . mc/edit-lines)
-             ("C-c ma" . mc/mark-all-like-this)))
+      :ensure    multiple-cursors
+      :init    (setq mc/list-file "~/.emacs.d/data/mc.el")
+      :bind      (("C-c me" . mc/edit-lines)
+                  ("C-c ma" . mc/mark-all-like-this)))
 
     (use-package smartparens
-      :ensure smartparens
-      :init (progn
-              (require 'smartparens)
-              (load-library "smartparens-config"))
+      :ensure    smartparens
+      :init      (progn
+                   (require 'smartparens)
+                   (load-library "smartparens-config"))
 
-      :config (progn
-                (smartparens-global-mode t)
-                (sp-with-modes '(html-mode sgml-mode nxml-mode web-mode)
-                  (sp-local-pair "<" ">"))
+      :config   (progn
+                  (smartparens-global-mode t)
+                  (sp-with-modes '(html-mode sgml-mode nxml-mode web-mode)
+                    (sp-local-pair "<" ">"))
 
-                (define-key sp-keymap (kbd "C-M-f") 'sp-forward-sexp)
-                (define-key sp-keymap (kbd "C-M-b") 'sp-backward-sexp)
+                  (define-key sp-keymap (kbd "C-M-f") 'sp-forward-sexp)
+                  (define-key sp-keymap (kbd "C-M-b") 'sp-backward-sexp)
 
-                (define-key sp-keymap (kbd "C-M-e") 'sp-up-sexp)
-                (define-key sp-keymap (kbd "C-M-d") 'sp-down-sexp)
+                  (define-key sp-keymap (kbd "C-M-e") 'sp-up-sexp)
+                  (define-key sp-keymap (kbd "C-M-d") 'sp-down-sexp)
 
-                (define-key sp-keymap (kbd "C-M-u") 'sp-backward-up-sexp)
-                (define-key sp-keymap (kbd "C-M-a") 'sp-backward-down-sexp)
+                  (define-key sp-keymap (kbd "C-M-u") 'sp-backward-up-sexp)
+                  (define-key sp-keymap (kbd "C-M-a") 'sp-backward-down-sexp)
 
-                (define-key sp-keymap (kbd "C-S-a") 'sp-beginning-of-sexp)
-                (define-key sp-keymap (kbd "C-S-d") 'sp-end-of-sexp)
+                  (define-key sp-keymap (kbd "C-S-a") 'sp-beginning-of-sexp)
+                  (define-key sp-keymap (kbd "C-S-d") 'sp-end-of-sexp)
 
-                (define-key sp-keymap (kbd "C-M-t") 'sp-transpose-sexp)
+                  (define-key sp-keymap (kbd "C-M-t") 'sp-transpose-sexp)
 
-                (define-key sp-keymap (kbd "C-M-n") 'sp-next-sexp)
-                (define-key sp-keymap (kbd "C-M-p") 'sp-previous-sexp)
+                  (define-key sp-keymap (kbd "C-M-n") 'sp-next-sexp)
+                  (define-key sp-keymap (kbd "C-M-p") 'sp-previous-sexp)
 
-                (define-key sp-keymap (kbd "C-M-k") 'sp-kill-sexp)
-                (define-key sp-keymap (kbd "C-M-w") 'sp-copy-sexp))
+                  (define-key sp-keymap (kbd "C-M-k") 'sp-kill-sexp)
+                  (define-key sp-keymap (kbd "C-M-w") 'sp-copy-sexp))
 
       :diminish smartparens-mode)
 
