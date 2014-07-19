@@ -824,63 +824,61 @@
 
   #+begin_src emacs-lisp
     (use-package clojure-mode
-      :ensure clojure-mode
-      :mode ("\\.\\(clj\\|cljs\\)$" . clojure-mode)
-      :config (add-hook 'clojure-mode-hook
-                        (lambda()
-                          (setq mode-name "CLJ"))))
+      :ensure    clojure-mode
+      :mode      ("\\.\\(clj\\|cljs\\)$" . clojure-mode)
+      :init      (defun rename-clojure-modeline ()
+                   (interactive)
+                   (setq mode-name "CLJ"))
+      :config    (add-hook 'clojure-mode-hook 'rename-clojure-modeline))
 
     (use-package cider
-      :ensure cider
-      :config (progn
-                (defalias 'cji 'cider-jack-in)
-                (setq cider-words-of-inspiration '("NREPL is ready!!")))
-      :init (progn
-              (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-              (bind-keys :map clojure-mode-map ("C-h j" . cider-restart)))
-      :diminish (cider-mode . ""))
+      :ensure    cider
+      :pre-init  (setq cider-words-of-inspiration '("NREPL is ready!!"))
+      :config    (defalias 'cji 'cider-jack-in)
+      :init      (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+      :diminish  (cider-mode . ""))
 
   #+end_src
 
 ** Web
   #+begin_src emacs-lisp
     (use-package css-mode
-      :config (setq css-indent-offset ers-tab-size))
+      :config    (setq css-indent-offset ers-tab-size))
 
     (use-package emmet-mode
-      :ensure emmet-mode
-      :defer  t)
+      :ensure    emmet-mode
+      :defer     t)
 
     (use-package web-mode
-      :ensure web-mode
-      :init   (add-hook 'html-mode-hook 'emmet-mode)
-      :config (setq web-mode-style-padding  ers-tab-size
-                    web-mode-script-padding ers-tab-size)
-      :mode ("\\.\\(html\\|htm\\)$" . web-mode))
+      :ensure    web-mode
+      :init      (add-hook 'html-mode-hook 'emmet-mode)
+      :config    (setq web-mode-style-padding  ers-tab-size
+                       web-mode-script-padding ers-tab-size)
+      :mode      ("\\.\\(html\\|htm\\)$" . web-mode))
 
     (use-package json-mode
-      :ensure json-mode
-      :config (bind-keys :map json-mode-map
-                         ("C-c i" . json-mode-beautify))
-      :mode ("\\.\\(json\\)$" . json-mode))
+      :ensure    json-mode
+      :config    (bind-keys :map json-mode-map
+                            ("C-c i" . json-mode-beautify))
+      :mode      ("\\.\\(json\\)$" . json-mode))
 
     (use-package js3-mode
-      :ensure js3-mode
-      :init   (setq js3-indent-level          ers-tab-size
-                    js3-mode-dev-mode-p       t
-                    js3-auto-indent-p         t
-                    js3-enter-indents-newline t
-                    js3-indent-on-enter-key   t)
-      :mode ("\\.\\(js\\|tern-project\\)$" . js3-mode))
+      :ensure    js3-mode
+      :init      (setq js3-indent-level          ers-tab-size
+                       js3-mode-dev-mode-p       t
+                       js3-auto-indent-p         t
+                       js3-enter-indents-newline t
+                       js3-indent-on-enter-key   t)
+      :mode      ("\\.\\(js\\|tern-project\\)$" . js3-mode))
 
     (use-package tern
-      :ensure tern
-      :config (setq tern-command (cons (expand-file-name ers-tern-executable) '())))
+      :ensure    tern
+      :config    (setq tern-command (list (expand-file-name ers-tern-executable))))
 
     (use-package company-tern
-      :ensure company-tern
-      :init   (add-to-list 'company-backends 'company-tern)
-      :config (add-hook 'js3-mode-hook 'tern-mode))
+      :ensure    company-tern
+      :init      (add-to-list 'company-backends 'company-tern)
+      :config    (add-hook 'js3-mode-hook 'tern-mode))
 
   #+end_src
 
@@ -899,6 +897,7 @@
   #+begin_src emacs-lisp
     (use-package yaml-mode
       :ensure yaml-mode
+      :defer t
       :mode ("\\.yml$" . yaml-mode))
   #+end_src
 
@@ -1122,55 +1121,55 @@
       (open-line arg))
 
     (use-package ace-window
-      :ensure ace-window
-      :bind ("C-x o" . ace-window))
+      :ensure    ace-window
+      :bind      ("C-x o" . ace-window))
 
     (use-package anzu
-      :ensure anzu
-      :config (global-anzu-mode t)
-      :diminish anzu-mode)
+      :ensure    anzu
+      :config    (global-anzu-mode t)
+      :diminish  anzu-mode)
 
     (use-package wrap-region
-      :ensure wrap-region
-      :config (wrap-region-global-mode t)
-      :diminish wrap-region-mode)
+      :ensure    wrap-region
+      :config    (wrap-region-global-mode t)
+      :diminish  wrap-region-mode)
 
     (use-package undo-tree
-      :ensure undo-tree
-      :config (global-undo-tree-mode t)
-      :init (setq undo-tree-visualizer-relative-timestamps  t
-                  undo-tree-visualizer-timestamps           t)
-      :diminish undo-tree-mode)
+      :ensure    undo-tree
+      :config    (global-undo-tree-mode t)
+      :init      (setq undo-tree-visualizer-relative-timestamps  t
+                       undo-tree-visualizer-timestamps           t)
+      :diminish  undo-tree-mode)
 
     (use-package expand-region
       :ensure expand-region
       :bind ("C-c e" . er/expand-region))
 
     (use-package hl-line
-      :init (add-hook 'prog-mode-hook 'hl-line-mode))
+      :init     (add-hook 'prog-mode-hook 'hl-line-mode))
 
     (use-package linum
-      :init (setq linum-format (quote "%4d "))
-      :config (add-hook 'prog-mode-hook 'linum-mode))
+      :init      (setq linum-format (quote "%4d "))
+      :config    (add-hook 'prog-mode-hook 'linum-mode))
 
     (use-package ace-jump-mode
-      :ensure ace-jump-mode
-      :bind (("C-c 1" . ace-jump-word-mode)
-             ("C-c 2" . ace-jump-char-mode)
-             ("C-c 3" . ace-jump-line-mode))
-      :diminish ace-jump-mode)
+      :ensure    ace-jump-mode
+      :bind      (("C-c gw" . ace-jump-word-mode)
+                  ("C-c gc" . ace-jump-char-mode)
+                  ("C-c gl" . ace-jump-line-mode))
+      :diminish  ace-jump-mode)
 
     (use-package buffer-stack
-      :ensure buffer-stack
-      :bind (("C-c [" . buffer-stack-down)
-             ("C-c ]" . buffer-stack-up))
-      :init (buffer-stack-track))
+      :ensure    buffer-stack
+      :bind      (("C-c [" . buffer-stack-down)
+                  ("C-c ]" . buffer-stack-up))
+      :config    (buffer-stack-track))
 
     (use-package uniquify
-      :config (setq uniquify-separator           "/"
-                    uniquify-buffer-name-style   'forward
-                    uniquify-after-kill-buffer-p t
-                    uniquify-ignore-buffers-re   "^\\*"))
+      :config    (setq uniquify-separator           "/"
+                       uniquify-buffer-name-style   'forward
+                       uniquify-after-kill-buffer-p t
+                       uniquify-ignore-buffers-re   "^\\*"))
 
     (use-package saveplace
       :init (progn (setq-default save-place t)
@@ -1232,28 +1231,27 @@
                            ("M-N" . ers/dired-go-to-last-item ))))
 
     (use-package dired-details
-      :ensure dired-details
-      :init (setq-default dired-details-hidden-string "--- ")
-      :config (dired-details-install))
+      :ensure    dired-details
+      :init      (setq-default dired-details-hidden-string "--- ")
+      :config    (dired-details-install))
 
     (use-package drag-stuff
-      :ensure drag-stuff
-      :bind (("M-P" . drag-stuff-up)
-             ("M-N" . drag-stuff-down)))
+      :ensure    drag-stuff
+      :bind      (("M-P" . drag-stuff-up)
+                  ("M-N" . drag-stuff-down)))
 
     (use-package rainbow-delimiters
-      :ensure rainbow-delimiters
-      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+      :ensure    rainbow-delimiters
+      :init      (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
     (use-package ag
-      :ensure ag)
+      :ensure    ag)
 
     (use-package duplicate-thing
-      :ensure duplicate-thing
-      :bind ("C-c d" . duplicate-thing))
+      :ensure    duplicate-thing
+      :bind      ("C-c d" . duplicate-thing))
 
-    (let ((ers-keybindings `((,(kbd "C-c g")   . goto-line)
-                             (,(kbd "C-o")     . open-next-line)
+    (let ((ers-keybindings `((,(kbd "C-o")     . open-next-line)
                              (,(kbd "M-o")     . open-previous-line)
                              (,(kbd "C-x 4 k") . ers/burry-other-buffer)
                              (,(kbd "C-c C-e") . ers/eval-and-replace)
@@ -1278,9 +1276,9 @@
 
     (use-package multiple-cursors
       :ensure multiple-cursors
-      :config (setq mc/list-file "~/.emacs.d/data/multiple-cursors-all-or-once.el")
+      :config (setq mc/list-file "~/.emacs.d/data/mc.el")
       :bind (("C-c me" . mc/edit-lines)
-             ("C-c C-<" . mc/mark-all-like-this)))
+             ("C-c ma" . mc/mark-all-like-this)))
 
     (use-package smartparens
       :ensure smartparens
@@ -1316,17 +1314,17 @@
       :diminish smartparens-mode)
 
     (use-package cl-lib-highlight
-      :ensure cl-lib-highlight
-      :init   (cl-lib-highlight-initialize))
+      :ensure    cl-lib-highlight
+      :init      (cl-lib-highlight-initialize))
 
     (use-package ispell
-      :init (defun ispell-line()
-              (interactive)
-              (ispell-region (line-beginning-position) (line-end-position)))
-      :bind (("C-c sr" . ispell-region)
-             ("C-c sb" . ispell-buffer)
-             ("C-c sw" . ispell-word)
-             ("C-c sl" . ispell-line)))
+      :init      (defun ispell-line()
+                   (interactive)
+                   (ispell-region (line-beginning-position) (line-end-position)))
+      :bind      (("C-c sr" . ispell-region)
+                  ("C-c sb" . ispell-buffer)
+                  ("C-c sw" . ispell-word)
+                  ("C-c sl" . ispell-line)))
   #+end_src
 
 * UI configuration
