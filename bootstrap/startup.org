@@ -518,9 +518,7 @@
                             "js2-basic-offset"
                             "js-indent-level"
                             "py-indent-offset"
-                            "sgml-basic-offset"
-                            "nxml-child-indent"
-                            "nxml-outline-child-indent")
+                            "sgml-basic-offset")
                do (progn
                     (eval `(setq-default ,(intern elt) ers-tab-size))
                     (eval `(setq ,(intern elt) ers-tab-size)))))
@@ -808,9 +806,11 @@
 
    #+begin_src emacs-lisp
      (use-package nxml-mode
-       :init (setq nxml-slash-auto-complete-flag t)
-       :defer t
-       :mode ("\\.\\(pom\\|xsd\\|xsl\\|xslt\\|gsp\\)$" . nxml-mode))
+       :init      (setq nxml-slash-auto-complete-flag t              
+                   nxml-child-indent             ers-tab-size
+                   nxml-outline-child-indent     ers-tab-size)
+       :defer     t
+       :mode      ("\\.\\(pom\\|xsd\\|xsl\\|xslt\\|gsp\\)$" . nxml-mode))
    #+end_src
 
 ** SQL
@@ -886,9 +886,9 @@
 
    #+begin_src emacs-lisp
      (use-package markdown-mode
-       :ensure markdown-mode
-       :defer t
-       :mode ("\\.\\(markdown\\|mdown\\|md\\)$" . markdown-mode))
+       :ensure    markdown-mode
+       :defer     t
+       :mode      ("\\.\\(markdown\\|mdown\\|md\\)$" . markdown-mode))
    #+end_src
 
 ** YAML
@@ -896,34 +896,33 @@
 
   #+begin_src emacs-lisp
     (use-package yaml-mode
-      :ensure yaml-mode
-      :defer t
-      :mode ("\\.yml$" . yaml-mode))
+      :ensure    yaml-mode
+      :defer     t
+      :mode      ("\\.yml$" . yaml-mode))
   #+end_src
 
 * Yasnippets configuration
 
   #+begin_src emacs-lisp
     (use-package yasnippet
-      :ensure yasnippet
-      :init (setq yas-verbosity 1)
-      :config (progn
-                (yas-global-mode 1)
+      :ensure    yasnippet
+      :init      (setq yas-verbosity 1)
+      :config    (progn
+                   (yas-global-mode 1)
+                   (let* ((yas-elpa-snippets-folder (car (file-expand-wildcards
+                                                          (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
+                          (yas-folder-candidates  `(,yas-elpa-snippets-folder
+                                                    ,(concat user-emacs-directory "snippets")
+                                                    ,(concat ers-emacs-dir "snippets"))))
 
-                (let* ((yas-elpa-snippets-folder (car (file-expand-wildcards
-                                                       (concat user-emacs-directory "elpa/yasnippet-*/snippets"))))
-                       (yas-folder-candidates  `(,yas-elpa-snippets-folder
-                                                 ,(concat user-emacs-directory "snippets")
-                                                 ,(concat ers-emacs-dir "snippets"))))
+                     (cl-loop for p in yas-folder-candidates
+                              unless (file-exists-p p)
+                              do (cl-delete p yas-folder-candidates))
 
-                  (cl-loop for p in yas-folder-candidates
-                           unless (file-exists-p p)
-                           do (cl-delete p yas-folder-candidates))
-
-                  (setq yas-snippet-dirs yas-folder-candidates))
-                (yas-reload-all)
-                (define-key yas-minor-mode-map (kbd "C-c <tab>") 'yas/insert-snippet))
-      :diminish yas-minor-mode)
+                     (setq yas-snippet-dirs yas-folder-candidates))
+                   (yas-reload-all)
+                   (define-key yas-minor-mode-map (kbd "C-c <tab>") 'yas/insert-snippet))
+      :diminish  yas-minor-mode)
   #+end_src
 
 * Spellchecking configuration
@@ -1242,6 +1241,7 @@
       :bind      ("C-c d" . duplicate-thing))
 
     (let ((ers-keybindings `((,(kbd "C-o")     . open-next-line)
+                             (,(kbd "C-h M-w") . copy-file-name-to-clipboard)
                              (,(kbd "M-o")     . open-previous-line)
                              (,(kbd "C-x 4 k") . ers/burry-other-buffer)
                              (,(kbd "C-c C-e") . ers/eval-and-replace)
