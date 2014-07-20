@@ -649,8 +649,8 @@
 ** Shell scripts
    #+begin_src emacs-lisp
      (use-package batch-mode
-       :ensure batch-mode
-       :mode ("\\.\\(bat\\)$" . batch-mode))
+       :ensure    batch-mode
+       :mode      ("\\.\\(bat\\)$" . batch-mode))
    #+end_src
 ** Version control
 
@@ -658,18 +658,18 @@
 
    #+begin_src emacs-lisp
      (use-package vc-svn
-       :ensure dsvn
-       :init (progn
-               (autoload 'svn-status "dsvn" "Run `svn status'." t)
-               (autoload 'svn-update "dsvn" "Run `svn update'." t)))
+       :ensure    dsvn
+       :init      (progn
+                    (autoload 'svn-status "dsvn" "Run `svn status'." t)
+                    (autoload 'svn-update "dsvn" "Run `svn update'." t)))
 
      (use-package magit
-       :ensure magit
-       :bind    ("C-x g" . magit-status)
+       :ensure   magit
+       :bind     ("C-x g" . magit-status)
        :diminish magit-auto-revert-mode
-       :config  (defadvice magit-status (after magit-status-advice (dir) activate)
-                  (when (window-parent)
-                    (delete-other-windows))))
+       :config   (defadvice magit-status (after magit-status-advice (dir) activate)
+                   (when (window-parent)
+                     (delete-other-windows))))
    #+end_src
 
 ** Project management
@@ -677,21 +677,21 @@
 
    #+begin_src emacs-lisp
      (use-package projectile
-       :ensure projectile
-       :config (projectile-global-mode t)
-       :init (progn
-               ;; create projectile data folder if non-existent
-               (ers/mkdir-p ers-projectile-folder)
-     
-               ;; set projectile custom variables
-               (let* ((ers-projectile-dir (file-name-as-directory ers-projectile-folder))
-                      (ers-projectile-cache-file (concat ers-projectile-dir ers-projectile-cache-filename))
-                      (ers-projectile-bookmarks-file (concat ers-projectile-dir ers-projectile-bookmarks-filename)))
-                 (setq projectile-cache-file          ers-projectile-cache-file
-                       projectile-known-projects-file ers-projectile-bookmarks-file
-                       projectile-indexing-method     'alien
-                       projectile-enable-caching      t)))
-       :diminish projectile-mode)
+       :ensure    projectile
+       :config    (projectile-global-mode t)
+       :init      (progn
+                    ;; create projectile data folder if non-existent
+                    (ers/mkdir-p ers-projectile-folder)
+
+                    ;; set projectile custom variables
+                    (let* ((ers-projectile-dir (file-name-as-directory ers-projectile-folder))
+                           (ers-projectile-cache-file (concat ers-projectile-dir ers-projectile-cache-filename))
+                           (ers-projectile-bookmarks-file (concat ers-projectile-dir ers-projectile-bookmarks-filename)))
+                      (setq projectile-cache-file          ers-projectile-cache-file
+                            projectile-known-projects-file ers-projectile-bookmarks-file
+                            projectile-indexing-method     'alien
+                            projectile-enable-caching      t)))
+       :diminish   projectile-mode)
    #+end_src
 
 ** Completion, matching and suggestions
@@ -716,59 +716,59 @@
 
    #+begin_src emacs-lisp
      (use-package company
-       :ensure company
-       :init (setq company-begin-commands           '()
-                   company-show-numbers              t
-                   company-selection-wrap-around     t
-                   company-tooltip-align-annotations t
-                   company-dabbrev-downcase          nil
-                   company-dabbrev-ignore-case       nil)
-       :config (add-hook 'after-init-hook 'global-company-mode)
-       :bind ("C-h TAB" . company-complete)
-       :diminish company-mode)
+       :ensure    company
+       :init      (setq company-begin-commands           '()
+                        company-show-numbers              t
+                        company-selection-wrap-around     t
+                        company-tooltip-align-annotations t
+                        company-dabbrev-downcase          nil
+                        company-dabbrev-ignore-case       nil)
+       :config    (add-hook 'after-init-hook 'global-company-mode)
+       :bind      ("C-h TAB" . company-complete)
+       :diminish  company-mode)
    #+end_src
 
 *** Helm settings
 
    #+begin_src emacs-lisp
      (use-package helm
-       :ensure helm
+       :ensure    helm
 
-       :config (setq helm-ff-transformer-show-only-basename nil
-                     helm-adaptive-history-file             ers-helm-adaptive-history-file
-                     helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
-                     helm-yank-symbol-first                 t
-                     helm-ff-auto-update-initial-value      t
-                     helm-input-idle-delay                  0.1
-                     helm-idle-delay                        0.1)
+       :config    (setq helm-ff-transformer-show-only-basename nil
+                        helm-adaptive-history-file             ers-helm-adaptive-history-file
+                        helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
+                        helm-yank-symbol-first                 t
+                        helm-ff-auto-update-initial-value      t
+                        helm-input-idle-delay                  0.1
+                        helm-idle-delay                        0.1)
 
-       :init (progn
-               (require 'helm-config)
-               (helm-mode t)
-               (helm-adaptative-mode t)
+       :init      (progn
+                    (require 'helm-config)
+                    (helm-mode t)
+                    (helm-adaptative-mode t)
 
-               (use-package helm-ag
-                 :ensure helm-ag
-                 :bind ("C-c a" . helm-ag))     
+                    (use-package helm-ag
+                      :ensure    helm-ag
+                      :bind      ("C-c a" . helm-ag))
 
-               (use-package helm-descbinds
-                 :ensure helm-descbinds
-                 :bind ("C-h b"   . helm-descbinds))
+                    (use-package helm-descbinds
+                      :ensure    helm-descbinds
+                      :bind      ("C-h b"   . helm-descbinds))
 
-               (use-package helm-projectile
-                 :ensure helm-projectile
-                 :bind ("C-c h" . helm-projectile))
+                    (use-package helm-projectile
+                      :ensure    helm-projectile
+                      :bind      ("C-c h" . helm-projectile))
 
-               (add-hook 'eshell-mode-hook
-                         #'(lambda ()
-                             (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
+                    (add-hook 'eshell-mode-hook
+                              #'(lambda ()
+                                  (bind-key "M-p" 'helm-eshell-history eshell-mode-map)))
 
-               (use-package helm-swoop
-                 :ensure helm-swoop
-                 :bind (("C-c o" . helm-swoop)
-                        ("C-c M-o" . helm-multi-swoop)))                   
+                    (use-package helm-swoop
+                      :ensure    helm-swoop
+                      :bind      (("C-c o" . helm-swoop)
+                                  ("C-c M-o" . helm-multi-swoop)))
 
-               (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))     
+                    (bind-key "C-c C-SPC" 'helm-ff-run-toggle-auto-update helm-find-files-map))
 
        :bind (("C-x r l" . helm-bookmarks)
               ("C-x C-m" . helm-M-x)
@@ -789,26 +789,26 @@
 *** Groovy mode
    #+begin_src emacs-lisp
      (use-package groovy-mode
-       :ensure groovy-mode
-       :defer t
-       :mode ("\\.\\(groovy\\|gradle\\)$" . groovy-mode))
+       :ensure    groovy-mode
+       :defer     t
+       :mode      ("\\.\\(groovy\\|gradle\\)$" . groovy-mode))
    #+end_src
 
 *** Grails settings
 
    #+begin_src emacs-lisp
      (use-package grails-projectile-mode
-       :init (grails-projectile-global-mode t)
-       :diminish grails-projectile-mode)
+       :init      (grails-projectile-global-mode t)
+       :diminish  grails-projectile-mode)
    #+end_src
 
 ** XML mode
 
    #+begin_src emacs-lisp
      (use-package nxml-mode
-       :init      (setq nxml-slash-auto-complete-flag t              
-                   nxml-child-indent             ers-tab-size
-                   nxml-outline-child-indent     ers-tab-size)
+       :init      (setq nxml-slash-auto-complete-flag t
+                        nxml-child-indent             ers-tab-size
+                        nxml-outline-child-indent     ers-tab-size)
        :defer     t
        :mode      ("\\.\\(pom\\|xsd\\|xsl\\|xslt\\|gsp\\)$" . nxml-mode))
    #+end_src
@@ -816,7 +816,7 @@
 ** SQL
    #+begin_src emacs-lisp
      (use-package sql
-       :mode ("\\.ddl\\'" . sql-mode))
+       :mode      ("\\.ddl\\'" . sql-mode))
 
    #+end_src
 
@@ -942,8 +942,8 @@
 
      ;; w3m
      (use-package w3m
-       :ensure w3m
-       :init (setq w3m-coding-system             'utf-8
+       :ensure    w3m
+       :init      (setq w3m-coding-system             'utf-8
                    w3m-file-coding-system        'utf-8
                    w3m-file-name-coding-system   'utf-8
                    w3m-input-coding-system       'utf-8
@@ -951,7 +951,7 @@
                    w3m-terminal-coding-system    'utf-8
                    w3m-use-cookies               t
                    w3m-cookie-accept-bad-cookies t)
-       :bind ("C-c m w" . w3m-browse-url))
+       :bind      ("C-c m w" . w3m-browse-url))
 
    #+end_src
 
@@ -987,20 +987,20 @@
 ** Google Talk
   #+begin_src emacs-lisp
     (use-package jabber
-      :ensure jabber
-      :init  (let ((cred (netrc-machine (netrc-parse ers-secrets-file) "jabber" t))
-                   (jabber-server "talk.google.com")
-                   (jabber-port   5223))
-               (setq jabber-account-list `((,(netrc-get cred "login")
-                                            (:password        . ,(netrc-get cred "password"))
-                                            (:network-server  . ,jabber-server)
-                                            (:connection-type . ssl)
-                                            (:port            . ,jabber-port))))
-               jabber-history-enabled         t
-               jabber-use-global-history      nil
-               jabber-history-dir             "~/.emacs.d/data/jabber-history"
-               jabber-vcard-avatars-retrieve  nil
-               jabber-chat-buffer-show-avatar nil))
+      :ensure    jabber
+      :init      (let ((cred (netrc-machine (netrc-parse ers-secrets-file) "jabber" t))
+                       (jabber-server "talk.google.com")
+                       (jabber-port   5223))
+                   (setq jabber-account-list `((,(netrc-get cred "login")
+                                                (:password        . ,(netrc-get cred "password"))
+                                                (:network-server  . ,jabber-server)
+                                                (:connection-type . ssl)
+                                                (:port            . ,jabber-port))))
+                   jabber-history-enabled         t
+                   jabber-use-global-history      nil
+                   jabber-history-dir             "~/.emacs.d/data/jabber-history"
+                   jabber-vcard-avatars-retrieve  nil
+                   jabber-chat-buffer-show-avatar nil))
 
   #+end_src
 
@@ -1008,17 +1008,17 @@
 
    #+begin_src emacs-lisp
      (use-package org2blog
-       :ensure org2blog
-       :config (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
-                     personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
-                     org2blog/wp-blog-alist `((,corporate-blog-name
-                                               :url ,corporate-blog-url
-                                               :username (netrc-get corporate-blog "login")
-                                               :password (netrc-get corporate-blog "password"))
-                                              (,personal-blog-name
-                                               :url ,personal-blog-url
-                                               :username (netrc-get personal-blog "login")
-                                               :password (netrc-get personal-blog "password")))))
+       :ensure    org2blog
+       :config    (setq corporate-blog (netrc-machine (netrc-parse ers-secrets-file) "corporate-blog" t)
+                        personal-blog  (netrc-machine (netrc-parse ers-secrets-file) "personal-blog"  t)
+                        org2blog/wp-blog-alist `((,corporate-blog-name
+                                                  :url ,corporate-blog-url
+                                                  :username (netrc-get corporate-blog "login")
+                                                  :password (netrc-get corporate-blog "password"))
+                                                 (,personal-blog-name
+                                                  :url ,personal-blog-url
+                                                  :username (netrc-get personal-blog "login")
+                                                  :password (netrc-get personal-blog "password")))))
 
    #+end_src
 
@@ -1141,8 +1141,8 @@
       :diminish  undo-tree-mode)
 
     (use-package expand-region
-      :ensure expand-region
-      :bind ("C-c e" . er/expand-region))
+      :ensure    expand-region
+      :bind      ("C-c e" . er/expand-region))
 
     (use-package hl-line
       :init     (add-hook 'prog-mode-hook 'hl-line-mode))
@@ -1266,7 +1266,7 @@
 
     (use-package multiple-cursors
       :ensure    multiple-cursors
-      :init    (setq mc/list-file "~/.emacs.d/data/mc.el")
+      :init      (setq mc/list-file "~/.emacs.d/data/mc.el")
       :bind      (("C-c me" . mc/edit-lines)
                   ("C-c ma" . mc/mark-all-like-this)))
 
@@ -1328,15 +1328,15 @@
            default-frame-alist      `((font . ,ers-ui-font)))
 
      (use-package smart-mode-line
-       :ensure smart-mode-line
-       :init   (setq sml/theme 'respectful)
-       :config (sml/setup))
+       :ensure    smart-mode-line
+       :init      (setq sml/theme 'respectful)
+       :config    (sml/setup))
 
      (use-package popwin
-       :ensure popwin
-       :config (progn
-                 (setq display-buffer-function 'popwin:display-buffer)
-                 (popwin-mode 1)))
+       :ensure    popwin
+       :config    (progn
+                    (setq display-buffer-function 'popwin:display-buffer)
+                    (popwin-mode t)))
 
      (defun turn-on-linum-hl-mode-hook ()
        (interactive)
@@ -1344,7 +1344,7 @@
        (linum-mode 1))
 
      (use-package nxml-mode
-       :init (add-hook 'nxml-mode-hook 'turn-on-linum-hl-mode-hook))
+       :init      (add-hook 'nxml-mode-hook 'turn-on-linum-hl-mode-hook))
 
    #+end_src
 
