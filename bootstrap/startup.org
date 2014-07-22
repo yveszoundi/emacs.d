@@ -963,6 +963,7 @@
                  (setq erc-kill-buffer-on-part          t
                        erc-server-auto-reconnect        t
                        erc-prompt-for-nickserv-password nil
+                       erc-server-coding-system         '(utf-8 . utf-8)
                        erc-autojoin-channels-alist      ers-erc-channel-list
                        erc-kill-queries-on-quit         t
                        erc-default-coding-system        '(utf-8 . utf-8)
@@ -970,6 +971,9 @@
                        erc-kill-server-buffer-on-quit   t
                        erc-prompt                       (lambda () (concat (buffer-name) "> ")))
 
+                 (require 'erc-spelling)
+                 (erc-spelling-mode 1)
+                 
                  ;; auto-fill buffer window
                  (add-hook 'window-configuration-change-hook
                            '(lambda () (setq erc-fill-column (- (window-width) 2)))))
