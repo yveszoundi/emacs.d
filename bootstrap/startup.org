@@ -281,6 +281,12 @@
        "Tern executable for Javascript completion."
        :type 'string
        :group 'emacs-rimero-setup)
+
+     ;; Git
+     (defcustom ers-yagist-token ""
+       "Yagist Github token for gists."
+       :type 'string
+       :group 'emacs-rimero-setup)
    #+end_src
 
 ** Post-startup
@@ -665,9 +671,19 @@
        :ensure   magit
        :bind     ("C-x g" . magit-status)
        :diminish magit-auto-revert-mode
+       :init     (defun magit-clone-url ()
+                  (interactive)
+                  (let ((git-repo-url (read-from-minibuffer "Enter git repo URL: ")))
+                    (magit-git-command (concat " clone " git-repo-url)
+                                       default-directory)))
        :config   (defadvice magit-status (after magit-status-advice (dir) activate)
                    (when (window-parent)
                      (delete-other-windows))))
+
+     (use-package yagist
+       :ensure    yagist
+       :init      (setq yagist-github-token ers-yagist-token))
+
    #+end_src
 
 ** Project management
