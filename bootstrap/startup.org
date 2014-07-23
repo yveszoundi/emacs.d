@@ -35,11 +35,9 @@
            `( ,(ers/emacs-sub-dir '("vendor"))))
 
      ;; packages
-     (require 'package)     
+     (require 'package)
 
-     (let ((ers-package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
-       (cl-loop for elt in ers-package-archives
-                do (push elt package-archives)))
+     (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")))
 
      (package-initialize)
 
@@ -738,6 +736,7 @@
                         helm-adaptive-history-file             ers-helm-adaptive-history-file
                         helm-boring-file-regexp-list           '("\\.git$" "\\.svn$" "\\.elc$")
                         helm-yank-symbol-first                 t
+                        helm-buffers-fuzzy-matching            t
                         helm-ff-auto-update-initial-value      t
                         helm-input-idle-delay                  0.1
                         helm-idle-delay                        0.1)
@@ -1397,6 +1396,7 @@
 * User settings
 
   #+begin_src emacs-lisp
+
     (when (file-exists-p ers-user-file)
       (load ers-user-file 'noerror))
 
