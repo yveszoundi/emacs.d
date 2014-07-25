@@ -6,6 +6,22 @@
 #+HTML_HEAD:   <link rel="publisher" href="https://github.com/yveszoundi" />
 
 * Startup
+
+** Enable/Disable UI modes
+   
+   Avoid the menubar, scrollbar and cursor blinking.
+
+   #+begin_src emacs-lisp
+     (defun ers/apply-frame-settings ()
+       (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode blink-cursor-mode))
+         (when (fboundp mode) (funcall mode -1)))
+
+       (dolist (mode '(show-paren-mode display-time-mode column-number-mode))
+         (when (fboundp mode) (funcall mode 1))))
+
+     (ers/apply-frame-settings)
+   #+end_src
+
 ** Pre-startup
    Setup global functions and constants.
 
@@ -198,6 +214,19 @@
        :group 'emacs-rimero-setup)
 
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     ;; jabber
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     (defcustom ers-jabber-server "talk.google.com"
+       "Jabber server."
+       :type 'string
+       :group 'emacs-rimero-setup)
+
+     (defcustom ers-jabber-port 5223
+       "Jabber server port."
+       :type 'int
+       :group 'emacs-rimero-setup)
+
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      ;; Files
      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
      (defcustom ers-ac-histfile "~/.emacs.d/data/ac-comphist.dat"
@@ -360,6 +389,9 @@
   #+end_src
 
 * Aliases
+
+  Define some basic aliases for commonly used commands.
+
   #+begin_src emacs-lisp
     (defalias 'yes-or-no-p 'y-or-n-p)
     (defalias 'serc        'ers/start-erc)
@@ -650,15 +682,25 @@
   #+end_src
 
 * Programming and related
+
 ** Shell scripts
+
+   Sadly, we may still have to write or edit code running on MS Windows.
+
    #+begin_src emacs-lisp
      (use-package batch-mode
        :ensure    batch-mode
        :mode      ("\\.\\(bat\\)$" . batch-mode))
    #+end_src
-** Version control
 
-   Setup svn and git.
+** Version control
+   
+   Nowadays it's either SVN(or similar) for legacy systems and Git for anything else.
+
+   - [[http://www.emacswiki.org/emacs/SvnStatusMode#toc5][dsvn]] : dsvn is a subversion mode influenced by pcsv and psvn.
+   - [[http://magit.github.io][magit]] : Magit is an emacs mode for interacting with the Git version control system. 
+   - [[https://github.com/pidu/git-timemachine][git-timemachine]] : Step through historic versions of git controlled file using everyone's favourite editor.
+   - [[https://github.com/mhayashi1120/yagist.el][yagist.el]]: Yet another Emacs paste mode, this one for Gist.
 
    #+begin_src emacs-lisp
      (use-package vc-svn
@@ -668,16 +710,23 @@
                     (autoload 'svn-update "dsvn" "Run `svn update'." t)))
 
      (use-package magit
-       :ensure   magit)
+       :ensure   magit
        :diminish magit-auto-revert-mode
        :init     (defun magit-clone-url ()
-                  (interactive)
-                  (let ((git-repo-url (read-from-minibuffer "Enter Git repository URL: ")))
-                    (magit-git-command (concat " clone " git-repo-url)
-                                       default-directory)))
+                   (interactive)
+                   (let ((git-repo-url (read-from-minibuffer "Enter git repo URL: ")))
+                     (magit-git-command (concat " clone " git-repo-url)
+                                        default-directory)))
+
+       :bind     (("C-x gs" . magit-status)
+                  ("C-x gc" . magit-clone-url))
        :config   (defadvice magit-status (after magit-status-advice (dir) activate)
                    (when (window-parent)
                      (delete-other-windows))))
+
+     (use-package git-timemachine
+       :ensure    git-timemachine
+       :bind      ("C-x gt" . git-timemachine))
 
      (use-package yagist
        :ensure    yagist
@@ -686,7 +735,8 @@
    #+end_src
 
 ** Project management
-   Use projectile for project management.
+
+   Use [[https://github.com/bbatsov/projectile][Projectile]] for project management.
 
    #+begin_src emacs-lisp
      (use-package projectile
@@ -725,7 +775,9 @@
      (global-set-key "\M- " 'hippie-expand)
    #+end_src
 
-*** Auto-complete settings
+*** Auto-completion settings
+    
+   Use [[http://company-mode.github.io][company-mode]] for text completion.
 
    #+begin_src emacs-lisp
      (use-package company
@@ -743,6 +795,8 @@
 
 *** Helm settings
 
+   [[https://github.com/emacs-helm/helm][Helm]] is an incremental completion and selection narrowing framework.
+    
    #+begin_src emacs-lisp
      (use-package helm
        :ensure    helm
@@ -798,7 +852,7 @@
 
 ** Groovy and Grails
 
-   Settings for Groovy and Grails development.
+   Settings for [[http://groovy.codehaus.org][Groovy]] and [[https://grails.org][Grails]] development.
 
 *** Groovy mode
    #+begin_src emacs-lisp
@@ -834,6 +888,8 @@
    #+end_src
 
 ** Clojure
+
+  [[http://clojure.org][Clojure]] programming setup.
 
   #+begin_src emacs-lisp
     (use-package clojure-mode
@@ -1001,13 +1057,14 @@
 
    #+end_src
 
-** Google Talk
+** Jabber messaging   
+
   #+begin_src emacs-lisp
     (use-package jabber
       :ensure    jabber
       :init      (let ((cred (netrc-machine (netrc-parse ers-secrets-file) "jabber" t))
-                       (jabber-server "talk.google.com")
-                       (jabber-port   5223))
+                       (jabber-server ers-jabber-server)
+                       (jabber-port   ers-jabber-port))
                    (setq jabber-account-list `((,(netrc-get cred "login")
                                                 (:password        . ,(netrc-get cred "password"))
                                                 (:network-server  . ,jabber-server)
@@ -1392,19 +1449,6 @@
 
      (if window-system
          (ers/set-current-font))
-   #+end_src
-
-** Enable/Disable UI modes
-
-   #+begin_src emacs-lisp
-     (defun ers/apply-frame-settings ()
-       (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode blink-cursor-mode))
-         (when (fboundp mode) (funcall mode -1)))
-
-       (dolist (mode '(show-paren-mode display-time-mode column-number-mode))
-         (when (fboundp mode) (funcall mode 1))))
-
-     (ers/apply-frame-settings)
    #+end_src
 
 * User settings
