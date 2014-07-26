@@ -583,6 +583,8 @@
 
 * Org mode settings
 
+  [[http://orgmode.org][org-mode]] configuration.
+
   #+begin_src emacs-lisp
     (use-package org
       :ensure htmlize
@@ -674,6 +676,8 @@
   #+end_src
 
 * Personal information
+  
+  Personal settings for email.
 
   #+begin_src emacs-lisp
     (setq user-mail-address ers-pim-mail-address
@@ -796,6 +800,12 @@
 *** Helm settings
 
    [[https://github.com/emacs-helm/helm][Helm]] is an incremental completion and selection narrowing framework.
+
+   There are couple of interesting integration modules :
+
+   - [[https://github.com/syohex/emacs-helm-ag][emacs-helm-ag]]
+   - [[https://github.com/bbatsov/projectile][helm-projectile]]
+   - [[https://github.com/ShingoFukuyama/helm-swoop][helm-swoop]]
     
    #+begin_src emacs-lisp
      (use-package helm
